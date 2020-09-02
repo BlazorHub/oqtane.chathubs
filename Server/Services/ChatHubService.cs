@@ -32,7 +32,7 @@ namespace Oqtane.ChatHubs.Services
                 lastMessages = lastMessages != null && lastMessages.Any() ? lastMessages.Select(item => this.CreateChatHubMessageClientModel(item)).ToList() : new List<ChatHubMessage>();
             }
 
-            List<ChatHubUser> onlineUsers = await this.chatHubRepository.GetOnlineUsers(room.Id).ToListAsync();
+            List<ChatHubUser> onlineUsers = await this.chatHubRepository.GetChatHubUsersByRoom(room).Online().ToListAsync();
             onlineUsers = onlineUsers != null && onlineUsers.Any() ? onlineUsers = onlineUsers.Select(item => this.CreateChatHubUserClientModel(item)).ToList() : new List<ChatHubUser>();
 
             return new ChatHubRoom()
@@ -55,7 +55,7 @@ namespace Oqtane.ChatHubs.Services
 
         public ChatHubUser CreateChatHubUserClientModel(ChatHubUser user)
         {
-            IEnumerable<ChatHubConnection> activeConnections = user.Connections.Active();
+            IEnumerable<ChatHubConnection> activeConnections = this.chatHubRepository.GetConnectionsByUserId(user.UserId);
             var connections = activeConnections != null && !activeConnections.Any() ? new List<ChatHubConnection>() : activeConnections.Select(item => CreateChatHubConnectionClientModel(item)).ToList();
 
             ChatHubSetting chatHubSettings = this.chatHubRepository.GetChatHubSetting(user.UserId);
@@ -67,7 +67,7 @@ namespace Oqtane.ChatHubs.Services
                 Username = user.Username,
                 DisplayName = user.DisplayName,
                 Connections = connections,
-                Settings = chatHubSettingClientModel ?? null,
+                Settings = chatHubSettingClientModel,
                 CreatedOn = user.CreatedOn,
                 CreatedBy = user.CreatedBy,
                 ModifiedOn = user.ModifiedOn,

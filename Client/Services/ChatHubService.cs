@@ -13,6 +13,7 @@ using System.Timers;
 using Oqtane.Shared.Models;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.JSInterop;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Oqtane.ChatHubs.Services
 {
@@ -112,7 +113,9 @@ namespace Oqtane.ChatHubs.Services
                 options.Headers["moduleid"] = this.ModuleId.ToString();
                 options.Headers["platform"] = "Oqtane";
                 options.Transports = HttpTransportType.WebSockets | HttpTransportType.LongPolling;
-            }).Build();
+            })
+            .AddNewtonsoftJsonProtocol(options => options.PayloadSerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore)    
+            .Build();
         }
 
         public void RegisterHubConnectionHandlers()
@@ -148,7 +151,7 @@ namespace Oqtane.ChatHubs.Services
 
         public async Task ConnectAsync()
         {
-            await this.Connection.StartAsync().ContinueWith(async task =>
+            await this.Connection.StartAsync().ContinueWith(task =>
             {
                 if (task.IsCompleted)
                 {
@@ -190,6 +193,7 @@ namespace Oqtane.ChatHubs.Services
             catch (Exception ex)
             {
                 // !!!Important | This Try Catch Block Is Necessary
+                this.HandleException(ex);
             }
         }
 

@@ -94,8 +94,16 @@ namespace Oqtane.ChatHubs.Repository
         }
         public IQueryable<ChatHubUser> GetOnlineUsers(int roomId)
         {
-            IQueryable<ChatHubUser> users = db.ChatHubRoomChatHubUser.Where(room_user => room_user.ChatHubRoomId == roomId).Include(ru => ru.User).ThenInclude(u => u.Connections).Select(ru => ru.User).Where(u => u.Connections.Any(c => c.Status == ChatHubConnectionStatus.Active.ToString()));
-            return users;
+            var query = from user in db.ChatHubUser
+                        join room_user in db.ChatHubRoomChatHubUser
+                            on user.UserId equals room_user.ChatHubUserId
+                        where room_user.ChatHubRoomId == roomId
+                        join connection in db.ChatHubConnection
+                            on user.UserId equals connection.ChatHubUserId
+                        where connection.Status == ChatHubConnectionStatus.Active.ToString()
+                        select user;
+
+            return query;
         }
         public IQueryable<ChatHubConnection> GetConnectionsByUserId(int userId)
         {

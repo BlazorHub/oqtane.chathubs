@@ -139,7 +139,6 @@ namespace Oqtane.ChatHubs
 
         public async Task ConnectAsGuest()
         {
-
             try
             {
                 if (this.ChatHubService.Connection?.State == HubConnectionState.Connected
@@ -158,7 +157,6 @@ namespace Oqtane.ChatHubs
                 await logger.LogError(ex, "Error Connecting To ChatHub: {Error}", ex.Message);
                 ModuleInstance.AddModuleMessage("Error Connecting To ChatHub", MessageType.Error);
             }
-
         }
 
         public async Task EnterRoom_Clicked(int roomId, int moduleid)
@@ -326,13 +324,7 @@ namespace Oqtane.ChatHubs
 
         public void Dispose()
         {
-            if (this.ChatHubService.Connection?.State == HubConnectionState.Connected
-             || this.ChatHubService.Connection?.State == HubConnectionState.Connecting
-             || this.ChatHubService.Connection?.State == HubConnectionState.Reconnecting)
-            {
-                this.ChatHubService.Connection?.StopAsync();
-            }
-
+            this.ChatHubService.Connection?.DisposeAsync();
             BrowserResizeService.OnResize -= BrowserHasResized;
         }
         

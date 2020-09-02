@@ -22,8 +22,6 @@ namespace Oqtane.ChatHubs.Repository
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
 
-            base.OnModelCreating(modelBuilder);
-
             modelBuilder.Entity<User>().HasDiscriminator<string>("UserType").HasValue<User>("User").HasValue<ChatHubUser>("ChatHubUser");
 
             // Relations
@@ -81,6 +79,8 @@ namespace Oqtane.ChatHubs.Repository
                 .HasOne(s => s.User)
                 .WithOne(u => u.Settings)
                 .HasForeignKey<ChatHubSetting>(s => s.ChatHubUserId);
+
+            base.OnModelCreating(modelBuilder);
 
         }
 

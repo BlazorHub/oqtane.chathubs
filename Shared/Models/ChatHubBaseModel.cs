@@ -1,5 +1,6 @@
 ﻿using Oqtane.Models;
 using System;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Oqtane.Shared.Models
@@ -7,6 +8,7 @@ namespace Oqtane.Shared.Models
     public class ChatHubBaseModel : IAuditable, IChatHubBaseModel
     {
 
+        [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
 
