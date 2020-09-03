@@ -8,59 +8,83 @@
 
 <MessageTemplate Messages="@room.Messages.OrderBy(item => item.ModifiedOn).ThenBy(item => item.Id)" Context="item">
     <SystemTemplate>
-        <StackLayout>
+        <StackLayout Orientation="StackOrientation.Horizontal">
             <Label Text="@string.Format("[{0}]", item.CreatedOn.ToLocalTime().ToString(ChatWindowDatePattern))"></Label>
-            <Label Text="System:"></Label>
-            <Label Text="@(HighlightOwnUsername(ReplaceYoutubeLinksAsync(HttpUtility.HtmlEncode(item.Content)), ChatHubService.ConnectedUser.DisplayName))"></Label>
+            <Label Text="@item.User.DisplayName" FontAttributes="FontAttributes.Bold"></Label>
+            <Label Text=":"></Label>
+        </StackLayout>
+        <StackLayout Orientation="StackOrientation.Horizontal">
+            <Label Text="@(HighlightOwnUsername(HttpUtility.HtmlEncode(item.Content), ChatHubService.ConnectedUser.DisplayName))"></Label>
         </StackLayout>
     </SystemTemplate>
     <AdminTemplate>
-        <StackLayout>
+        <StackLayout Orientation="StackOrientation.Horizontal">
             <Label Text="@string.Format("[{0}]", item.CreatedOn.ToLocalTime().ToString(ChatWindowDatePattern))"></Label>
-            <Label Text="System:"></Label>
-            <Label Text="@(HighlightOwnUsername(ReplaceYoutubeLinksAsync(HttpUtility.HtmlEncode(item.Content)), ChatHubService.ConnectedUser.DisplayName))"></Label>
+            <Label Text="@item.User.DisplayName" FontAttributes="FontAttributes.Bold"></Label>
+            <Label Text=":"></Label>
+        </StackLayout>
+        <StackLayout Orientation="StackOrientation.Horizontal">
+            <Label Text="@(HighlightOwnUsername(HttpUtility.HtmlEncode(item.Content), ChatHubService.ConnectedUser.DisplayName))"></Label>
         </StackLayout>
     </AdminTemplate>
     <UserTemplate>
-        <StackLayout>
+        <StackLayout Orientation="StackOrientation.Horizontal">
             <Label Text="@string.Format("[{0}]", item.CreatedOn.ToLocalTime().ToString(ChatWindowDatePattern))"></Label>
-            <Label Text="System:"></Label>
-            <Label Text="@(HighlightOwnUsername(ReplaceYoutubeLinksAsync(HttpUtility.HtmlEncode(item.Content)), ChatHubService.ConnectedUser.DisplayName))"></Label>
+            <Label Text="@item.User.DisplayName" FontAttributes="FontAttributes.Bold"></Label>
+            <Label Text=":"></Label>
+        </StackLayout>
+        <StackLayout Orientation="StackOrientation.Horizontal">
+            <Label Text="@(HighlightOwnUsername(HttpUtility.HtmlEncode(item.Content), ChatHubService.ConnectedUser.DisplayName))"></Label>
         </StackLayout>
     </UserTemplate>
     <GuestTemplate>
-        <StackLayout>
+        <StackLayout Orientation="StackOrientation.Horizontal">
             <Label Text="@string.Format("[{0}]", item.CreatedOn.ToLocalTime().ToString(ChatWindowDatePattern))"></Label>
-            <Label Text="System:"></Label>
-            <Label Text="@(HighlightOwnUsername(ReplaceYoutubeLinksAsync(HttpUtility.HtmlEncode(item.Content)), ChatHubService.ConnectedUser.DisplayName))"></Label>
+            <Label Text="@item.User.DisplayName" FontAttributes="FontAttributes.Bold"></Label>
+            <Label Text=":"></Label>
+        </StackLayout>
+        <StackLayout Orientation="StackOrientation.Horizontal">
+            <Label Text="@(HighlightOwnUsername(HttpUtility.HtmlEncode(item.Content), ChatHubService.ConnectedUser.DisplayName))"></Label>
         </StackLayout>
     </GuestTemplate>
     <WhisperTemplate>
-        <StackLayout>
+        <StackLayout Orientation="StackOrientation.Horizontal">
             <Label Text="@string.Format("[{0}]", item.CreatedOn.ToLocalTime().ToString(ChatWindowDatePattern))"></Label>
-            <Label Text="System:"></Label>
-            <Label Text="@(HighlightOwnUsername(ReplaceYoutubeLinksAsync(HttpUtility.HtmlEncode(item.Content)), ChatHubService.ConnectedUser.DisplayName))"></Label>
+            <Label Text="@item.User.DisplayName" FontAttributes="FontAttributes.Bold"></Label>
+            <Label Text=":"></Label>
+        </StackLayout>
+        <StackLayout Orientation="StackOrientation.Horizontal">
+            <Label Text="@(HighlightOwnUsername(HttpUtility.HtmlEncode(item.Content), ChatHubService.ConnectedUser.DisplayName))"></Label>
         </StackLayout>
     </WhisperTemplate>
     <MeTemplate>
-        <StackLayout>
+        <StackLayout Orientation="StackOrientation.Horizontal">
             <Label Text="@string.Format("[{0}]", item.CreatedOn.ToLocalTime().ToString(ChatWindowDatePattern))"></Label>
-            <Label Text="System:"></Label>
-            <Label Text="@(HighlightOwnUsername(ReplaceYoutubeLinksAsync(HttpUtility.HtmlEncode(item.Content)), ChatHubService.ConnectedUser.DisplayName))"></Label>
+            <Label Text="@item.User.DisplayName" FontAttributes="FontAttributes.Bold"></Label>
+            <Label Text=":"></Label>
+        </StackLayout>
+        <StackLayout Orientation="StackOrientation.Horizontal">
+            <Label Text="@(HighlightOwnUsername(HttpUtility.HtmlEncode(item.Content), ChatHubService.ConnectedUser.DisplayName))"></Label>
         </StackLayout>
     </MeTemplate>
     <EnterLeaveTemplate>
-        <StackLayout>
+        <StackLayout Orientation="StackOrientation.Horizontal">
             <Label Text="@string.Format("[{0}]", item.CreatedOn.ToLocalTime().ToString(ChatWindowDatePattern))"></Label>
-            <Label Text="System:"></Label>
-            <Label Text="@(HighlightOwnUsername(ReplaceYoutubeLinksAsync(HttpUtility.HtmlEncode(item.Content)), ChatHubService.ConnectedUser.DisplayName))"></Label>
+            <Label Text="@item.User.DisplayName" FontAttributes="FontAttributes.Bold"></Label>
+            <Label Text=":"></Label>
+        </StackLayout>
+        <StackLayout Orientation="StackOrientation.Horizontal">
+            <Label Text="@(HighlightOwnUsername(HttpUtility.HtmlEncode(item.Content), ChatHubService.ConnectedUser.DisplayName))"></Label>
         </StackLayout>
     </EnterLeaveTemplate>
     <ConnectDisconnectTemplate>
-        <StackLayout>
+        <StackLayout Orientation="StackOrientation.Horizontal">
             <Label Text="@string.Format("[{0}]", item.CreatedOn.ToLocalTime().ToString(ChatWindowDatePattern))"></Label>
-            <Label Text="System:"></Label>
-            <Label Text="@(HighlightOwnUsername(ReplaceYoutubeLinksAsync(HttpUtility.HtmlEncode(item.Content)), ChatHubService.ConnectedUser.DisplayName))"></Label>
+            <Label Text="@item.User.DisplayName" FontAttributes="FontAttributes.Bold"></Label>
+            <Label Text=":"></Label>
+        </StackLayout>
+        <StackLayout Orientation="StackOrientation.Horizontal">
+            <Label Text="@(HighlightOwnUsername(HttpUtility.HtmlEncode(item.Content), ChatHubService.ConnectedUser.DisplayName))"></Label>
         </StackLayout>
     </ConnectDisconnectTemplate>
     <ImageTemplate>
@@ -136,38 +160,13 @@
     public ChatHubRoom room { get; set; }
 
     public static string ChatWindowDatePattern = @"HH:mm:ss";
-
-    public string ReplaceYoutubeLinksAsync(string message)
-    {
-        try
-        {
-            return message;
-
-            /*
-            List<string> regularExpressions = this.SettingService.GetSetting(this.settings, "RegularExpression", "").Split(";delimiter;", StringSplitOptions.RemoveEmptyEntries).ToList();
-
-            foreach (var regularExpression in regularExpressions)
-            {
-                string pattern = regularExpression;
-                string replacement = string.Format("<a href=\"{0}\" target=\"_blank\" title=\"{0}\">{0}</a>", "$0");
-                message = Regex.Replace(message, pattern, replacement);
-            }
-            */
-        }
-        catch (Exception ex)
-        {
-
-        }
-
-        return message;
-    }
-
+    
     public string HighlightOwnUsername(string message, string username)
     {
         try
         {
             string pattern = username;
-            string replacement = string.Format("<strong>{0}</strong>", "$0");
+            string replacement = string.Format("{0}", "$0");
             message = Regex.Replace(message, pattern, replacement);
         }
         catch (Exception ex)

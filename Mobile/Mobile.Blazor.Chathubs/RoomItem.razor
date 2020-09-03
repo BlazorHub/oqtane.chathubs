@@ -21,19 +21,17 @@
 
         <StackLayout>
 
-            <Label Text="@Item.Title"></Label>
-
             <MessageItem room="@Item"></MessageItem>
 
             <StackLayout Orientation="StackOrientation.Horizontal" VerticalOptions="LayoutOptions.EndAndExpand">
 
                 <Entry @bind-Text="Item.MessageInput"
                        Placeholder="Type your message here"
-                       OnCompleted="() => ChatHubService.SendMessage(Item.MessageInput, Item.Id, Constants.ModuleId)"
+                       OnCompleted="() => SendMessage_Clicked(Item.MessageInput, Item)"
                        IsEnabled="(!isEnabled)"
                        HorizontalOptions="LayoutOptions.FillAndExpand" />
 
-                <Button Text="Send" OnClick="() => ChatHubService.SendMessage(Item.MessageInput, Item.Id, Constants.ModuleId)" />
+                <Button Text="Send" OnClick="() => SendMessage_Clicked(Item.MessageInput, Item)" />
 
             </StackLayout>
 
@@ -51,6 +49,12 @@
     [Parameter] public ChatHubRoom Item { get; set; }
 
     bool isEnabled;
+
+    public void SendMessage_Clicked(string messageInput, ChatHubRoom room)
+    {
+        this.ChatHubService.SendMessage(messageInput, room.Id, Constants.ModuleId);
+        room.MessageInput = string.Empty;
+    }
 
     public async Task LeaveRoom_Clicked(int roomId)
     {
