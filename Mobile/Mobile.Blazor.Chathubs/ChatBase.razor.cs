@@ -99,8 +99,7 @@ namespace Mobile.Blazor.Chathubs
             this.MobileBlazorAlert(msg);
         }
 
-
-        public async void MobileBlazorAlert(string msg = "")
+        public async void MobileBlazorAlert(string msg = null)
         {
             await InvokeAsync(() =>
             {

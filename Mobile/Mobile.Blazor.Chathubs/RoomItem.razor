@@ -7,7 +7,7 @@
 
     <Label Text="@Item.Title" HorizontalOptions="LayoutOptions.FillAndExpand" VerticalOptions="LayoutOptions.CenterAndExpand" />
 
-    <Button Text="Enter" OnClick="async () => await EnterRoom_Clicked(Item.Id)" />
+    <Button Text="Leave" OnClick="async () => await LeaveRoom_Clicked(Item.Id)" />
 
 </StackLayout>
 
@@ -17,14 +17,6 @@
     public ChatHubService ChatHubService { get; set; }
 
     [Parameter] public ChatHubRoom Item { get; set; }
-
-    public async Task EnterRoom_Clicked(int roomId)
-    {
-        if (ChatHubService.Connection?.State == HubConnectionState.Connected)
-        {
-            await this.ChatHubService.EnterChatRoom(roomId);
-        }
-    }
 
     public async Task LeaveRoom_Clicked(int roomId)
     {
