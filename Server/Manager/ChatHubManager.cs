@@ -34,7 +34,7 @@ namespace Oqtane.ChatHubs.Manager
         public string ExportModule(Module module)
         {
             string content = "";
-            List<ChatHubRoom> chatHubRooms = _chatHubRepository.GetChatHubRooms(module.ModuleId).ToList();
+            List<ChatHubRoom> chatHubRooms = _chatHubRepository.GetChatHubRoomsByModuleId(module.ModuleId).ToList();
             if (chatHubRooms != null)
             {
                 content = JsonSerializer.Serialize(chatHubRooms);

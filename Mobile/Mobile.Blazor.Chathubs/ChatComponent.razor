@@ -5,9 +5,35 @@
 
         <Label Text="Chat Component!" FontSize="40" />
 
-        <Counter />
+        <GuestLogin @ref="GuestLoginReference" ChatComponentReference="@this"></GuestLogin>
+
+        <Frame BorderColor="Color.LightBlue" CornerRadius="2" Margin="5" Padding="10">
+            <ScrollView>
+                <StackLayout>
+
+                    @if (ChatHubService.Lobbies == null || !ChatHubService.Lobbies.Any())
+                    {
+                        <StackLayout Orientation="StackOrientation.Horizontal">
+                            <Label Text="Loading..." />
+                            <ActivityIndicator Color="Color.Purple" IsRunning="true" />
+                        </StackLayout>
+                    }
+                    else
+                    {
+                        foreach (var item in ChatHubService.Lobbies)
+                        {
+                            <LobbyItem Item="item" />
+                        }
+                    }
+
+                </StackLayout>
+            </ScrollView>
+        </Frame>
 
     </StackLayout>
+
+    <ExceptionModal @ref="ExceptionModalReference" Message="@ExceptionMessage"></ExceptionModal>
+
 </ContentView>
 
 @code {

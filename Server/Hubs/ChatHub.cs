@@ -143,7 +143,7 @@ namespace Oqtane.ChatHubs.Hubs
         public override async Task OnConnectedAsync()
         {
             string moduleId = Context.GetHttpContext().Request.Headers["moduleid"];
-            List<ChatHubRoom> list = this.chatHubRepository.GetChatHubRooms(int.Parse(moduleId)).ToList();
+            List<ChatHubRoom> list = this.chatHubRepository.GetChatHubRoomsByModuleId(int.Parse(moduleId)).ToList();
 
             string platform = Context.GetHttpContext().Request.Headers["platform"];
 

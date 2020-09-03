@@ -1,0 +1,41 @@
+﻿@using Oqtane.Shared.Models
+@using Microsoft.AspNetCore.SignalR
+@using Microsoft.AspNetCore.SignalR.Client;
+@using Microsoft.AspNetCore.Http.Connections;
+
+<StackLayout Orientation="StackOrientation.Horizontal">
+
+    <Entry @bind-Text="Guestname"
+           Placeholder="Choose your username"
+           OnCompleted="Login"
+           IsEnabled="(!isEnabled)"
+           HorizontalOptions="LayoutOptions.FillAndExpand" />
+
+    <Button Text="Enter Chat" OnClick="async () => await Login()" />
+
+</StackLayout>
+
+@code {
+
+    [Inject]
+    public ChatHubService ChatHubService { get; set; }
+
+    [Parameter]
+    public ChatComponent ChatComponentReference { get; set; }
+
+    public string Guestname { get; set; }
+
+    bool isEnabled;
+    bool isLogin;
+
+    private async Task Login()
+    {
+        isLogin = true;
+        StateHasChanged();
+
+        await this.ChatComponentReference.ConnectAsGuest();
+
+        isLogin = false;
+        StateHasChanged();
+    }
+}

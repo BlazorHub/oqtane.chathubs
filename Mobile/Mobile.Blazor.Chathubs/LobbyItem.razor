@@ -1,0 +1,34 @@
+﻿@using Oqtane.Shared.Models
+@using Microsoft.AspNetCore.SignalR
+@using Microsoft.AspNetCore.SignalR.Client;
+@using Microsoft.AspNetCore.Http.Connections;
+
+<StackLayout Orientation="StackOrientation.Horizontal">
+
+    <Label Text="@Item.Title" HorizontalOptions="LayoutOptions.FillAndExpand" />
+
+    <Button Text="Enter" OnClick="async () => await EnterRoom_Clicked(Item.Id, Item.ModuleId)" />
+
+</StackLayout>
+
+@code {
+
+    [Inject]
+    public ChatHubService ChatHubService { get; set; }
+
+    [Parameter] public ChatHubRoom Item { get; set; }
+
+    public async Task EnterRoom_Clicked(int roomId, int moduleid)
+    {
+        if (ChatHubService.Connection?.State == HubConnectionState.Connected)
+        {
+            await this.ChatHubService.EnterChatRoom(roomId);
+        }
+    }
+
+    public async Task LeaveRoom_Clicked(int roomId, int moduleId)
+    {
+        await this.ChatHubService.LeaveChatRoom(roomId);
+    }
+
+}

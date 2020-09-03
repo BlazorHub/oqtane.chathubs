@@ -3,6 +3,7 @@ using Microsoft.MobileBlazorBindings;
 using Microsoft.Extensions.Hosting;
 using Xamarin.Essentials;
 using Xamarin.Forms;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Mobile.Blazor.Chathubs
 {
@@ -15,6 +16,8 @@ namespace Mobile.Blazor.Chathubs
                 {
                     // Register app-specific services
                     //services.AddSingleton<AppState>();
+                    services.AddHttpClient();
+                    services.AddScoped<ChatHubService>();
                 })
                 .Build();
 

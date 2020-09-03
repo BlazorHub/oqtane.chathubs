@@ -24,7 +24,7 @@ namespace Oqtane.ChatHubs.Services
 
         Task ConnectAsync();
 
-        Task<List<ChatHubRoom>> GetChatHubRoomsAsync(int ModuleId);
+        Task<List<ChatHubRoom>> GetChatHubRoomsByModuleIdAsync(int ModuleId);
         Task<ChatHubRoom> GetChatHubRoomAsync(int ChatHubRoomId, int ModuleId);
         Task<ChatHubRoom> AddChatHubRoomAsync(ChatHubRoom ChatHubRoom);
         Task UpdateChatHubRoomAsync(ChatHubRoom ChatHubRoom);

@@ -50,6 +50,34 @@ namespace Oqtane.ChatHubs.Controllers
         [HttpGet]
         [ActionName("GetChatHubRooms")]
         [Authorize(Policy = "ViewModule")]
+        public async Task<IEnumerable<ChatHubRoom>> GetAsync()
+        {
+            try
+            {
+                IList<ChatHubRoom> chatHubRooms = new List<ChatHubRoom>();
+
+                var rooms = chatHubRepository.GetChatHubRooms().Public().ToList();
+                if (rooms != null && rooms.Any())
+                {                        
+                    foreach(var room in rooms)
+                    {
+                        var item = await this.chatHubService.CreateChatHubRoomClientModelAsync(room);
+                        chatHubRooms.Add(item);
+                    }
+                }
+
+                return chatHubRooms;
+            }
+            catch (Exception ex)
+            {
+                logger.Log(LogLevel.Error, this, LogFunction.Read, ex, "Get Error {Error}", ex.Message);
+                throw;
+            }
+        }
+
+        [HttpGet]
+        [ActionName("GetChatHubRoomsByModuleId")]
+        [Authorize(Policy = "ViewModule")]
         public async Task<IEnumerable<ChatHubRoom>> GetAsync(int moduleid)
         {
             try
@@ -57,10 +85,10 @@ namespace Oqtane.ChatHubs.Controllers
                 IList<ChatHubRoom> chatHubRooms = new List<ChatHubRoom>();
                 if (moduleid == EntityId)
                 {
-                    var rooms = chatHubRepository.GetChatHubRooms(moduleid).Public().ToList();
+                    var rooms = chatHubRepository.GetChatHubRoomsByModuleId(moduleid).Public().ToList();
                     if (rooms != null && rooms.Any())
-                    {                        
-                        foreach(var room in rooms)
+                    {
+                        foreach (var room in rooms)
                         {
                             var item = await this.chatHubService.CreateChatHubRoomClientModelAsync(room);
                             chatHubRooms.Add(item);

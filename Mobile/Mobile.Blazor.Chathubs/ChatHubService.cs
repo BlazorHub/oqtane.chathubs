@@ -1,5 +1,3 @@
-using Microsoft.AspNetCore.Components;
-using Oqtane.Shared;
 using System;
 using System.Collections.Generic;
 using System.Net.Http;
@@ -7,26 +5,21 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.SignalR.Client;
 using Microsoft.AspNetCore.Http.Connections;
-using Oqtane.Services;
 using System.Linq;
 using System.Timers;
-using Oqtane.Shared.Models;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.JSInterop;
 using Microsoft.Extensions.DependencyInjection;
+using Oqtane.Shared.Models;
+using System.Net.Http.Json;
 
-namespace Oqtane.ChatHubs.Services
+namespace Mobile.Blazor.Chathubs
 {
 
-    public class ChatHubService : ServiceBase, IChatHubService
+    public class ChatHubService
     {
 
-        private readonly HttpClient HttpClient;
-        private readonly NavigationManager NavigationManager;
-        private readonly SiteState SiteState;
-        private readonly IJSRuntime JSRuntime;
-
-        private int ModuleId;
+        public IHttpClientFactory HttpClientFactory { get; set; }
 
         public HubConnection Connection { get; set; }
         public ChatHubUser ConnectedUser { get; set; }
@@ -59,13 +52,9 @@ namespace Oqtane.ChatHubs.Services
 
         private Timer GetLobbyRoomsTimer = new Timer();
 
-        public ChatHubService(HttpClient httpClient, SiteState siteState, NavigationManager navigationManager, IJSRuntime JSRuntime, int moduleId) : base(httpClient)
+        public ChatHubService(IHttpClientFactory httpClientFactory)
         {
-            this.HttpClient = httpClient;
-            this.SiteState = siteState;
-            this.NavigationManager = navigationManager;
-            this.JSRuntime = JSRuntime;
-            this.ModuleId = moduleId;
+            this.HttpClientFactory = httpClientFactory;
 
             this.OnConnectedEvent += OnConnectedExecute;
             this.OnAddChatHubRoomEvent += OnAddChatHubRoomExecute;
@@ -102,7 +91,7 @@ namespace Oqtane.ChatHubs.Services
             }
 
             StringBuilder urlBuilder = new StringBuilder();
-            var chatHubConnection = this.NavigationManager.BaseUri + "chathub";
+            var chatHubConnection = string.Concat(Constants.BaseSiteUrl, Constants.ChatHubUrl);
 
             urlBuilder.Append(chatHubConnection);
             urlBuilder.Append("?guestname=" + username);
@@ -110,7 +99,7 @@ namespace Oqtane.ChatHubs.Services
             var url = urlBuilder.ToString();
             Connection = new HubConnectionBuilder().WithUrl(url, options =>
             {
-                options.Headers["moduleid"] = this.ModuleId.ToString();
+                options.Headers["moduleid"] = Constants.ModuleId.ToString();
                 options.Headers["platform"] = "Oqtane";
                 options.Transports = HttpTransportType.WebSockets | HttpTransportType.LongPolling;
             })
@@ -186,7 +175,7 @@ namespace Oqtane.ChatHubs.Services
         {
             try
             {
-                this.Lobbies = await this.GetChatHubRoomsByModuleIdAsync(this.ModuleId);
+                this.Lobbies = await this.GetChatHubRoomsAsync();
                 this.SortLobbyRooms();
                 this.UpdateUI();
             }
@@ -457,52 +446,22 @@ namespace Oqtane.ChatHubs.Services
             await this.GetLobbyRooms();
         }
 
-        public string apiurl
+        public async Task<List<ChatHubRoom>> GetChatHubRoomsAsync()
         {
-            get { return CreateApiUrl(SiteState.Alias, "ChatHub"); }
+            var httpClient = this.HttpClientFactory.CreateClient();
+            return await httpClient.GetFromJsonAsync<List<ChatHubRoom>>(Constants.BaseSiteUrl + Constants.ApiUrl + "/getchathubrooms?entityid=" + Constants.ModuleId);
         }
 
-        public async Task<List<ChatHubRoom>> GetChatHubRoomsByModuleIdAsync(int ModuleId)
-        {
-            return await HttpClient.GetJsonAsync<List<ChatHubRoom>>(apiurl + "/getchathubroomsbymoduleid?moduleid=" + ModuleId + "&entityid=" + ModuleId);
-        }
-        public async Task<ChatHubRoom> GetChatHubRoomAsync(int ChatHubRoomId, int ModuleId)
-        {
-            return await HttpClient.GetJsonAsync<ChatHubRoom>(apiurl + "/getchathubroom/" + ChatHubRoomId + "?moduleid=" + ModuleId + "&entityid=" + ModuleId);
-        }
-        public async Task<ChatHubRoom> AddChatHubRoomAsync(ChatHubRoom ChatHubRoom)
-        {
-            return await HttpClient.PostJsonAsync<ChatHubRoom>(apiurl + "/addchathubroom" + "?entityid=" + ChatHubRoom.ModuleId, ChatHubRoom);
-        }
-        public async Task UpdateChatHubRoomAsync(ChatHubRoom ChatHubRoom)
-        {
-            await HttpClient.PutJsonAsync(apiurl + "/updatechathubroom/" + ChatHubRoom.Id + "?entityid=" + ChatHubRoom.ModuleId, ChatHubRoom);
-        }
-        public async Task DeleteChatHubRoomAsync(int ChatHubRoomId, int ModuleId)
-        {
-            await HttpClient.DeleteAsync(apiurl + "/deletechathubroom/" + ChatHubRoomId + "?moduleid=" + ModuleId + "&entityid=" + ModuleId);
-        }
-
-        public async Task DeleteRoomImageAsync(int ChatHubRoomId, int ModuleId)
-        {
-            await HttpClient.DeleteAsync(apiurl + "/deleteroomimage/" + ChatHubRoomId + "?moduleid=" + ModuleId + "&entityid=" + ModuleId);
-        }
-
-        private void HandleException(Task task)
+        public void HandleException(Task task)
         {
             if (task.Exception != null)
             {
                 this.HandleException(task.Exception);
             }
         }
-        private void HandleException(Exception exception)
+        public void HandleException(Exception exception)
         {
             this.OnExceptionEvent.Invoke(this, new { Exception = exception, ConnectedUser = this.ConnectedUser });
-        }
-
-        public async Task FixCorruptConnections(int ModuleId)
-        {
-            await HttpClient.DeleteAsync(apiurl + "/fixcorruptconnections" + "?moduleid=" + ModuleId + "&entityid=" + ModuleId);
         }
 
     }

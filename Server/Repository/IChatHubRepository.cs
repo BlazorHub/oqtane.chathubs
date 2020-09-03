@@ -10,7 +10,8 @@ namespace Oqtane.ChatHubs.Repository
 
         #region GET
 
-        IQueryable<ChatHubRoom> GetChatHubRooms(int ModuleId);
+        IQueryable<ChatHubRoom> GetChatHubRooms();
+        IQueryable<ChatHubRoom> GetChatHubRoomsByModuleId(int ModuleId);
         IQueryable<ChatHubRoom> GetChatHubRoomsByUser(ChatHubUser user);
         IQueryable<ChatHubUser> GetChatHubUsersByRoom(ChatHubRoom room);
         ChatHubRoom GetChatHubRoom(int ChatHubRoomId);
