@@ -1,4 +1,6 @@
-﻿@using Oqtane.Shared.Models
+﻿@namespace Mobile.Blazor.Chathubs
+
+@using Oqtane.Shared.Models
 @using Microsoft.AspNetCore.SignalR
 @using Microsoft.AspNetCore.SignalR.Client;
 @using Microsoft.AspNetCore.Http.Connections;
@@ -20,6 +22,8 @@
         <StackLayout>
 
             <Label Text="@Item.Title"></Label>
+
+            <MessageItem room="@Item"></MessageItem>
 
             <StackLayout Orientation="StackOrientation.Horizontal" VerticalOptions="LayoutOptions.EndAndExpand">
 

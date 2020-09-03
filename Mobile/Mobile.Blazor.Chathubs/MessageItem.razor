@@ -1,0 +1,181 @@
+﻿@namespace Mobile.Blazor.Chathubs
+
+@using System.Text.RegularExpressions
+@using Oqtane.Shared.Models
+@using System
+@using System.Linq
+@using System.Web
+
+<MessageTemplate Messages="@room.Messages.OrderBy(item => item.ModifiedOn).ThenBy(item => item.Id)" Context="item">
+    <SystemTemplate>
+        <StackLayout>
+            <Label Text="@string.Format("[{0}]", item.CreatedOn.ToLocalTime().ToString(ChatWindowDatePattern))"></Label>
+            <Label Text="System:"></Label>
+            <Label Text="@(HighlightOwnUsername(ReplaceYoutubeLinksAsync(HttpUtility.HtmlEncode(item.Content)), ChatHubService.ConnectedUser.DisplayName))"></Label>
+        </StackLayout>
+    </SystemTemplate>
+    <AdminTemplate>
+        <StackLayout>
+            <Label Text="@string.Format("[{0}]", item.CreatedOn.ToLocalTime().ToString(ChatWindowDatePattern))"></Label>
+            <Label Text="System:"></Label>
+            <Label Text="@(HighlightOwnUsername(ReplaceYoutubeLinksAsync(HttpUtility.HtmlEncode(item.Content)), ChatHubService.ConnectedUser.DisplayName))"></Label>
+        </StackLayout>
+    </AdminTemplate>
+    <UserTemplate>
+        <StackLayout>
+            <Label Text="@string.Format("[{0}]", item.CreatedOn.ToLocalTime().ToString(ChatWindowDatePattern))"></Label>
+            <Label Text="System:"></Label>
+            <Label Text="@(HighlightOwnUsername(ReplaceYoutubeLinksAsync(HttpUtility.HtmlEncode(item.Content)), ChatHubService.ConnectedUser.DisplayName))"></Label>
+        </StackLayout>
+    </UserTemplate>
+    <GuestTemplate>
+        <StackLayout>
+            <Label Text="@string.Format("[{0}]", item.CreatedOn.ToLocalTime().ToString(ChatWindowDatePattern))"></Label>
+            <Label Text="System:"></Label>
+            <Label Text="@(HighlightOwnUsername(ReplaceYoutubeLinksAsync(HttpUtility.HtmlEncode(item.Content)), ChatHubService.ConnectedUser.DisplayName))"></Label>
+        </StackLayout>
+    </GuestTemplate>
+    <WhisperTemplate>
+        <StackLayout>
+            <Label Text="@string.Format("[{0}]", item.CreatedOn.ToLocalTime().ToString(ChatWindowDatePattern))"></Label>
+            <Label Text="System:"></Label>
+            <Label Text="@(HighlightOwnUsername(ReplaceYoutubeLinksAsync(HttpUtility.HtmlEncode(item.Content)), ChatHubService.ConnectedUser.DisplayName))"></Label>
+        </StackLayout>
+    </WhisperTemplate>
+    <MeTemplate>
+        <StackLayout>
+            <Label Text="@string.Format("[{0}]", item.CreatedOn.ToLocalTime().ToString(ChatWindowDatePattern))"></Label>
+            <Label Text="System:"></Label>
+            <Label Text="@(HighlightOwnUsername(ReplaceYoutubeLinksAsync(HttpUtility.HtmlEncode(item.Content)), ChatHubService.ConnectedUser.DisplayName))"></Label>
+        </StackLayout>
+    </MeTemplate>
+    <EnterLeaveTemplate>
+        <StackLayout>
+            <Label Text="@string.Format("[{0}]", item.CreatedOn.ToLocalTime().ToString(ChatWindowDatePattern))"></Label>
+            <Label Text="System:"></Label>
+            <Label Text="@(HighlightOwnUsername(ReplaceYoutubeLinksAsync(HttpUtility.HtmlEncode(item.Content)), ChatHubService.ConnectedUser.DisplayName))"></Label>
+        </StackLayout>
+    </EnterLeaveTemplate>
+    <ConnectDisconnectTemplate>
+        <StackLayout>
+            <Label Text="@string.Format("[{0}]", item.CreatedOn.ToLocalTime().ToString(ChatWindowDatePattern))"></Label>
+            <Label Text="System:"></Label>
+            <Label Text="@(HighlightOwnUsername(ReplaceYoutubeLinksAsync(HttpUtility.HtmlEncode(item.Content)), ChatHubService.ConnectedUser.DisplayName))"></Label>
+        </StackLayout>
+    </ConnectDisconnectTemplate>
+    <ImageTemplate>
+        @if (item.Photos != null)
+        {
+
+            /*
+            <div>
+                <button type="button" class="btn btn-link" @onclick="() => ImageModalRef.OpenDialog(item)">
+
+                    Open Image(s)
+
+                    @if (item.Photos != null)
+                    {
+                        @foreach (var photo in item.Photos)
+                        {
+                            <span>@photo.Caption</span>
+
+                            @if (!photo.Equals(item.Photos.Last()))
+                            {
+                                <strong> | </strong>
+                            }
+                        }
+                    }
+                </button>
+            </div>
+            */
+
+        }
+    </ImageTemplate>
+    <CommandsTemplate>
+
+        @*
+        <div>
+            @if (item.CommandMetaDatas != null && item.CommandMetaDatas.Any())
+            {
+                <div class="table-responsive-sm">
+                    <table class="table table-sm chathub-font-size-075rem">
+                        <thead>
+                            <tr>
+                                <th scope="col">Name</th>
+                                <th scope="col">Roles</th>
+                                <th scope="col">Usage</th>
+                                <th scope="col">Arguments</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var command in item.CommandMetaDatas)
+                            {
+                                <tr>
+                                    <td>/@command.ResourceName</td>
+                                    <td>@string.Join(" | ", command.Roles)</td>
+                                    <td>@command.Usage</td>
+                                    <td>@command.Arguments</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+        </div>
+        *@
+
+    </CommandsTemplate>
+</MessageTemplate>
+
+@code {
+
+    [Inject]
+    public ChatHubService ChatHubService { get; set; }
+
+    [Parameter]
+    public ChatHubRoom room { get; set; }
+
+    public static string ChatWindowDatePattern = @"HH:mm:ss";
+
+    public string ReplaceYoutubeLinksAsync(string message)
+    {
+        try
+        {
+            return message;
+
+            /*
+            List<string> regularExpressions = this.SettingService.GetSetting(this.settings, "RegularExpression", "").Split(";delimiter;", StringSplitOptions.RemoveEmptyEntries).ToList();
+
+            foreach (var regularExpression in regularExpressions)
+            {
+                string pattern = regularExpression;
+                string replacement = string.Format("<a href=\"{0}\" target=\"_blank\" title=\"{0}\">{0}</a>", "$0");
+                message = Regex.Replace(message, pattern, replacement);
+            }
+            */
+        }
+        catch (Exception ex)
+        {
+
+        }
+
+        return message;
+    }
+
+    public string HighlightOwnUsername(string message, string username)
+    {
+        try
+        {
+            string pattern = username;
+            string replacement = string.Format("<strong>{0}</strong>", "$0");
+            message = Regex.Replace(message, pattern, replacement);
+        }
+        catch (Exception ex)
+        {
+
+        }
+
+        return message;
+    }
+
+}
