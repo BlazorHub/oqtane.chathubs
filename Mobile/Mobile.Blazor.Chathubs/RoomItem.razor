@@ -7,7 +7,14 @@
 
 <StackLayout Orientation="StackOrientation.Horizontal">
 
-    <Label Text="@Item.Title" HorizontalOptions="LayoutOptions.FillAndExpand" VerticalOptions="LayoutOptions.CenterAndExpand" />
+    <Image class=""
+           WidthRequest="72"
+           BackgroundColor="Color.Transparent"
+           HorizontalOptions="LayoutOptions.Start"
+           VerticalOptions="LayoutOptions.CenterAndExpand"
+           Source="@(new FileImageSource { File = "chat_room_image_rounded_corners.png" })" />
+
+    <Label Text="@Item.Title" FontAttributes="FontAttributes.Bold" HorizontalOptions="LayoutOptions.StartAndExpand" VerticalOptions="LayoutOptions.CenterAndExpand" />
     <Button Text="Join" OnClick="async () => OnRoomModalOpened()" />
     <Button Text="Leave" OnClick="async () => await LeaveRoom_Clicked(Item.Id)" />
 

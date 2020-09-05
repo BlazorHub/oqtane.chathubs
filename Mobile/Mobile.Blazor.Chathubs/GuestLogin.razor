@@ -28,7 +28,7 @@
         <Frame BorderColor="Color.Green" HorizontalOptions="LayoutOptions.FillAndExpand" CornerRadius="0" Margin="1" Padding="10" BackgroundColor="Color.LightGreen">
             <StackLayout>
 
-                <Label Text="@string.Format("Connected as {0}", ChatHubService.ConnectedUser?.DisplayName)"></Label>
+                <Button Text="@string.Format("Connected as {0}", ChatHubService.ConnectedUser?.DisplayName)" OnClick="async () => await ChatHubService.DisconnectAsync()" BackgroundColor="Color.Transparent" />
 
             </StackLayout>
         </Frame>
