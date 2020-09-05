@@ -85,11 +85,6 @@ namespace Mobile.Blazor.Chathubs
 
         public void BuildGuestConnection(string username)
         {
-            if (string.IsNullOrEmpty(username))
-            {
-                return;
-            }
-
             StringBuilder urlBuilder = new StringBuilder();
             var chatHubConnection = string.Concat(Constants.BaseSiteUrl, Constants.ChatHubUrl);
 

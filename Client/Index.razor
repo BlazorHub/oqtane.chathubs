@@ -15,14 +15,8 @@
 <style type="text/css">
 
     /*
-    .chathub-light-yellow-module-container * { border-radius: 0px; -webkit-border-radius: 0px; -moz-border-radius: 0px; }
+    body * { border-radius: 0px; -webkit-border-radius: 0px; -moz-border-radius: 0px; }
     */
-
-    .chathub-light-yellow-module-container {
-        position: relative;
-        background-color: #ffffdd;
-        border: 1px solid #dddddd;
-    }
 
     .chathub-font-size-075rem {
         font-size: 0.75rem;
@@ -42,9 +36,7 @@
 
 </style>
 
-<br />
-
-<div id="chathub-module-@ModuleState.ModuleId" class="p-sm-3 chathub-light-yellow-module-container" style="height:920px; overflow: auto;">
+<div id="chathub-module-@ModuleState.ModuleId" class="p-sm-3 bg-light" style="height:1000px;">
 
     @if (UserSecurity.IsAuthorized(PageState.User, PermissionNames.Edit, PageState.Page.Permissions))
     {
@@ -56,8 +48,7 @@
     @if (ChatHubService.Connection == null || ChatHubService.Connection?.State == HubConnectionState.Disconnected)
     {
         <div class="form-group">
-            <label for="guestUsernameInput-@ModuleState.ModuleId.ToString()">Choose your desired username:</label>
-            <input type="text" id="guestUsernameInput-@ModuleState.ModuleId.ToString()" class="form-control" @bind-value="@GuestUsername" placeholder="Username-@CultureInfo.CurrentCulture" />
+            <input type="text" id="guestUsernameInput-@ModuleState.ModuleId.ToString()" class="form-control" @bind-value="@GuestUsername" placeholder="Choose an username" />
         </div>
 
         <div class="form-group">
@@ -100,68 +91,91 @@
                         <BSTabLabel><button class="btn btn-link">Lobby</button></BSTabLabel>
                         <BSTabContent>
 
-                            <section class="d-flex flex-wrap flex-lg-nowrap align-content-lg-start p-sm-3 bg-white">
-                                <div class="flex-fill" style="max-width: 1200px; height:@(string.Format("{0}px", UserlistWindowHeight)); overflow: auto;">
+                            <div class="jumbotron jumbotron-fluid bg-white py-1 mb-0">
+                                <div class="container">
+                                    <h1 class="display-4">Fluid jumbotron</h1>
+                                    <p class="lead">This is a simple hero unit, a simple jumbotron-style component for calling extra attention to featured content or information.</p>
+                                </div>
+                            </div>
 
-                                    <ActionLink Action="Add" Security="SecurityAccessLevel.Edit" Text="Add Room" />
+                            <section class="d-flex">
+                                <div class="flex-fill flex-grow-1" style="max-width: 1200px; height:@(string.Format("{0}px", UserlistWindowHeight)); overflow: auto;">
 
-                                    <Table TableItem="ChatHubRoom" Items="@ChatHubService.Lobbies" PageSize="4" TableClass="table table-sm table-light" TableHeadClass="chathub-table-visibility-collapse" ShowSearchBar="false">
+                                    <div class="w-100 bg-white p-sm-3">
 
-                                        <Column TableItem="ChatHubRoom" Title="Image" Field="@(x => x.ImageUrl)" Sortable="false" Filterable="false" Class="align-middle" Width="20%">
-                                            <Template>
+                                        <ActionLink Action="Add" Security="SecurityAccessLevel.Edit" Text="Add Room" />
 
-                                                <MatCard class="chathub-photo-mat-card">
-                                                    <MatCardContent>
-                                                        <MatCardMedia Wide="true" ImageUrl="@string.Format("{0}/modules/oqtane.chathubs/images/rooms/{1}", NavigationManager.BaseUri, context.ImageUrl)" class="@(string.IsNullOrEmpty(context.ImageUrl) ? "d-none" : "img-fuid bg-light")"></MatCardMedia>
-                                                        <MatCardMedia Wide="true" ImageUrl="@string.Format("{0}/modules/oqtane.chathubs/images/chat-room-image.png", NavigationManager.BaseUri, context.ImageUrl)" class="@(string.IsNullOrEmpty(context.ImageUrl) ? "img-fluid bg-light" : "d-none")"></MatCardMedia>
-                                                    </MatCardContent>
-                                                </MatCard>
+                                        <Table TableItem="ChatHubRoom" Items="@ChatHubService.Lobbies" PageSize="4" TableClass="table table-sm" TableHeadClass="chathub-table-visibility-collapse" ShowSearchBar="false">
 
-                                            </Template>
-                                        </Column>
+                                            <Column TableItem="ChatHubRoom" Title="Image" Field="@(x => x.ImageUrl)" Sortable="false" Filterable="false" Class="align-middle" Width="20%">
+                                                <Template>
 
-                                        <Column TableItem="ChatHubRoom" Title="Content" Field="@(x => x.Content)" Sortable="false" Filterable="false">
-                                            <Template>
-                                                <div class="px-1 py-2">
-                                                    <a href="@NavigateUrl(PageState.Page.Path, "moduleid=" + context.ModuleId.ToString() + "&" + "roomid=" + context.Id.ToString())">
-                                                        <h6>@context.Title</h6>
-                                                    </a>
-                                                    <p class="text-muted">
-                                                        <span>@context.Content</span>
-                                                        &nbsp;
-                                                        <span class="text-muted">(Posted by @context.CreatedBy on @context.CreatedOn.ToShortDateString())</span>
-                                                        <br />
-                                                        Online Users: @context.Users.Count()
-                                                    </p>
-                                                    <div class="form-group">
-                                                        <button type="button" class="btn btn-sm btn-link bg-light border-0" @onclick="@(async () => await EnterRoom_Clicked(context.Id, context.ModuleId))">Enter Room</button>
+                                                    <MatCard class="chathub-photo-mat-card">
+                                                        <MatCardContent>
+                                                            <MatCardMedia Wide="true" ImageUrl="@string.Format("{0}/modules/oqtane.chathubs/images/rooms/{1}", NavigationManager.BaseUri, context.ImageUrl)" class="@(string.IsNullOrEmpty(context.ImageUrl) ? "d-none" : "img-fuid bg-light")"></MatCardMedia>
+                                                            <MatCardMedia Wide="true" ImageUrl="@string.Format("{0}/modules/oqtane.chathubs/images/chat-room-image.png", NavigationManager.BaseUri, context.ImageUrl)" class="@(string.IsNullOrEmpty(context.ImageUrl) ? "img-fluid bg-light" : "d-none")"></MatCardMedia>
+                                                        </MatCardContent>
+                                                    </MatCard>
+
+                                                </Template>
+                                            </Column>
+
+                                            <Column TableItem="ChatHubRoom" Title="Content" Field="@(x => x.Content)" Sortable="false" Filterable="false">
+                                                <Template>
+                                                    <div class="px-1 py-2">
+                                                        <a href="@NavigateUrl(PageState.Page.Path, "moduleid=" + context.ModuleId.ToString() + "&" + "roomid=" + context.Id.ToString())">
+                                                            <h6>@context.Title</h6>
+                                                        </a>
+                                                        <p class="text-muted">
+                                                            <span>@context.Content</span>
+                                                            &nbsp;
+                                                            <span class="text-muted">(Posted by @context.CreatedBy on @context.CreatedOn.ToShortDateString())</span>
+                                                            <br />
+                                                            Online Users: @context.Users.Count()
+                                                        </p>
+                                                        <div class="form-group">
+                                                            <button type="button" class="btn btn-sm btn-link bg-light border-0" @onclick="@(async () => await EnterRoom_Clicked(context.Id, context.ModuleId))">Enter Room</button>
+                                                        </div>
                                                     </div>
-                                                </div>
-                                            </Template>
-                                        </Column>
+                                                </Template>
+                                            </Column>
 
-                                        <Column TableItem="ChatHubRoom" Title="Edit" Sortable="false" Filterable="false" Class="@(UserSecurity.IsAuthorized(PageState.User, PermissionNames.Edit, PageState.Page.Permissions) && PageState.EditMode ? "d-table-cell" : "d-none")">
-                                            <Template>
-                                                <ActionLink Action="Edit" Security="SecurityAccessLevel.Edit" Parameters="@($"moduleid=" + context.ModuleId.ToString() + "&" + "roomid=" + context.Id.ToString())" />
-                                            </Template>
-                                        </Column>
+                                            <Column TableItem="ChatHubRoom" Title="Edit" Sortable="false" Filterable="false" Class="@(UserSecurity.IsAuthorized(PageState.User, PermissionNames.Edit, PageState.Page.Permissions) && PageState.EditMode ? "d-table-cell" : "d-none")">
+                                                <Template>
+                                                    <ActionLink Action="Edit" Security="SecurityAccessLevel.Edit" Parameters="@($"moduleid=" + context.ModuleId.ToString() + "&" + "roomid=" + context.Id.ToString())" />
+                                                </Template>
+                                            </Column>
 
-                                        <Column TableItem="ChatHubRoom" Title="Delete" Sortable="false" Filterable="false" Class="@(UserSecurity.IsAuthorized(PageState.User, PermissionNames.Edit, PageState.Page.Permissions) && PageState.EditMode ? "d-table-cell" : "d-none")">
-                                            <Template>
-                                                <ActionDialog Header="Delete Room" Message="@("Are You Sure You Wish To Delete This Room?")" Action="Delete" Security="SecurityAccessLevel.Edit" Class="btn btn-danger" OnClick="@(async () => await DeleteRoom(context.Id))" />
-                                            </Template>
-                                        </Column>
+                                            <Column TableItem="ChatHubRoom" Title="Delete" Sortable="false" Filterable="false" Class="@(UserSecurity.IsAuthorized(PageState.User, PermissionNames.Edit, PageState.Page.Permissions) && PageState.EditMode ? "d-table-cell" : "d-none")">
+                                                <Template>
+                                                    <ActionDialog Header="Delete Room" Message="@("Are You Sure You Wish To Delete This Room?")" Action="Delete" Security="SecurityAccessLevel.Edit" Class="btn btn-danger" OnClick="@(async () => await DeleteRoom(context.Id))" />
+                                                </Template>
+                                            </Column>
 
-                                        <BlazorTable.Pager ShowPageNumber="true" ShowTotalCount="true" />
+                                            <BlazorTable.Pager ShowPageNumber="true" ShowTotalCount="true" />
 
-                                    </Table>
+                                        </Table>
+
+                                    </div>
 
                                 </div>
                             </section>
 
                         </BSTabContent>
                     </BSTab>
-
+                    <BSTab>
+                        <BSTabLabel>
+                            <button class="btn btn-link">App Download</button>
+                        </BSTabLabel>
+                        <BSTabContent>
+                            <div class="jumbotron jumbotron-fluid bg-white py-1 mb-2">
+                                <div class="container">
+                                    <h1 class="display-4">Fluid jumbotron</h1>
+                                    <p class="lead">This is a simple hero unit, a simple jumbotron-style component for calling extra attention to featured content or information.</p>
+                                </div>
+                            </div>
+                        </BSTabContent>
+                    </BSTab>
 
                     @foreach (ChatHubRoom room in ChatHubService.Rooms)
                     {
@@ -373,7 +387,7 @@
                                         </div>
                                     </div>
 
-                                    <div class="userlist bg-light p-0 pl-xl-3 w-100 d-none d-xl-flex @(room.ShowUserlist ? "flex-fill d-flex" : "")" style="max-width: 280px;">
+                                    <div class="userlist bg-light p-0 p-sm-2 w-100 d-none d-xl-flex @(room.ShowUserlist ? "flex-fill d-flex" : "")" style="max-width: 280px;">
                                         <div class="w-100 my-3" style="height: @(string.Format("{0}px", UserlistWindowHeight)); overflow: auto;">
 
                                             <button type="button" class="btn btn-light input-group-button @(room.ShowUserlist ? "d-block" : "d-none")" @onclick="() => ChatHubService.ToggleUserlist(room)" style="position: relative; float: right;"><span class="oi oi-x"></span></button>
@@ -458,7 +472,7 @@
                                                         <div class="px-sm-1 py-3">
 
                                                             <h5>All your Invitations <span class="badge badge-success">NEW</span></h5>
-                                                            
+
                                                             <div class="container">
                                                                 @foreach (var item in ChatHubService.Invitations)
                                                                 {
@@ -474,7 +488,7 @@
                                                                     </div>
                                                                 }
                                                             </div>
-                                                            
+
                                                             @if (!ChatHubService.Invitations.Any())
                                                             {
                                                                 <div class="alert alert-warning" role="alert">

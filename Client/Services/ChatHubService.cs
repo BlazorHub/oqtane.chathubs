@@ -96,11 +96,6 @@ namespace Oqtane.ChatHubs.Services
 
         public void BuildGuestConnection(string username)
         {
-            if (string.IsNullOrEmpty(username))
-            {
-                return;
-            }
-
             StringBuilder urlBuilder = new StringBuilder();
             var chatHubConnection = this.NavigationManager.BaseUri + "chathub";
 

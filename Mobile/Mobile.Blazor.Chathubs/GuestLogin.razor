@@ -2,18 +2,37 @@
 
 @using Oqtane.Shared.Models
 @using Microsoft.AspNetCore.SignalR
-@using Microsoft.AspNetCore.SignalR.Client;
-@using Microsoft.AspNetCore.Http.Connections;
+@using Microsoft.AspNetCore.SignalR.Client
+@using Microsoft.AspNetCore.Http.Connections
 
 <StackLayout Orientation="StackOrientation.Horizontal">
 
-    <Entry @bind-Text="Guestname"
-           Placeholder="Choose your username"
-           OnCompleted="Login"
-           IsEnabled="(!isEnabled)"
-           HorizontalOptions="LayoutOptions.FillAndExpand" />
+    @if (ChatHubService.Connection == null || ChatHubService.Connection?.State == HubConnectionState.Disconnected)
+    {
+        <Frame BorderColor="Color.Purple" HorizontalOptions="LayoutOptions.FillAndExpand" CornerRadius="0" Margin="1" Padding="10" BackgroundColor="Color.MediumPurple">
+            <StackLayout>
 
-    <Button Text="Enter Chat" OnClick="async () => await Login()" />
+                <Entry @bind-Text="Guestname"
+                        Placeholder="Choose your username"
+                        OnCompleted="Login"
+                        IsEnabled="(!isEnabled)"
+                        HorizontalOptions="LayoutOptions.FillAndExpand" />
+
+                <Button Text="Enter Chat" OnClick="async () => await Login()" />
+
+            </StackLayout>
+        </Frame>
+    }
+    else if (ChatHubService.Connection?.State == HubConnectionState.Connected)
+    {
+        <Frame BorderColor="Color.Green" HorizontalOptions="LayoutOptions.FillAndExpand" CornerRadius="0" Margin="1" Padding="10" BackgroundColor="Color.LightGreen">
+            <StackLayout>
+
+                <Label Text="@string.Format("Connected as {0}", ChatHubService.ConnectedUser?.DisplayName)"></Label>
+
+            </StackLayout>
+        </Frame>
+    }
 
 </StackLayout>
 
@@ -40,4 +59,5 @@
         isLogin = false;
         StateHasChanged();
     }
+
 }

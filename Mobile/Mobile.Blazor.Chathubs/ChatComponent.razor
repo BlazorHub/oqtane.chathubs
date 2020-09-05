@@ -1,14 +1,14 @@
 ﻿@inherits ChatBase
 
+@using Microsoft.AspNetCore.SignalR.Client
+
 <ContentView>
 
     <StackLayout Margin="new Thickness(20)">
 
-        <Label Text="Chat Component!" FontSize="40" />
-
         <GuestLogin @ref="GuestLoginReference" ChatComponentReference="@this"></GuestLogin>
 
-        <Frame BorderColor="Color.LightBlue" CornerRadius="2" Margin="5" Padding="10">
+        <Frame BorderColor="Color.Purple" CornerRadius="0" Margin="1" Padding="10" BackgroundColor="Color.MediumPurple" IsVisible="ChatHubService.Connection?.State == HubConnectionState.Connected">
             <ScrollView>
                 <StackLayout>
 
@@ -31,7 +31,7 @@
             </ScrollView>
         </Frame>
 
-        <Frame BorderColor="Color.LightBlue" CornerRadius="2" Margin="5" Padding="10">
+        <Frame BorderColor="Color.MediumBlue" CornerRadius="0" Margin="1" Padding="10" BackgroundColor="Color.LightBlue">
             <ScrollView>
                 <StackLayout>
 
@@ -54,12 +54,12 @@
             </ScrollView>
         </Frame>
 
-    </StackLayout>
+        </StackLayout>
 
-    <ExceptionModal @ref="ExceptionModalReference" Message="@ExceptionMessage"></ExceptionModal>
+        <ExceptionModal @ref="ExceptionModalReference" Message="@ExceptionMessage"></ExceptionModal>
 
-</ContentView>
+    </ContentView>
 
-@code {
+    @code {
 
-}
+    }

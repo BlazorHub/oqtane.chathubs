@@ -2,15 +2,13 @@
 
 @using Oqtane.Shared.Models
 @using Microsoft.AspNetCore.SignalR
-@using Microsoft.AspNetCore.SignalR.Client;
-@using Microsoft.AspNetCore.Http.Connections;
+@using Microsoft.AspNetCore.SignalR.Client
+@using Microsoft.AspNetCore.Http.Connections
 
 <StackLayout Orientation="StackOrientation.Horizontal">
 
     <Label Text="@Item.Title" HorizontalOptions="LayoutOptions.FillAndExpand" VerticalOptions="LayoutOptions.CenterAndExpand" />
-
     <Button Text="Join" OnClick="async () => OnRoomModalOpened()" />
-
     <Button Text="Leave" OnClick="async () => await LeaveRoom_Clicked(Item.Id)" />
 
 </StackLayout>
@@ -21,19 +19,25 @@
 
         <StackLayout>
 
-            <MessageItem room="@Item"></MessageItem>
+                <ScrollView VerticalOptions="LayoutOptions.FillAndExpand">
+                    <StackLayout Margin="0" Padding="10" BackgroundColor="Color.LightGray">
 
-            <StackLayout Orientation="StackOrientation.Horizontal" VerticalOptions="LayoutOptions.EndAndExpand">
+                        <MessageItems room="@Item"></MessageItems>
 
-                <Entry @bind-Text="Item.MessageInput"
-                       Placeholder="Type your message here"
-                       OnCompleted="() => SendMessage_Clicked(Item.MessageInput, Item)"
-                       IsEnabled="(!isEnabled)"
-                       HorizontalOptions="LayoutOptions.FillAndExpand" />
+                    </StackLayout>
+                </ScrollView>
 
-                <Button Text="Send" OnClick="() => SendMessage_Clicked(Item.MessageInput, Item)" />
+                <StackLayout Orientation="StackOrientation.Horizontal" VerticalOptions="LayoutOptions.End" Margin="0" Padding="10" BackgroundColor="Color.LightGoldenrodYellow">
 
-            </StackLayout>
+                    <Entry @bind-Text="Item.MessageInput"
+                           Placeholder="Type your message here"
+                           OnCompleted="() => SendMessage_Clicked(Item.MessageInput, Item)"
+                           IsEnabled="(!isEnabled)"
+                           HorizontalOptions="LayoutOptions.FillAndExpand" />
+
+                    <Button Text="Send" OnClick="() => SendMessage_Clicked(Item.MessageInput, Item)" />
+
+                </StackLayout>
 
         </StackLayout>
 
@@ -46,7 +50,8 @@
     [Inject]
     public ChatHubService ChatHubService { get; set; }
 
-    [Parameter] public ChatHubRoom Item { get; set; }
+    [Parameter]
+    public ChatHubRoom Item { get; set; }
 
     bool isEnabled;
 
@@ -64,7 +69,7 @@
     public ModalContainer RoomModalContainer { get; set; }
 
     public async void OnRoomModalOpened()
-    {
+    {       
         RoomModalContainer.ShowDialog();
     }
 

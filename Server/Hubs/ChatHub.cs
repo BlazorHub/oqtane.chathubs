@@ -53,7 +53,7 @@ namespace Oqtane.ChatHubs.Hubs
             guestname = Context.GetHttpContext().Request.Query["guestname"];
             guestname = guestname.Trim();
 
-            if (!string.IsNullOrEmpty(guestname) && !this.IsValidGuestUsername(guestname))
+            if (string.IsNullOrEmpty(guestname) || !this.IsValidGuestUsername(guestname))
             {
                 throw new HubException("No valid username.");
             }
