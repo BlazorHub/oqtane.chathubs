@@ -24,7 +24,8 @@
     [Inject]
     public ChatHubService ChatHubService { get; set; }
 
-    [Parameter] public ChatHubRoom Item { get; set; }
+    [Parameter]
+    public ChatHubRoom Item { get; set; }
 
     public async Task EnterRoom_Clicked(int roomId)
     {

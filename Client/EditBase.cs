@@ -28,9 +28,10 @@ namespace Oqtane.ChatHubs
         [Inject]
         public IFileReaderService fileReaderService { get; set; }
 
-        public ChatHubService ChatHubService { get; set; }
+        [Inject]
+        public IChatHubService ChatHubService { get; set; }
 
-        public override SecurityAccessLevel SecurityAccessLevel { get { return SecurityAccessLevel.Edit; } }
+        public override SecurityAccessLevel SecurityAccessLevel { get { return SecurityAccessLevel.Anonymous; } }
         public override string Actions { get { return "Add,Edit"; } }
 
         public int roomId = -1;
@@ -54,7 +55,7 @@ namespace Oqtane.ChatHubs
         {
             try
             {
-                this.ChatHubService = new ChatHubService(HttpClient, SiteState, NavigationManager, JsRuntime, ModuleState.ModuleId);
+                //this.ChatHubService = new ChatHubService(HttpClient, SiteState, NavigationManager, JsRuntime, ModuleState.ModuleId);
                 this.ChatHubService.UpdateUI += UpdateUIStateHasChanged;
 
                 await this.InitContextRoomAsync();
@@ -70,7 +71,7 @@ namespace Oqtane.ChatHubs
         {
             try
             {
-                this.ChatHubService = new ChatHubService(HttpClient, SiteState, NavigationManager, JsRuntime, ModuleState.ModuleId);
+                //this.ChatHubService = new ChatHubService(HttpClient, SiteState, NavigationManager, JsRuntime, ModuleState.ModuleId);
                 this.ChatHubService.UpdateUI += UpdateUIStateHasChanged;
 
                 if (PageState.QueryString.ContainsKey("roomid"))
@@ -116,6 +117,7 @@ namespace Oqtane.ChatHubs
                         Status = Enum.GetName(typeof(ChatHubRoomStatus), ChatHubRoomStatus.Active),
                         ImageUrl = string.Empty,
                         OneVsOneId = string.Empty,
+                        CreatorId = ChatHubService.ConnectedUser.UserId,
                     };
 
                     room = await this.ChatHubService.AddChatHubRoomAsync(room);

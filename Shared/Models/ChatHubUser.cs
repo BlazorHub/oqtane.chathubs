@@ -21,6 +21,9 @@ namespace Oqtane.Shared.Models
         public virtual ChatHubSetting Settings { get; set; }
 
         [NotMapped]
+        public virtual ChatHubCam Cam { get; set; }
+
+        [NotMapped]
         public virtual ICollection<ChatHubIgnore> Ignores { get; set; }
 
     }

@@ -34,8 +34,10 @@ namespace Oqtane.ChatHubs
         protected ISettingService SettingService { get; set; }
         [Inject]
         protected BlazorAlertsService BlazorAlertsService { get; set; }
-
-        public ChatHubService ChatHubService { get; set; }
+        [Inject]
+        public IChatHubService ChatHubService { get; set; }
+        [Inject]
+        protected VideoService VideoService { get; set; }
         public BrowserResizeService BrowserResizeService { get; set; }
         public ScrollService ScrollService { get; set; }        
 
@@ -65,10 +67,11 @@ namespace Oqtane.ChatHubs
 
         protected override void OnInitialized()
         {
-            this.ChatHubService = new ChatHubService(HttpClient, SiteState, NavigationManager, JSRuntime, ModuleState.ModuleId);
             this.BrowserResizeService = new BrowserResizeService(HttpClient, JSRuntime);
             this.ScrollService = new ScrollService(HttpClient, JSRuntime);
-            
+            //this.VideoService = new VideoService(HttpClient, JSRuntime);
+            //this.ChatHubService = new ChatHubService(HttpClient, SiteState, NavigationManager, JSRuntime, ModuleState.ModuleId, VideoService);
+
             this.ChatHubService.UpdateUI += UpdateUIStateHasChanged;
             this.ChatHubService.OnAddChatHubMessageEvent += OnAddChatHubMessageExecute;
             this.ChatHubService.OnExceptionEvent += OnExceptionExecute;
@@ -93,6 +96,8 @@ namespace Oqtane.ChatHubs
         {
             try
             {
+                this.ChatHubService.ModuleId = ModuleState.ModuleId;
+
                 this.settings = await this.SettingService.GetModuleSettingsAsync(ModuleState.ModuleId);
                 maxUserNameCharacters = int.Parse(this.SettingService.GetSetting(settings, "MaxUserNameCharacters", "500"));
                 
@@ -102,7 +107,7 @@ namespace Oqtane.ChatHubs
                 }
                 else
                 {
-                    await this.ChatHubService.GetLobbyRooms();
+                    await this.ChatHubService.GetLobbyRooms(ModuleState.ModuleId);
                 }
             }
             catch (Exception ex)
@@ -148,7 +153,7 @@ namespace Oqtane.ChatHubs
                     this.BlazorAlertsService.NewBlazorAlert("The client is already connected.");
                 }
 
-                this.ChatHubService.BuildGuestConnection(GuestUsername);
+                this.ChatHubService.BuildGuestConnection(GuestUsername, ModuleState.ModuleId);
                 this.ChatHubService.RegisterHubConnectionHandlers();
                 await this.ChatHubService.ConnectAsync();
             }
@@ -163,7 +168,7 @@ namespace Oqtane.ChatHubs
         {
             if(ChatHubService.Connection?.State == HubConnectionState.Connected)
             {
-                await this.ChatHubService.EnterChatRoom(roomId);
+                await this.ChatHubService.EnterChatRoom(roomId);                
             }
         }
 

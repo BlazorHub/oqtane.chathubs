@@ -13,6 +13,7 @@ namespace Oqtane.Shared.Models
         public string Type { get; set; }
         public string Status { get; set; }
         public string OneVsOneId { get; set; }
+        public int CreatorId { get; set; }
 
         [NotMapped]
         public string MessageInput { get; set; }

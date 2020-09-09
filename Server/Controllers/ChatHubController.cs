@@ -17,6 +17,7 @@ using Oqtane.ChatHubs.Repository;
 using Oqtane.Infrastructure;
 using System.Drawing;
 using Oqtane.ChatHubs.Services;
+using Oqtane.Controllers;
 
 namespace Oqtane.ChatHubs.Controllers
 {
@@ -27,7 +28,7 @@ namespace Oqtane.ChatHubs.Controllers
 
         IWebHostEnvironment webHostEnvironment;
         private readonly IHubContext<Hubs.ChatHub> chatHub;
-        private readonly UserManager<IdentityUser> identityUserManager;
+        private readonly UserManager<IdentityUser> userManager;
         private readonly IChatHubRepository chatHubRepository;
         private readonly IChatHubService chatHubService;
         private readonly ILogManager logger;
@@ -37,7 +38,7 @@ namespace Oqtane.ChatHubs.Controllers
         {
             this.webHostEnvironment = webHostEnvironment;
             this.chatHub = chatHub;
-            this.identityUserManager = identityUserManager;
+            this.userManager = identityUserManager;
             this.chatHubRepository = chatHubRepository;
             this.chatHubService = chatHubService;
             this.logger = logger;
@@ -137,8 +138,9 @@ namespace Oqtane.ChatHubs.Controllers
                 if (ModelState.IsValid && ChatHubRoom.ModuleId == EntityId)
                 {
                     ChatHubRoom = chatHubRepository.AddChatHubRoom(ChatHubRoom);
-                    logger.Log(LogLevel.Information, this, LogFunction.Create, "ChatHubRoom Added {ChatHubRoom}", ChatHubRoom);
+                    logger.Log(LogLevel.Information, this, LogFunction.Create, "ChatHubRoom Added {ChatHubRoom}", ChatHubRoom);                    
                 }
+
                 return await this.chatHubService.CreateChatHubRoomClientModelAsync(ChatHubRoom);
             }
             catch (Exception ex)

@@ -13,7 +13,7 @@ namespace Oqtane.ChatHubs
     {
 
         [Parameter]
-        public ChatHubService ChatHubService { get; set; }
+        public IChatHubService ChatHubService { get; set; }
 
         public BSModal CenteredBSModal;
 

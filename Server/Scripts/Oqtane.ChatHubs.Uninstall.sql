@@ -2,6 +2,9 @@
 Remove ChatHub Tables
 */
 
+DROP TABLE [dbo].[ChatHubCam]
+GO
+
 DROP TABLE [dbo].[ChatHubSetting]
 GO
 

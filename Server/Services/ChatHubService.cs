@@ -44,6 +44,8 @@ namespace Oqtane.ChatHubs.Services
                 ImageUrl = room.ImageUrl,
                 Type = room.Type,
                 Status = room.Status,
+                OneVsOneId = room.OneVsOneId,
+                CreatorId = room.CreatorId,
                 Messages = lastMessages,
                 Users = onlineUsers,
                 CreatedOn = room.CreatedOn,
@@ -228,7 +230,8 @@ namespace Oqtane.ChatHubs.Services
                     Type = ChatHubRoomType.OneVsOne.ToString(),
                     Status = ChatHubRoomStatus.Active.ToString(),
                     ImageUrl = string.Empty,
-                    OneVsOneId = this.CreateOneVsOneId(callerUser, targetUser)
+                    OneVsOneId = this.CreateOneVsOneId(callerUser, targetUser),
+                    CreatorId = callerUser.UserId
                 };
                 return this.chatHubRepository.AddChatHubRoom(chatHubRoom);
             }

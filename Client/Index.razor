@@ -12,6 +12,8 @@
 @using System.Web
 @using BlazorAlerts
 
+@inject Oqtane.ChatHubs.Services.IChatHubService ChatHubService
+
 <style type="text/css">
 
     /*
@@ -62,7 +64,6 @@
         </pre>
     }
 
-
     @if (ChatHubService.Lobbies != null)
     {
         if (PageState.QueryString.ContainsKey("moduleid") && PageState.QueryString.ContainsKey("roomid") && int.Parse(PageState.QueryString["moduleid"]) == ModuleState.ModuleId)
@@ -102,8 +103,6 @@
                                 <div class="flex-fill flex-grow-1" style="max-width: 1200px; height:@(string.Format("{0}px", UserlistWindowHeight)); overflow: auto;">
 
                                     <div class="w-100 bg-white p-sm-3">
-
-                                        <ActionLink Action="Add" Security="SecurityAccessLevel.Edit" Text="Add Room" />
 
                                         <Table TableItem="ChatHubRoom" Items="@ChatHubService.Lobbies" PageSize="4" TableClass="table table-sm" TableHeadClass="chathub-table-visibility-collapse" ShowSearchBar="false">
 
@@ -163,19 +162,24 @@
 
                         </BSTabContent>
                     </BSTab>
-                    <BSTab>
-                        <BSTabLabel>
-                            <button class="btn btn-link">App Download</button>
-                        </BSTabLabel>
-                        <BSTabContent>
-                            <div class="jumbotron jumbotron-fluid bg-white py-1 mb-2">
-                                <div class="container">
-                                    <h1 class="display-4">Fluid jumbotron</h1>
-                                    <p class="lead">This is a simple hero unit, a simple jumbotron-style component for calling extra attention to featured content or information.</p>
+                    @if (ChatHubService.Connection?.State == HubConnectionState.Connected)
+                    {
+                        <BSTab>
+                            <BSTabLabel>
+                                <button class="btn btn-link">Settings</button>
+                            </BSTabLabel>
+                            <BSTabContent>
+                                <div class="jumbotron jumbotron-fluid bg-white py-1 mb-2">
+                                    <div class="container">
+                                        <h1 class="display-4">Fluid jumbotron</h1>
+                                        <p class="lead">This is a simple hero unit, a simple jumbotron-style component for calling extra attention to featured content or information.</p>
+                                    </div>
                                 </div>
-                            </div>
-                        </BSTabContent>
-                    </BSTab>
+
+                                <ActionLink Action="Add" Security="SecurityAccessLevel.Anonymous" Text="Add Room" />
+                            </BSTabContent>
+                        </BSTab>
+                    }
 
                     @foreach (ChatHubRoom room in ChatHubService.Rooms)
                     {
@@ -189,6 +193,8 @@
 
                             </BSTabLabel>
                             <BSTabContent>
+
+                                <VideoComponent ChatHubService="@ChatHubService" ChatHubRoom="@room"></VideoComponent>
 
                                 <div class="d-flex">
                                     <div class="flex-fill flex-grow-1 @(room.ShowUserlist ? "d-none" : "d-flex")">

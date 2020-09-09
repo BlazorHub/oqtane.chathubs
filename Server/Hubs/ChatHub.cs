@@ -16,6 +16,7 @@ using Oqtane.ChatHubs.Services;
 using Oqtane.ChatHubs.Repository;
 using Microsoft.AspNetCore.Http;
 using Oqtane.ChatHubs.Commands;
+using System.Threading;
 
 namespace Oqtane.ChatHubs.Hubs
 {
@@ -262,6 +263,19 @@ namespace Oqtane.ChatHubs.Hubs
                 await Clients.Group(room.Id.ToString()).SendAsync("RemoveUser", chatHubUserClientModel, room.Id.ToString());
                 await this.SendGroupNotification(string.Format("{0} left chat room with client device {1}.", user.DisplayName, this.MakeStringAnonymous(Context.ConnectionId, 7, '*')), room.Id, Context.ConnectionId, user, ChatHubMessageType.Enter_Leave);
             }
+        }
+
+        [AllowAnonymous]
+        public async Task<IAsyncEnumerable<byte[]>> UploadStream(IAsyncEnumerable<byte[]> stream, int roomId, CancellationTokenSource tokenSource)
+        {
+            ChatHubUser user = await this.GetChatHubUserAsync();
+
+            var connectionsIds = this.chatHubService.GetAllExceptConnectionIds(user);
+            connectionsIds.Add(Context.ConnectionId);
+
+            await Clients.GroupExcept(roomId.ToString(), connectionsIds).SendAsync("DownloadStream", stream, roomId);
+
+            return stream;
         }
 
         private async Task<bool> ExecuteCommandManager(ChatHubUser chatHubUser, string message, int roomId)

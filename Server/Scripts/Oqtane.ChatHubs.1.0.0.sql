@@ -11,6 +11,7 @@ CREATE TABLE [dbo].[ChatHubRoom](
 	[Type] [nvarchar](256) NOT NULL,
 	[Status] [nvarchar](256) NOT NULL,
 	[OneVsOneId] [nvarchar](256) NOT NULL,
+	[CreatorId] [int] NOT NULL,
 	[CreatedBy] [nvarchar](256) NOT NULL,
 	[CreatedOn] [datetime] NOT NULL,
 	[ModifiedBy] [nvarchar](256) NOT NULL,
@@ -108,6 +109,21 @@ CREATE TABLE [dbo].[ChatHubSetting](
 )
 GO
 
+CREATE TABLE [dbo].[ChatHubCam](
+	[Id] [int] IDENTITY(1,1) NOT NULL,
+	[ChatHubUserId] [int] NOT NULL,
+	[Status] [nvarchar](256) NOT NULL,
+	[CreatedBy] [nvarchar](256) NOT NULL,
+	[CreatedOn] [datetime] NOT NULL,
+	[ModifiedBy] [nvarchar](256) NOT NULL,
+	[ModifiedOn] [datetime] NOT NULL,
+  CONSTRAINT [PK_ChatHubCam] PRIMARY KEY CLUSTERED 
+  (
+	[Id] ASC
+  )
+)
+GO
+
 CREATE TABLE [dbo].[ChatHubIgnore](
 	[Id] [int] IDENTITY(1,1) NOT NULL,
 	[ChatHubUserId] [int] NOT NULL,
@@ -175,6 +191,11 @@ ON DELETE CASCADE
 GO
 
 ALTER TABLE [dbo].[ChatHubSetting]  WITH CHECK ADD  CONSTRAINT [FK_ChatHubSetting_ChatHubUser] FOREIGN KEY([ChatHubUserId])
+REFERENCES [dbo].[User] ([UserId])
+ON DELETE CASCADE
+GO
+
+ALTER TABLE [dbo].[ChatHubCam]  WITH CHECK ADD  CONSTRAINT [FK_ChatHubCam_ChatHubUser] FOREIGN KEY([ChatHubUserId])
 REFERENCES [dbo].[User] ([UserId])
 ON DELETE CASCADE
 GO

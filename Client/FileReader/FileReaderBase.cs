@@ -23,7 +23,7 @@ namespace Oqtane.ChatHubs
         protected SiteState SiteState { get; set; }
 
         [Parameter]
-        public ChatHubService ChatHubService { get; set; }
+        public IChatHubService ChatHubService { get; set; }
         [Parameter]
         public string ModuleId { get; set; }
         [Parameter]

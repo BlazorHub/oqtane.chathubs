@@ -1,0 +1,63 @@
+﻿@namespace Oqtane.ChatHubs
+
+@using Oqtane.ChatHubs.Services
+@using Oqtane.Shared.Models
+
+<style type="text/css">
+
+    #chathubs-video {
+        -webkit-transform: scaleX(-1);
+        transform: scaleX(-1);
+    }
+
+    #chathubs-canvas {
+        -moz-transform: scaleX(-1);
+        -o-transform: scaleX(-1);
+        -webkit-transform: scaleX(-1);
+        transform: scaleX(-1);
+        filter: FlipH;
+        -ms-filter: "FlipH";
+    }
+
+    #chathubs-canvas-download {
+        -moz-transform: scaleX(-1);
+        -o-transform: scaleX(-1);
+        -webkit-transform: scaleX(-1);
+        transform: scaleX(-1);
+        filter: FlipH;
+        -ms-filter: "FlipH";
+    }
+
+</style>
+
+<div class="container">
+    <div class="row">
+
+        @if (true || ChatHubService.ConnectedUser.UserId == ChatHubRoom.CreatorId)
+        {
+            <div class="col-sm-8">
+                <pre class="bg-light">Video Component</pre>
+                <video id="chathubs-video-@ChatHubRoom.Id" class="my-1" playsinline autoplay></video>
+                <canvas id="chathubs-canvas-@ChatHubRoom.Id" class="d-none" width="400" height="250"></canvas>
+            </div>
+        }
+        @if (true)
+        {
+            <div class="col-sm-4">
+                <pre class="bg-light">Video Download Stream</pre>
+                <canvas id="chathubs-canvas-download-@ChatHubRoom.Id" class="" width="400" height="250"></canvas>
+            </div>
+        }
+
+    </div>
+</div>
+
+@code {
+
+    [Parameter]
+    public IChatHubService ChatHubService { get; set; }
+
+    [Parameter]
+    public ChatHubRoom ChatHubRoom { get; set; }
+
+}
