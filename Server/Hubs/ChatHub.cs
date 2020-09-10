@@ -16,7 +16,6 @@ using Oqtane.ChatHubs.Services;
 using Oqtane.ChatHubs.Repository;
 using Microsoft.AspNetCore.Http;
 using Oqtane.ChatHubs.Commands;
-using System.Threading;
 
 namespace Oqtane.ChatHubs.Hubs
 {
@@ -266,7 +265,7 @@ namespace Oqtane.ChatHubs.Hubs
         }
 
         [AllowAnonymous]
-        public async Task<IAsyncEnumerable<byte[]>> UploadStream(IAsyncEnumerable<byte[]> stream, int roomId, CancellationTokenSource tokenSource)
+        public async Task<string> UploadStream(string stream, int roomId)
         {
             ChatHubUser user = await this.GetChatHubUserAsync();
 

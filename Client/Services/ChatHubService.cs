@@ -140,7 +140,7 @@ namespace Oqtane.ChatHubs.Services
             this.Connection.On("AddIgnoredUser", (ChatHubUser ignoredUser) => OnAddIgnoredUserEvent(this, ignoredUser));
             this.Connection.On("RemoveIgnoredUser", (ChatHubUser ignoredUser) => OnRemoveIgnoredUserEvent(this, ignoredUser));
             this.Connection.On("AddIgnoredByUser", (ChatHubUser ignoredUser) => OnAddIgnoredByUserExecute(this, ignoredUser));
-            this.Connection.On("DownloadStream", (IAsyncEnumerable<byte[]> stream, int roomId) => OnDownloadStreamExecute(this, new { stream = stream, roomId = roomId }));
+            this.Connection.On("DownloadStream", (string stream, int roomId) => OnDownloadStreamExecute(this, new { stream = stream, roomId = roomId }));
             this.Connection.On("RemoveIgnoredByUser", (ChatHubUser ignoredUser) => OnRemoveIgnoredByUserExecute(this, ignoredUser));
             this.Connection.On("ClearHistory", (int roomId) => OnClearHistoryEvent(this, roomId));
             this.Connection.On("Disconnect", (ChatHubUser user) => OnDisconnectEvent(this, user));
@@ -157,23 +157,34 @@ namespace Oqtane.ChatHubs.Services
             });
         }
 
+        public async Task StartStreaming(int roomId)
+        {
+            await this.VideoService.InitVideoJs();
+            await this.VideoService.GetUserMediaPermission(roomId);
+
+            await Task.Delay(5000);
+
+            Task streamTask = new Task(async () => await this.RunStreamTask(roomId));
+            this.StreamTasks.Add(roomId, streamTask);
+
+            streamTask.Start();
+        }
+
         public async Task RunStreamTask(int roomId)
         {
             while (true)
             {
-                await this.UploadStream(this.ClientStreamData(roomId), roomId);
-                await Task.Delay(1000);
+                await this.VideoService.DrawImage(roomId);
+                string str = await this.VideoService.GetImageAsBase64String(roomId);
+                await this.UploadStream(str, roomId);
+                await Task.Delay(200);
             }
         }
 
-        public async Task StartStreaming(int roomId)
+        private async Task UploadStream(string bytes, int roomId)
         {
-            await this.VideoService.GetUserMediaPermission(roomId);
-            
-            Task task = new Task(async() => await this.RunStreamTask(roomId));
-            this.StreamTasks.Add(roomId, task);
-
-            task.Start();
+            var channel = await this.Connection.StreamAsChannelAsync<string>("UploadStream", bytes, roomId);
+            this.OnDownloadStreamExecute(this, new { stream = bytes, roomId = roomId });
         }
 
         public void EndStreaming(int roomId)
@@ -182,62 +193,19 @@ namespace Oqtane.ChatHubs.Services
             streamTask.Value.Dispose();
         }
 
-        private async Task UploadStream(IAsyncEnumerable<byte[]> stream, int roomId)
-        {
-            var cancellationTokenSource = new CancellationTokenSource();
-            var channel = await this.Connection.StreamAsChannelAsync<byte[]>("UploadStream", stream, roomId, cancellationTokenSource);
-
-            this.OnDownloadStreamExecute(this, new { stream = stream, roomId = roomId });
-
-            while (await channel.WaitToReadAsync())
-            {
-                while (channel.TryRead(out var output))
-                {
-                    Console.WriteLine($"{output}");
-                }
-            }
-
-            Console.WriteLine("Streaming completed");
-        }
-
-        public async IAsyncEnumerable<byte[]> ClientStreamData(int roomId)
-        {
-            for (var i = 0; i < 10; i++)
-            {
-                await this.VideoService.DrawImage(roomId);
-                byte[] bytes = await this.VideoService.GetImageAsBase64String(roomId);
-                yield return bytes;
-            }
-        }
-
         public async void OnDownloadStreamExecute(object sender, dynamic item)
         {
-            IAsyncEnumerable<byte[]> stream = item.stream;
+            string stream = item.stream;
             int roomId = item.roomId;
 
-            byte[] bytes = null;
-            IAsyncEnumerator<byte[]> e = stream.GetAsyncEnumerator();
             try
             {
-                while (await e.MoveNextAsync())
-                {
-                    if(bytes == null)
-                    {
-                        bytes = e.Current;
-                    }
-                    else
-                    {
-                        bytes.Concat(e.Current);
-                    }
-                }
-
-                await this.VideoService.SetStream(bytes, roomId);
+                await this.VideoService.SetImage(stream, roomId);
             }
             catch(Exception ex)
             {
                 Console.WriteLine(ex.Message);
             }
-            finally { if (e != null) await e.DisposeAsync(); }
         }
 
         public async Task EnterChatRoom(int roomId)
@@ -247,9 +215,6 @@ namespace Oqtane.ChatHubs.Services
                 if (task.IsCompleted)
                 {
                     this.HandleException(task);
-
-                    await Task.Delay(1000);
-                    await this.StartStreaming(roomId);
                 }
             });
         }

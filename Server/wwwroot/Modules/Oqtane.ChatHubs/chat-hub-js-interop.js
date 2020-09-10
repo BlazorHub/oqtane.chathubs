@@ -59,80 +59,149 @@
         document.body.removeChild(link);
     };
 
-    window.videoElement = '';
-    window.getVideoElement = function () {
-        return videoElement;
-    };
-    window.setVideoElement = function (elementId) {
-        videoElement = document.querySelector(elementId);
-    };
+    window.videojs = function () {
 
-    window.video = {
+        videostreams = {
 
-        constrains: {
-            audio: true,
-            video: {
-                width: { min: 256, ideal: 1024, max: 1280 },
-                height: { min: 144, ideal: 512, max: 720 }
-            }
-        },
-        getUserMediaPermission: function (roomId) {
+            video: function () {
 
-            navigator.mediaDevices.getUserMedia(this.constrains)
-                .then(function (mediaStream) {
+                this.videoElement = '';
+                this.getVideoElement = function () {
+                    return this.videoElement;
+                };
+                this.setVideoElement = function (elementId) {
+                    this.videoElement = elementId;
+                };
+            },
+            canvas: function () {
 
-                    window.setVideoElement('#chathubs-video-' + roomId);
-                    window.videoElement.srcObject = mediaStream;
-                    window.videoElement.onloadedmetadata = function (e) {
-                        window.videoElement.play();
-                    };
-                })
-                .catch(function (ex) {
-                    console.log(ex.message);
-                });
-        },
-        captureAudio: function (roomId) {
+                this.canvasElement = '';
+                this.getCanvasElement = function () {
+                    return this.canvasElement;
+                };
+                this.setCanvasElement = function (elementId) {
+                    this.canvasElement = elementId;
+                };
+            },
+            canvasDownload: function () {
 
-        },
-        drawImage: function (roomId) {
+                this.canvasDownloadElement = '';
+                this.getCanvasDownloadElement = function () {
+                    return this.canvasDownloadElement;
+                };
+                this.setCanvasDownloadElement = function (elementId) {
+                    this.canvasDownloadElement = elementId;
+                };
+            },
+            livestreams: [],
+            getlivestream: function (roomId) {
 
-            const canvas = document.querySelector('#chathubs-canvas-' + roomId);
-            const context = canvas.getContext('2d');
-            const image = document.querySelector('#chathubs-video-' + roomId);
+                return self.videostreams.livestreams.find(item => item.id === roomId);
+            },
+            constrains: {
+                audio: true,
+                video: {
+                    width: { min: 640, ideal: 720, max: 1024 },
+                    height: { min: 480, ideal: 576, max: 512 }
+                }
+            },
+            getUserMediaPermission: function (roomId) {
 
-            context.drawImage(image, 0, 0);
-        },
-        getImageAsBase64String: async function (roomId , format = "image/jpeg") {
+                console.log("get user media permission..");
 
-            var canvas = document.querySelector('#chathubs-canvas-' + roomId);
-            var dataUrl = canvas.toDataURL(format);
-            return dataUrl.split(',')[1];
-        },
-        stopVideo: function () {
+                navigator.mediaDevices.getUserMedia(this.constrains)
+                    .then(function (mediaStream) {
 
-            var stream = video.srcObject;
-            var tracks = stream.getTracks();
+                        var vInstance = new self.videostreams.video();
+                        vInstance.setVideoElement('#chathubs-video-' + roomId);
+                        var vElement = document.querySelector(vInstance.getVideoElement());
+                        vElement.srcObject = mediaStream;
+                        vElement.onloadedmetadata = function (e) {
+                            vElement.play();
+                        };
 
-            for (var i = 0; i < tracks.length; i++) {
-                var track = tracks[i];
-                track.stop();
-            }
-            video.srcObject = null;
-        },
-        setImage: function (base64ImageString, roomId) {
-            
-            var canvas = document.querySelector('#chathubs-canvas-download-' + roomId);
-            var context = canvas.getContext("2d");
+                        var cInstance = new self.videostreams.canvas();
+                        cInstance.setCanvasElement('#chathubs-canvas-' + roomId);
 
-            var image = new Image();
-            image.onload = function () {
+                        var cdInstance = new self.videostreams.canvasDownload();
+                        cdInstance.setCanvasDownloadElement('#chathubs-canvas-download-' + roomId);
+
+                        var dicItem = {
+                            id: roomId,
+                            video: vInstance,
+                            canvas: cInstance,
+                            canvas_download: cdInstance
+                        };
+
+                        self.videostreams.livestreams.push(dicItem);
+                    })
+                    .catch(function (ex) {
+                        console.log(ex.message);
+                    });
+            },
+            captureAudio: function (roomId) {
+
+            },
+            drawImage: function (roomId) {
+
+                var livestream = self.videostreams.getlivestream(roomId);
+
+                var canvas = document.querySelector(livestream.canvas.getCanvasElement());
+                var context = canvas.getContext('2d');
+                var image = document.querySelector(livestream.video.getVideoElement());
+
                 context.drawImage(image, 0, 0);
-            };
-            var format = "data:image/png;base64";
-            image.src = format + "," + base64ImageString;
+            },
+            getImageAsBase64String: function (roomId) {
 
-            console.log(source);
-        },
+                var livestream = self.videostreams.getlivestream(roomId);
+                var canvas = document.querySelector(livestream.canvas.getCanvasElement());
+                var dataUrl = canvas.toDataURL("image/jpeg", 0.5);
+                return dataUrl;
+            },
+            stopVideo: function () {
+
+                var stream = video.srcObject;
+                var tracks = stream.getTracks();
+
+                for (var i = 0; i < tracks.length; i++) {
+                    var track = tracks[i];
+                    track.stop();
+                }
+                video.srcObject = null;
+            },
+            setImage: function (base64ImageString, roomId) {
+
+                var livestream = self.videostreams.getlivestream(roomId);
+
+                var canvas = document.querySelector(livestream.canvas_download.getCanvasDownloadElement());
+                var ctx = canvas.getContext('2d');
+
+                var img = new Image();
+                img.onload = function () {
+                    ctx.drawImage(img, 0, 0);
+                };
+
+                img.src = base64ImageString;
+            },
+        };
     };
+
+    window.initvideojs = function () {
+
+        console.log("store object ref..");
+        return storeObjectRef(new window.videojs());
+    };
+
+    var jsObjectRefs = {};
+    var jsObjectRefId = 0;
+    const jsRefKey = '_jsObjectRefId';
+    function storeObjectRef(obj) {
+        var id = jsObjectRefId++;
+        jsObjectRefs[id] = obj;
+        var jsRef = {};
+        jsRef[jsRefKey] = id;
+        return jsRef;
+    }  
 
 });

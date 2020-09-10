@@ -4,6 +4,7 @@ using Oqtane.Modules;
 using Oqtane.Services;
 using System;
 using System.Net.Http;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 namespace Oqtane.ChatHubs
@@ -20,32 +21,41 @@ namespace Oqtane.ChatHubs
             this.JSRuntime = JSRuntime;
         }
 
+        public class JsRuntimeObjectRef
+        {
+            [JsonPropertyName("_jsObjectRefId")]
+            public int JsObjectRefId { get; set; }
+        }
+        private JsRuntimeObjectRef _jsRuntimeObjectRef;
+
+        public async Task InitVideoJs()
+        {
+            this._jsRuntimeObjectRef = await this.JSRuntime.InvokeAsync<JsRuntimeObjectRef>("initvideojs");
+        }
+
         public async Task GetUserMediaPermission(int roomId)
         {
-            await this.JSRuntime.InvokeVoidAsync("video.getUserMediaPermission", roomId);
+            await this.JSRuntime.InvokeVoidAsync("videostreams.getUserMediaPermission", roomId, _jsRuntimeObjectRef);
         }
 
         public async Task CaptureAudio(int roomId)
         {
-            await this.JSRuntime.InvokeVoidAsync("video.captureAudio", roomId);
+            await this.JSRuntime.InvokeVoidAsync("videostreams.captureAudio", roomId);
         }
 
         public async Task DrawImage(int roomId)
         {
-            await this.JSRuntime.InvokeVoidAsync("video.drawImage", roomId);
+            await this.JSRuntime.InvokeVoidAsync("videostreams.drawImage", roomId, _jsRuntimeObjectRef);
         }
 
-        public async Task<byte[]> GetImageAsBase64String(int roomId)
+        public async Task<string> GetImageAsBase64String(int roomId)
         {
-            var imageAsBase64String = await this.JSRuntime.InvokeAsync<string>("video.getImageAsBase64String", roomId);
-            byte[] bytes = Convert.FromBase64String(imageAsBase64String);
-            return bytes;
+            return await this.JSRuntime.InvokeAsync<string>("videostreams.getImageAsBase64String", roomId, _jsRuntimeObjectRef);
         }
 
-        public async Task SetStream(byte[] stream, int roomId)
+        public async Task SetImage(string image, int roomId)
         {
-            var imageAsBase64String = Convert.ToBase64String(stream);
-            await this.JSRuntime.InvokeVoidAsync("video.setImage", imageAsBase64String, roomId);
+            await this.JSRuntime.InvokeVoidAsync("videostreams.setImage", image, roomId, _jsRuntimeObjectRef);
         }
 
     }
