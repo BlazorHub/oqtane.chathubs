@@ -350,8 +350,9 @@ namespace Oqtane.ChatHubs
                 room.UnreadMessages = 0;
             }
         }
-        public void Hide(BSTabEvent e)
+        public async Task HideAsync(BSTabEvent e)
         {
+            await this.VideoService.StopVideo(int.Parse(e.Activated.Id));
         }
         public void Hidden(BSTabEvent e)
         {
