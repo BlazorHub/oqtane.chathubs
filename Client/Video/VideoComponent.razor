@@ -32,29 +32,28 @@
 
 <div>
 
-    <div class="d-flex align-items-center bd-highlight">
+    @if (ChatHubService.StreamTasks.Any())
+    {
+        <div class="d-flex align-items-center bd-highlight my-1">
 
-        @if (true || ChatHubService.ConnectedUser.UserId == ChatHubRoom.CreatorId)
-        {
-            <div class="p-1 bd-highlight bg-white border border-light">
-                <pre class="bg-light">Video Component</pre>
-                <video id="chathubs-video-@ChatHubRoom.Id" class="my-1" playsinline autoplay></video>
-                <canvas id="chathubs-canvas-@ChatHubRoom.Id" class="d-none" width="400" height="250"></canvas>
-            </div>
-        }
-        @if (true)
-        {
-            <div class="p-1 bd-highlight bg-white border border-light">
-                <pre class="bg-light">Video Download Stream</pre>
-                <canvas id="chathubs-canvas-download-@ChatHubRoom.Id" class="" width="200" height="200"></canvas>
-            </div>
-        }
+            @if (true || ChatHubService.ConnectedUser.UserId == ChatHubRoom.CreatorId)
+            {
+                <div class="p-1 bd-highlight bg-white border border-light">
+                    <pre class="bg-light">Video Component</pre>
+                    <video id="chathubs-video-@ChatHubRoom.Id" class="my-1" playsinline autoplay></video>
+                    <canvas id="chathubs-canvas-@ChatHubRoom.Id" class="d-none" width="400" height="250"></canvas>
+                </div>
+            }
+            @if (true)
+            {
+                <div class="p-1 bd-highlight bg-white border border-light">
+                    <pre class="bg-light">Video Download Stream</pre>
+                    <canvas id="chathubs-canvas-download-@ChatHubRoom.Id" class="" width="200" height="200"></canvas>
+                </div>
+            }
 
-    </div>
-
-    <br />
-
-    <button type="button" @onclick="() => ChatHubService.StartStreaming(ChatHubRoom.Id)">Start Streaming</button>
+        </div>
+    }
 
 </div>
 

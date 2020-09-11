@@ -36,6 +36,11 @@
         box-shadow: none;
     }
 
+    .mdc-tab {
+        padding-left: 0px !important;
+        padding-right: 0px !important;
+    }
+
 </style>
 
 <div id="chathub-module-@ModuleState.ModuleId" class="p-sm-3 bg-light" style="height:1000px;">
@@ -173,10 +178,12 @@
                                     <div class="container">
                                         <h1 class="display-4">Fluid jumbotron</h1>
                                         <p class="lead">This is a simple hero unit, a simple jumbotron-style component for calling extra attention to featured content or information.</p>
+
+                                        <ActionLink Action="Add" Security="SecurityAccessLevel.Anonymous" Text="Add Room" />                                        
                                     </div>
                                 </div>
 
-                                <ActionLink Action="Add" Security="SecurityAccessLevel.Anonymous" Text="Add Room" />
+                                
                             </BSTabContent>
                         </BSTab>
                     }
@@ -468,6 +475,23 @@
 
                                                 </MatTab>
 
+                                                <MatTab>
+
+                                                    <LabelContent><div><span class="oi oi-camera-slr"></span></div></LabelContent>
+
+                                                    <ChildContent>
+
+                                                        <div class="px-sm-1 py-3">
+
+                                                            <h5>Webcam Live Streams <span class="badge badge-success">FREE</span></h5>
+                                                            <button type="button" @onclick="() => ChatHubService.StartStreaming(room.Id)">Start Streaming</button>
+
+                                                        </div>
+
+                                                    </ChildContent>
+
+                                                </MatTab>
+                                                
                                                 <MatTab>
 
                                                     <LabelContent><div><span class="oi oi-list"></span> (@ChatHubService.Invitations.Count())</div></LabelContent>
