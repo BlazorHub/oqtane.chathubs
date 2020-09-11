@@ -104,6 +104,10 @@
                     self.videostreams.livestreams.push(obj);
                 }
             },
+            removelivestream: function (roomId) {
+
+                self.videostreams.livestreams = self.videostreams.livestreams.filter(item => item.id !== roomId);
+            },
             getlivestream: function (roomId) {
 
                 return self.videostreams.livestreams.find(item => item.id === roomId);
@@ -187,6 +191,8 @@
                         }
                         video.srcObject = null;
                     }
+
+                    self.videostreams.removelivestream(roomId);
                 }
             },
             setImage: function (base64ImageString, roomId) {
