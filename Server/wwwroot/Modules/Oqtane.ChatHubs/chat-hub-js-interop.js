@@ -78,7 +78,7 @@
             },
             canvas: function () {
 
-                this.canvasId = '';                
+                this.canvasId = '';
                 this.setCanvasId = function (roomId) {
                     this.canvasId = self.videostreams.canvasId + roomId;
                 };
@@ -97,6 +97,13 @@
                 };
             },
             livestreams: [],
+            addlivestream: function (obj) {
+
+                var item = self.videostreams.getlivestream(obj.id);
+                if (item !== null) {
+                    self.videostreams.livestreams.push(obj);
+                }
+            },
             getlivestream: function (roomId) {
 
                 return self.videostreams.livestreams.find(item => item.id === roomId);
@@ -108,7 +115,7 @@
                     height: { min: 480, ideal: 576, max: 512 }
                 }
             },
-            getUserMediaPermission: function (roomId) {
+            startVideo: function (roomId) {
 
                 navigator.mediaDevices.getUserMedia(this.constrains)
                     .then(function (mediaStream) {
@@ -134,7 +141,7 @@
                             canvas_download: cdInstance
                         };
 
-                        self.videostreams.livestreams.push(dicItem);
+                        self.videostreams.addlivestream(dicItem);
                     })
                     .catch(function (ex) {
                         console.log(ex.message);
@@ -146,47 +153,56 @@
             drawImage: function (roomId) {
 
                 var livestream = self.videostreams.getlivestream(roomId);
-
-                var canvas = livestream.canvas.getCanvasDomElement();
-                var context = canvas.getContext('2d');
-                var image = livestream.video.getVideoDomElement();
-
-                context.drawImage(image, 0, 0);
+                if (livestream !== undefined) {
+                    var canvas = livestream.canvas.getCanvasDomElement();
+                    if (canvas !== null) {
+                        var context = canvas.getContext('2d');
+                        var image = livestream.video.getVideoDomElement();
+                        context.drawImage(image, 0, 0);
+                    }
+                }
             },
             getImageAsBase64String: function (roomId) {
 
                 var livestream = self.videostreams.getlivestream(roomId);
-                var canvas = livestream.canvas.getCanvasDomElement();
-                var dataUrl = canvas.toDataURL("image/jpeg", 0.5);
-                return dataUrl;
+                if (livestream !== undefined) {
+                    var canvas = livestream.canvas.getCanvasDomElement();
+                    if (canvas !== null) {
+                        var dataUrl = canvas.toDataURL("image/jpeg", 0.5);
+                        return dataUrl;
+                    }
+                }
             },
             stopVideo: function (roomId) {
 
                 var livestream = self.videostreams.getlivestream(roomId);
-                var video = livestream.video.getVideoDomElement();
-
-                var stream = video.srcObject;
-                var tracks = stream.getTracks();
-
-                for (var i = 0; i < tracks.length; i++) {
-                    var track = tracks[i];
-                    track.stop();
+                if (livestream !== undefined) {
+                    var video = livestream.video.getVideoDomElement();
+                    var stream = video.srcObject;
+                    var tracks = stream.getTracks();
+                    for (var i = 0; i < tracks.length; i++) {
+                        var track = tracks[i];
+                        track.stop();
+                    }
+                    video.srcObject = null;
                 }
-                video.srcObject = null;
             },
             setImage: function (base64ImageString, roomId) {
 
                 var livestream = self.videostreams.getlivestream(roomId);
+                if (livestream !== undefined) {
+                    var canvas = livestream.canvas_download.getCanvasDownloadDomElement();
+                    if (canvas !== null) {
+                        var ctx = canvas.getContext('2d');
 
-                var canvas = livestream.canvas_download.getCanvasDownloadDomElement();
-                var ctx = canvas.getContext('2d');
+                        var img = new Image();
+                        img.onload = function () {
+                            ctx.drawImage(img, 0, 0);
+                        };
 
-                var img = new Image();
-                img.onload = function () {
-                    ctx.drawImage(img, 0, 0);
-                };
-
-                img.src = base64ImageString;
+                        img.src = base64ImageString;
+                    }
+                }
             },
         };
     };

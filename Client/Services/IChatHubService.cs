@@ -66,6 +66,8 @@ namespace Oqtane.ChatHubs.Services
 
         Task StartStreaming(int roomId);
 
+        void StopStreaming(int roomId);
+
         Task EnterChatRoom(int roomId);
 
         Task LeaveChatRoom(int roomId);

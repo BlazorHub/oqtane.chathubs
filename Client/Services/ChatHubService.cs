@@ -14,7 +14,6 @@ using Oqtane.Shared.Models;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.JSInterop;
 using Microsoft.Extensions.DependencyInjection;
-using System.Threading;
 using Oqtane.Modules;
 
 namespace Oqtane.ChatHubs.Services
@@ -160,14 +159,21 @@ namespace Oqtane.ChatHubs.Services
         public async Task StartStreaming(int roomId)
         {
             await this.VideoService.InitVideoJs();
-            await this.VideoService.GetUserMediaPermission(roomId);
+            await this.VideoService.StartVideo(roomId);
 
             await Task.Delay(5000);
 
             Task streamTask = new Task(async () => await this.RunStreamTask(roomId));
-            this.StreamTasks.Add(roomId, streamTask);
-
+            this.AddStreamTask(roomId, streamTask);
             streamTask.Start();
+        }
+
+        public void AddStreamTask(int roomId, Task streamTask)
+        {
+            if(!this.StreamTasks.Any(item => item.Key == roomId))
+            {
+                this.StreamTasks.Add(roomId, streamTask);
+            }
         }
 
         public async Task RunStreamTask(int roomId)
@@ -187,10 +193,11 @@ namespace Oqtane.ChatHubs.Services
             this.OnDownloadStreamExecute(this, new { stream = bytes, roomId = roomId });
         }
 
-        public void EndStreaming(int roomId)
+        public void StopStreaming(int roomId)
         {
             KeyValuePair<int, Task> streamTask = this.StreamTasks.FirstOrDefault(item => item.Key == roomId);
-            streamTask.Value.Dispose();
+            streamTask.Value?.Dispose();
+            this.StreamTasks.Remove(streamTask.Key);
         }
 
         public async void OnDownloadStreamExecute(object sender, dynamic item)
@@ -226,7 +233,6 @@ namespace Oqtane.ChatHubs.Services
                 if (task.IsCompleted)
                 {
                     this.HandleException(task);
-                    this.EndStreaming(roomId);
                 }
             });
         }

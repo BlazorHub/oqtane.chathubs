@@ -32,9 +32,9 @@ namespace Oqtane.ChatHubs
             this._jsRuntimeObjectRef = await this.JSRuntime.InvokeAsync<JsRuntimeObjectRef>("initvideojs");
         }
 
-        public async Task GetUserMediaPermission(int roomId)
+        public async Task StartVideo(int roomId)
         {
-            await this.JSRuntime.InvokeVoidAsync("videostreams.getUserMediaPermission", roomId, _jsRuntimeObjectRef);
+            await this.JSRuntime.InvokeVoidAsync("videostreams.startVideo", roomId, _jsRuntimeObjectRef);
         }
 
         public async Task CaptureAudio(int roomId)
