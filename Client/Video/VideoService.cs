@@ -2,7 +2,6 @@
 using Oqtane.ChatHubs.Client.Video;
 using Oqtane.Modules;
 using Oqtane.Services;
-using System;
 using System.Net.Http;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
@@ -12,6 +11,13 @@ namespace Oqtane.ChatHubs
     public class VideoService : ServiceBase, IService, IVideoService
     {
 
+        private JsRuntimeObjectRef _jsRuntimeObjectRef;
+        public class JsRuntimeObjectRef
+        {
+            [JsonPropertyName("_jsObjectRefId")]
+            public int JsObjectRefId { get; set; }
+        }
+
         private readonly HttpClient HttpClient;
         private readonly IJSRuntime JSRuntime;
 
@@ -20,13 +26,6 @@ namespace Oqtane.ChatHubs
             this.HttpClient = httpClient;
             this.JSRuntime = JSRuntime;
         }
-
-        public class JsRuntimeObjectRef
-        {
-            [JsonPropertyName("_jsObjectRefId")]
-            public int JsObjectRefId { get; set; }
-        }
-        private JsRuntimeObjectRef _jsRuntimeObjectRef;
 
         public async Task InitVideoJs()
         {
@@ -51,6 +50,11 @@ namespace Oqtane.ChatHubs
         public async Task<string> GetImageAsBase64String(int roomId)
         {
             return await this.JSRuntime.InvokeAsync<string>("videostreams.getImageAsBase64String", roomId, _jsRuntimeObjectRef);
+        }
+
+        public async Task StopVideo(int roomId)
+        {
+            await this.JSRuntime.InvokeVoidAsync("videostreams.stopVideo", roomId, _jsRuntimeObjectRef);
         }
 
         public async Task SetImage(string image, int roomId)

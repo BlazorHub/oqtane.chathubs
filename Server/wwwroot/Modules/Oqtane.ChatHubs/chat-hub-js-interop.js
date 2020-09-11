@@ -11,7 +11,6 @@
 
             if (Math.ceil($messageWindow.scrollTop() + $messageWindow.innerHeight()) + $lastChildHeight + tolerance >= $messageWindow.prop("scrollHeight")) {
 
-                //$messageWindow.stop(true, false);
                 $messageWindow.animate({ scrollTop: $messageWindow[0].scrollHeight }, { queue: false, duration: animationTime });
             }
         }
@@ -63,34 +62,38 @@
 
         videostreams = {
 
+            videoId: '#chathubs-video-',
+            canvasId: '#chathubs-canvas-',
+            canvasDownloadId: '#chathubs-canvas-download-',
+
             video: function () {
 
-                this.videoElement = '';
-                this.getVideoElement = function () {
-                    return this.videoElement;
+                this.videoId = '';
+                this.setVideoId = function (roomId) {
+                    this.videoId = self.videostreams.videoId + roomId;
                 };
-                this.setVideoElement = function (elementId) {
-                    this.videoElement = elementId;
+                this.getVideoDomElement = function () {
+                    return document.querySelector(this.videoId);
                 };
             },
             canvas: function () {
 
-                this.canvasElement = '';
-                this.getCanvasElement = function () {
-                    return this.canvasElement;
+                this.canvasId = '';                
+                this.setCanvasId = function (roomId) {
+                    this.canvasId = self.videostreams.canvasId + roomId;
                 };
-                this.setCanvasElement = function (elementId) {
-                    this.canvasElement = elementId;
+                this.getCanvasDomElement = function () {
+                    return document.querySelector(this.canvasId);
                 };
             },
             canvasDownload: function () {
 
-                this.canvasDownloadElement = '';
-                this.getCanvasDownloadElement = function () {
-                    return this.canvasDownloadElement;
+                this.canvasDownloadId = '';
+                this.setCanvasDownloadId = function (roomId) {
+                    this.canvasDownloadId = self.videostreams.canvasDownloadId + roomId;
                 };
-                this.setCanvasDownloadElement = function (elementId) {
-                    this.canvasDownloadElement = elementId;
+                this.getCanvasDownloadDomElement = function () {
+                    return document.querySelector(this.canvasDownloadId);
                 };
             },
             livestreams: [],
@@ -107,24 +110,22 @@
             },
             getUserMediaPermission: function (roomId) {
 
-                console.log("get user media permission..");
-
                 navigator.mediaDevices.getUserMedia(this.constrains)
                     .then(function (mediaStream) {
 
                         var vInstance = new self.videostreams.video();
-                        vInstance.setVideoElement('#chathubs-video-' + roomId);
-                        var vElement = document.querySelector(vInstance.getVideoElement());
+                        vInstance.setVideoId(roomId);
+                        var vElement = vInstance.getVideoDomElement();
                         vElement.srcObject = mediaStream;
                         vElement.onloadedmetadata = function (e) {
                             vElement.play();
                         };
 
                         var cInstance = new self.videostreams.canvas();
-                        cInstance.setCanvasElement('#chathubs-canvas-' + roomId);
+                        cInstance.setCanvasId(roomId);
 
                         var cdInstance = new self.videostreams.canvasDownload();
-                        cdInstance.setCanvasDownloadElement('#chathubs-canvas-download-' + roomId);
+                        cdInstance.setCanvasDownloadId(roomId);
 
                         var dicItem = {
                             id: roomId,
@@ -146,20 +147,23 @@
 
                 var livestream = self.videostreams.getlivestream(roomId);
 
-                var canvas = document.querySelector(livestream.canvas.getCanvasElement());
+                var canvas = livestream.canvas.getCanvasDomElement();
                 var context = canvas.getContext('2d');
-                var image = document.querySelector(livestream.video.getVideoElement());
+                var image = livestream.video.getVideoDomElement();
 
                 context.drawImage(image, 0, 0);
             },
             getImageAsBase64String: function (roomId) {
 
                 var livestream = self.videostreams.getlivestream(roomId);
-                var canvas = document.querySelector(livestream.canvas.getCanvasElement());
+                var canvas = livestream.canvas.getCanvasDomElement();
                 var dataUrl = canvas.toDataURL("image/jpeg", 0.5);
                 return dataUrl;
             },
-            stopVideo: function () {
+            stopVideo: function (roomId) {
+
+                var livestream = self.videostreams.getlivestream(roomId);
+                var video = livestream.video.getVideoDomElement();
 
                 var stream = video.srcObject;
                 var tracks = stream.getTracks();
@@ -174,7 +178,7 @@
 
                 var livestream = self.videostreams.getlivestream(roomId);
 
-                var canvas = document.querySelector(livestream.canvas_download.getCanvasDownloadElement());
+                var canvas = livestream.canvas_download.getCanvasDownloadDomElement();
                 var ctx = canvas.getContext('2d');
 
                 var img = new Image();
@@ -189,7 +193,6 @@
 
     window.initvideojs = function () {
 
-        console.log("store object ref..");
         return storeObjectRef(new window.videojs());
     };
 
@@ -202,6 +205,6 @@
         var jsRef = {};
         jsRef[jsRefKey] = id;
         return jsRef;
-    }  
+    };
 
 });
