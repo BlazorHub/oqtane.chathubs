@@ -178,13 +178,15 @@
                 var livestream = self.videostreams.getlivestream(roomId);
                 if (livestream !== undefined) {
                     var video = livestream.video.getVideoDomElement();
-                    var stream = video.srcObject;
-                    var tracks = stream.getTracks();
-                    for (var i = 0; i < tracks.length; i++) {
-                        var track = tracks[i];
-                        track.stop();
+                    if (video !== null) {
+                        var stream = video.srcObject;
+                        var tracks = stream.getTracks();
+                        for (var i = 0; i < tracks.length; i++) {
+                            var track = tracks[i];
+                            track.stop();
+                        }
+                        video.srcObject = null;
                     }
-                    video.srcObject = null;
                 }
             },
             setImage: function (base64ImageString, roomId) {

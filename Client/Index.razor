@@ -167,6 +167,7 @@
 
                         </BSTabContent>
                     </BSTab>
+
                     @if (ChatHubService.Connection?.State == HubConnectionState.Connected)
                     {
                         <BSTab>
@@ -182,8 +183,6 @@
                                         <ActionLink Action="Add" Security="SecurityAccessLevel.Anonymous" Text="Add Room" />                                        
                                     </div>
                                 </div>
-
-                                
                             </BSTabContent>
                         </BSTab>
                     }
@@ -485,6 +484,7 @@
 
                                                             <h5>Webcam Live Streams <span class="badge badge-success">FREE</span></h5>
                                                             <button type="button" @onclick="() => ChatHubService.StartStreaming(room.Id)">Start Streaming</button>
+                                                            <button type="button" @onclick="() => ChatHubService.StopStreaming(room.Id)">Stop Streaming</button>
 
                                                         </div>
 

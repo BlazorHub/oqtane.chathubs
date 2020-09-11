@@ -159,9 +159,8 @@ namespace Oqtane.ChatHubs.Services
         public async Task StartStreaming(int roomId)
         {
             await this.VideoService.InitVideoJs();
-            await this.VideoService.StartVideo(roomId);
-
             await Task.Delay(1000);
+            await this.VideoService.StartVideo(roomId);
 
             Task streamTask = new Task(async () => await this.RunStreamTask(roomId));
             this.AddStreamTask(roomId, streamTask);
