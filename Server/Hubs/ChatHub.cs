@@ -267,14 +267,23 @@ namespace Oqtane.ChatHubs.Hubs
         [AllowAnonymous]
         public async Task<string> UploadStream(string stream, int roomId)
         {
-            ChatHubUser user = await this.GetChatHubUserAsync();
+            try
+            {
+                ChatHubUser user = await this.GetChatHubUserAsync();
 
-            var connectionsIds = this.chatHubService.GetAllExceptConnectionIds(user);
-            connectionsIds.Add(Context.ConnectionId);
+                var connectionsIds = this.chatHubService.GetAllExceptConnectionIds(user);
+                connectionsIds.Add(Context.ConnectionId);
 
-            await Clients.GroupExcept(roomId.ToString(), connectionsIds).SendAsync("DownloadStream", stream, roomId);
+                await Clients.GroupExcept(roomId.ToString(), connectionsIds).SendAsync("DownloadStream", stream, roomId);
 
-            return stream;
+                return stream;
+            }
+            catch(Exception ex)
+            {
+                Console.Write(ex.Message);
+            }
+
+            return null;
         }
 
         private async Task<bool> ExecuteCommandManager(ChatHubUser chatHubUser, string message, int roomId)

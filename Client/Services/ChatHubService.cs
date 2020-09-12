@@ -15,6 +15,7 @@ using Microsoft.AspNetCore.SignalR;
 using Microsoft.JSInterop;
 using Microsoft.Extensions.DependencyInjection;
 using Oqtane.Modules;
+using System.Threading;
 
 namespace Oqtane.ChatHubs.Services
 {
@@ -41,7 +42,7 @@ namespace Oqtane.ChatHubs.Services
         public List<ChatHubUser> IgnoredUsers { get; set; } = new List<ChatHubUser>();
         public List<ChatHubUser> IgnoredByUsers { get; set; } = new List<ChatHubUser>();
 
-        public Dictionary<int, Task> StreamTasks { get; set; } = new Dictionary<int, Task>();
+        public Dictionary<int, dynamic> StreamTasks { get; set; } = new Dictionary<int, dynamic>();
 
         public System.Timers.Timer GetLobbyRoomsTimer { get; set; } = new System.Timers.Timer();
         public System.Timers.Timer VideoStreamTimer { get; set; } = new System.Timers.Timer();
@@ -162,26 +163,37 @@ namespace Oqtane.ChatHubs.Services
             await Task.Delay(1000);
             await this.VideoService.StartVideo(roomId);
 
-            Task streamTask = new Task(async () => await this.RunStreamTask(roomId));
-            this.AddStreamTask(roomId, streamTask);
-            streamTask.Start();
+            CancellationTokenSource tokenSource = new CancellationTokenSource();
+            CancellationToken token = tokenSource.Token;
+
+            Task task = new Task(async () => await this.RunStreamTask(roomId, token), token);
+
+            this.AddStreamTask(roomId, task, tokenSource);
+            task.Start();
         }
 
-        public void AddStreamTask(int roomId, Task streamTask)
+        public void AddStreamTask(int roomId, Task task, CancellationTokenSource tokenSource)
         {
             if(!this.StreamTasks.Any(item => item.Key == roomId))
             {
-                this.StreamTasks.Add(roomId, streamTask);
+                this.StreamTasks.Add(roomId, new { task = task, tokenSource = tokenSource });
             }
         }
 
-        public async Task RunStreamTask(int roomId)
+        public async Task RunStreamTask(int roomId, CancellationToken token)
         {
             while (true)
             {
                 await this.VideoService.DrawImage(roomId);
                 string str = await this.VideoService.GetImageAsBase64String(roomId);
                 await this.UploadStream(str, roomId);
+
+                if (token.IsCancellationRequested)
+                {
+                    Console.WriteLine("task canceled");
+                    break;
+                }
+
                 await Task.Delay(200);
             }
         }
@@ -194,9 +206,12 @@ namespace Oqtane.ChatHubs.Services
 
         public void StopStreaming(int roomId)
         {
-            KeyValuePair<int, Task> streamTask = this.StreamTasks.FirstOrDefault(item => item.Key == roomId);
-            streamTask.Value?.Dispose();
-            this.StreamTasks.Remove(streamTask.Key);
+            KeyValuePair<int, dynamic> keyValuePair = this.StreamTasks.FirstOrDefault(item => item.Key == roomId);
+
+            keyValuePair.Value.tokenSource.Cancel();
+            keyValuePair.Value.task.Dispose();
+
+            this.StreamTasks.Remove(keyValuePair.Key);
         }
 
         public async void OnDownloadStreamExecute(object sender, dynamic item)

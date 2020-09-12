@@ -33,7 +33,7 @@ namespace Oqtane.ChatHubs.Services
         List<ChatHubUser> IgnoredUsers { get; set; }
         List<ChatHubUser> IgnoredByUsers { get; set; }
 
-        Dictionary<int, Task> StreamTasks { get; set; }
+        Dictionary<int, dynamic> StreamTasks { get; set; }
 
         System.Timers.Timer GetLobbyRoomsTimer { get; set; }
         System.Timers.Timer VideoStreamTimer { get; set; }
