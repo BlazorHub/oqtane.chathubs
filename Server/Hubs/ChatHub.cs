@@ -266,7 +266,7 @@ namespace Oqtane.ChatHubs.Hubs
         }
 
         [AllowAnonymous]
-        public async IAsyncEnumerable<string> UploadStream(string stream, int roomId)
+        public async IAsyncEnumerable<char> UploadStream(string stream, int roomId)
         {
             ChatHubUser user = await this.GetChatHubUserAsync();
 
@@ -277,7 +277,7 @@ namespace Oqtane.ChatHubs.Hubs
 
             for(var i = 0; i < stream.Length; i++)
             {
-                yield return stream[i].ToString();
+                yield return stream[i];
             }
         }
 

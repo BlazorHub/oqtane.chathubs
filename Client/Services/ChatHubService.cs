@@ -204,20 +204,20 @@ namespace Oqtane.ChatHubs.Services
 
         private async Task UploadStream(string base64Image, int roomId)
         {
-            await this.Connection.StreamAsChannelAsync<string>("UploadStream", base64Image, roomId).ContinueWith(async (task) =>
+            await this.Connection.StreamAsChannelAsync<char>("UploadStream", base64Image, roomId).ContinueWith(async (task) =>
             {
                 if (task.IsCompleted)
                 {
                     this.HandleException(task);
-                    ChannelReader<string> channel = task.Result;
+                    ChannelReader<char> channel = task.Result;
 
                     string result = string.Empty;
 
                     while (await channel.WaitToReadAsync())
                     {
-                        while (channel.TryRead(out var str))
+                        while (channel.TryRead(out var chaar))
                         {
-                            result += str;
+                            result += chaar;
                         }
                     }
 
