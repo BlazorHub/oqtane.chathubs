@@ -42,12 +42,6 @@
         }
     };
 
-    window.showChatPage = function () {
-
-        var $chatPage = $("#chat-page");
-        $chatPage.fadeIn(200);
-    };
-
     window.saveAsFile = function (filename, bytesBase64) {
 
         var link = document.createElement('a');
@@ -66,32 +60,23 @@
             canvasId: '#chathubs-canvas-',
             canvasDownloadId: '#chathubs-canvas-download-',
 
-            video: function () {
+            video: function (roomId) {
 
-                this.videoId = '';
-                this.setVideoId = function (roomId) {
-                    this.videoId = self.videostreams.videoId + roomId;
-                };
+                this.videoId = self.videostreams.videoId + roomId;
                 this.getVideoDomElement = function () {
                     return document.querySelector(this.videoId);
                 };
             },
-            canvas: function () {
+            canvas: function (roomId) {
 
-                this.canvasId = '';
-                this.setCanvasId = function (roomId) {
-                    this.canvasId = self.videostreams.canvasId + roomId;
-                };
+                this.canvasId = self.videostreams.canvasId + roomId;
                 this.getCanvasDomElement = function () {
                     return document.querySelector(this.canvasId);
                 };
             },
-            canvasDownload: function () {
+            canvasDownload: function (roomId) {
 
-                this.canvasDownloadId = '';
-                this.setCanvasDownloadId = function (roomId) {
-                    this.canvasDownloadId = self.videostreams.canvasDownloadId + roomId;
-                };
+                this.canvasDownloadId = self.videostreams.canvasDownloadId + roomId;
                 this.getCanvasDownloadDomElement = function () {
                     return document.querySelector(this.canvasDownloadId);
                 };
@@ -124,19 +109,15 @@
                 navigator.mediaDevices.getUserMedia(this.constrains)
                     .then(function (mediaStream) {
 
-                        var vInstance = new self.videostreams.video();
-                        vInstance.setVideoId(roomId);
+                        var vInstance = new self.videostreams.video(roomId);
                         var vElement = vInstance.getVideoDomElement();
                         vElement.srcObject = mediaStream;
                         vElement.onloadedmetadata = function (e) {
                             vElement.play();
                         };
 
-                        var cInstance = new self.videostreams.canvas();
-                        cInstance.setCanvasId(roomId);
-
-                        var cdInstance = new self.videostreams.canvasDownload();
-                        cdInstance.setCanvasDownloadId(roomId);
+                        var cInstance = new self.videostreams.canvas(roomId);
+                        var cdInstance = new self.videostreams.canvasDownload(roomId);
 
                         var dicItem = {
                             id: roomId,
@@ -186,7 +167,7 @@
                         var stream = video.srcObject;
                         var tracks = stream.getTracks();
                         for (var i = 0; i < tracks.length; i++) {
-                            var track = tracks[i];
+                            var track = tracks[i];+
                             track.stop();
                         }
                         video.srcObject = null;
