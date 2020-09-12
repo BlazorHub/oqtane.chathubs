@@ -161,7 +161,6 @@ namespace Oqtane.ChatHubs.Services
         public async Task StartStreaming(int roomId)
         {
             await this.VideoService.InitVideoJs();
-            await Task.Delay(3000);
             await this.VideoService.StartVideo(roomId);
 
             CancellationTokenSource tokenSource = new CancellationTokenSource();
