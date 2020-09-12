@@ -16,6 +16,7 @@ using Microsoft.JSInterop;
 using Microsoft.Extensions.DependencyInjection;
 using Oqtane.Modules;
 using System.Threading;
+using System.Threading.Channels;
 
 namespace Oqtane.ChatHubs.Services
 {
@@ -160,7 +161,7 @@ namespace Oqtane.ChatHubs.Services
         public async Task StartStreaming(int roomId)
         {
             await this.VideoService.InitVideoJs();
-            await Task.Delay(1000);
+            await Task.Delay(3000);
             await this.VideoService.StartVideo(roomId);
 
             CancellationTokenSource tokenSource = new CancellationTokenSource();
@@ -186,11 +187,14 @@ namespace Oqtane.ChatHubs.Services
             {
                 await this.VideoService.DrawImage(roomId);
                 string str = await this.VideoService.GetImageAsBase64String(roomId);
-                await this.UploadStream(str, roomId);
+
+                if(!string.IsNullOrEmpty(str))
+                {
+                    await this.UploadStream(str, roomId);
+                }
 
                 if (token.IsCancellationRequested)
                 {
-                    Console.WriteLine("task canceled");
                     break;
                 }
 
@@ -198,10 +202,28 @@ namespace Oqtane.ChatHubs.Services
             }
         }
 
-        private async Task UploadStream(string bytes, int roomId)
+        private async Task UploadStream(string base64Image, int roomId)
         {
-            var channel = await this.Connection.StreamAsChannelAsync<string>("UploadStream", bytes, roomId);
-            this.OnDownloadStreamExecute(this, new { stream = bytes, roomId = roomId });
+            await this.Connection.StreamAsChannelAsync<string>("UploadStream", base64Image, roomId).ContinueWith(async (task) =>
+            {
+                if (task.IsCompleted)
+                {
+                    this.HandleException(task);
+                    ChannelReader<string> channel = task.Result;
+
+                    string result = string.Empty;
+
+                    while (await channel.WaitToReadAsync())
+                    {
+                        while (channel.TryRead(out var str))
+                        {
+                            result += str;
+                        }
+                    }
+
+                    this.OnDownloadStreamExecute(this, new { stream = result, roomId = roomId });
+                }
+            });
         }
 
         public void StopStreaming(int roomId)
