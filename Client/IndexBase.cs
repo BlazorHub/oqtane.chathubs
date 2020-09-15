@@ -317,11 +317,12 @@ namespace Oqtane.ChatHubs
             string message = string.Empty;
             if (exception.InnerException != null && exception.InnerException is HubException)
             {
-                message = exception.InnerException.Message.Substring(exception.InnerException.Message.IndexOf("HubException"));
+                message = exception.ToString();
+                //message = exception.InnerException.Message.Substring(exception.InnerException.Message.IndexOf("HubException"));
             }
             else
             {
-                message = exception.Message;
+                message = exception.ToString();
             }
 
             BlazorAlertsService.NewBlazorAlert(message);

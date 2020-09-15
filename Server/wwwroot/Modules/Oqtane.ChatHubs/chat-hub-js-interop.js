@@ -52,50 +52,49 @@
         document.body.removeChild(link);
     };
 
-    window.videojs = function () {
+    window.__jsstreams = function () {
 
-        videostreams = {
+        __obj = {
 
-            videoId: '#chathubs-video-',
-            canvasId: '#chathubs-canvas-',
-            canvasDownloadId: '#chathubs-canvas-download-',
+            videolocalid: '#chathubs-video-local-',
+            canvaslocalid: '#chathubs-canvas-local-',
+            canvasremoteid: '#chathubs-canvas-remote-',
 
-            video: function (roomId) {
+            canvaslocalwidth: 100,
+            canvaslocalheight: 100,
 
-                this.videoId = self.videostreams.videoId + roomId;
-                this.getVideoDomElement = function () {
-                    return document.querySelector(this.videoId);
+            livestream: function (roomId) {
+
+                this.videolocalid = self.__obj.videolocalid + roomId;
+                this.getvideolocaldomelement = function () {
+                    return document.querySelector(this.videolocalid);
                 };
-            },
-            canvas: function (roomId) {
 
-                this.canvasId = self.videostreams.canvasId + roomId;
-                this.getCanvasDomElement = function () {
-                    return document.querySelector(this.canvasId);
+                this.canvaslocalid = self.__obj.canvaslocalid + roomId;
+                this.getcanvaslocaldomelement = function () {
+                    return document.querySelector(this.canvaslocalid);
                 };
-            },
-            canvasDownload: function (roomId) {
 
-                this.canvasDownloadId = self.videostreams.canvasDownloadId + roomId;
-                this.getCanvasDownloadDomElement = function () {
-                    return document.querySelector(this.canvasDownloadId);
+                this.canvasremoteid = self.__obj.canvasremoteid + roomId;
+                this.getcanvasremotedomelement = function () {
+                    return document.querySelector(this.canvasremoteid);
                 };
             },
             livestreams: [],
             addlivestream: function (obj) {
 
-                var item = self.videostreams.getlivestream(obj.id);
+                var item = self.__obj.getlivestream(obj.id);
                 if (item !== null) {
-                    self.videostreams.livestreams.push(obj);
+                    self.__obj.livestreams.push(obj);
                 }
             },
             removelivestream: function (roomId) {
 
-                self.videostreams.livestreams = self.videostreams.livestreams.filter(item => item.id !== roomId);
+                self.__obj.livestreams = self.__obj.livestreams.filter(item => item.id !== roomId);
             },
             getlivestream: function (roomId) {
 
-                return self.videostreams.livestreams.find(item => item.id === roomId);
+                return self.__obj.livestreams.find(item => item.id === roomId);
             },
             constrains: {
                 audio: true,
@@ -104,65 +103,63 @@
                     height: { min: 480, ideal: 576, max: 512 }
                 }
             },
-            startVideo: function (roomId) {
+            startvideo: function (roomId) {
 
                 navigator.mediaDevices.getUserMedia(this.constrains)
                     .then(function (mediaStream) {
 
-                        var vInstance = new self.videostreams.video(roomId);
-                        var vElement = vInstance.getVideoDomElement();
+                        var livestream = new self.__obj.livestream(roomId);
+
+                        var vElement = livestream.getvideolocaldomelement();
                         vElement.srcObject = mediaStream;
                         vElement.onloadedmetadata = function (e) {
                             vElement.play();
                         };
 
-                        var cInstance = new self.videostreams.canvas(roomId);
-                        var cdInstance = new self.videostreams.canvasDownload(roomId);
-
-                        var dicItem = {
+                        var livestreamdicitem = {
                             id: roomId,
-                            video: vInstance,
-                            canvas: cInstance,
-                            canvas_download: cdInstance
+                            item: livestream,
                         };
 
-                        self.videostreams.addlivestream(dicItem);
+                        self.__obj.addlivestream(livestreamdicitem);
+                        self.__obj.resizecanvas();
                     })
                     .catch(function (ex) {
                         console.log(ex.message);
                     });
             },
-            captureAudio: function (roomId) {
+            captureaudio: function (roomId) {
 
-            },
-            drawImage: function (roomId) {
+            },            
+            drawimage: function (roomId) {
 
-                var livestream = self.videostreams.getlivestream(roomId);
+                var livestream = self.__obj.getlivestream(roomId);
                 if (livestream !== undefined) {
-                    var canvas = livestream.canvas.getCanvasDomElement();
+                    var canvas = livestream.item.getcanvaslocaldomelement();
                     if (canvas !== null) {
-                        var context = canvas.getContext('2d');
-                        var image = livestream.video.getVideoDomElement();
-                        context.drawImage(image, 0, 0);
+                        var ctx = canvas.getContext('2d');
+                        var img = livestream.item.getvideolocaldomelement();
+
+                        ctx.drawImage(img, 0, 0);
                     }
                 }
             },
-            getImageAsBase64String: function (roomId) {
+            getimageasbase64string: function (roomId) {
 
-                var livestream = self.videostreams.getlivestream(roomId);
+                var livestream = self.__obj.getlivestream(roomId);
                 if (livestream !== undefined) {
-                    var canvas = livestream.canvas.getCanvasDomElement();
+                    var canvas = livestream.item.getcanvaslocaldomelement();
                     if (canvas !== null) {
                         var dataUrl = canvas.toDataURL("image/jpeg", 0.5);
                         return dataUrl;
                     }
                 }
             },
-            stopVideo: function (roomId) {
+            stopvideo: function (roomId) {
 
-                var livestream = self.videostreams.getlivestream(roomId);
+                var livestream = self.__obj.getlivestream(roomId);
                 if (livestream !== undefined) {
-                    var video = livestream.video.getVideoDomElement();
+                    var video = livestream.item.getvideolocaldomelement();
                     if (video !== null) {
                         var stream = video.srcObject;
                         var tracks = stream.getTracks();
@@ -173,37 +170,99 @@
                         video.srcObject = null;
                     }
 
-                    self.videostreams.removelivestream(roomId);
+                    self.__obj.removelivestream(roomId);
                 }
             },
-            setImage: function (base64ImageString, roomId) {
+            setimage: function (base64ImageString, roomId) {
 
-                var livestream = self.videostreams.getlivestream(roomId);
+                var livestream = self.__obj.getlivestream(roomId);
                 if (livestream !== undefined) {
-                    var canvas = livestream.canvas_download.getCanvasDownloadDomElement();
+                    var canvas = livestream.item.getcanvasremotedomelement();
                     if (canvas !== null) {
                         var ctx = canvas.getContext('2d');
 
                         var img = new Image();
                         img.onload = function () {
-                            ctx.drawImage(img, 0, 0);
+
+                            self.__obj.drawimageextension(ctx, img, 0, 0, 640, 480, 0.5, 0.5);
                         };
 
                         img.src = base64ImageString;
                     }
                 }
             },
+            resizecanvas: function (roomId) {
+
+                var livestream = self.__obj.getlivestream(roomId);
+                if (livestream !== undefined) {
+                    var canvas = livestream.item.getcanvasremotedomelement();
+                    if (canvas !== null) {
+
+                        var context = canvas.getContext('2d');
+
+                        window.addEventListener('resize', resizeCanvas, false);
+
+                        var resizeCanvas = function() {
+
+                            //canvas.width = window.innerWidth;
+                            //canvas.height = window.innerHeight;
+                        };
+                        resizeCanvas();
+                    }
+                }
+            },
+            drawimageextension: function (ctx, img, x, y, w, h, offsetX, offsetY) {
+
+                if (arguments.length === 2) {
+                    x = y = 0;
+                    w = ctx.canvas.width;
+                    h = ctx.canvas.height;
+                }
+
+                offsetX = typeof offsetX === "number" ? offsetX : 0.5;
+                offsetY = typeof offsetY === "number" ? offsetY : 0.5;
+
+                if (offsetX < 0) offsetX = 0;
+                if (offsetY < 0) offsetY = 0;
+                if (offsetX > 1) offsetX = 1;
+                if (offsetY > 1) offsetY = 1;
+
+                var iw = img.width,
+                    ih = img.height,
+                    r = Math.min(w / iw, h / ih),
+                    nw = iw * r,
+                    nh = ih * r,
+                    cx, cy, cw, ch, ar = 1;
+
+                if (nw < w) ar = w / nw;
+                if (Math.abs(ar - 1) < 1e-14 && nh < h) ar = h / nh;  // updated
+                nw *= ar;
+                nh *= ar;
+
+                cw = iw / (nw / w);
+                ch = ih / (nh / h);
+
+                cx = (iw - cw) * offsetX;
+                cy = (ih - ch) * offsetY;
+
+                if (cx < 0) cx = 0;
+                if (cy < 0) cy = 0;
+                if (cw > iw) cw = iw;
+                if (ch > ih) ch = ih;
+
+                ctx.drawImage(img, cx, cy, cw, ch, x, y, w, h);
+            },
         };
     };
 
-    window.initvideojs = function () {
+    window.__initjsstreams = function () {
 
-        return storeObjectRef(new window.videojs());
+        return storeObjectRef(new window.__jsstreams());
     };
 
     var jsObjectRefs = {};
     var jsObjectRefId = 0;
-    const jsRefKey = '_jsObjectRefId';
+    const jsRefKey = '__jsObjectRefId';
     function storeObjectRef(obj) {
         var id = jsObjectRefId++;
         jsObjectRefs[id] = obj;

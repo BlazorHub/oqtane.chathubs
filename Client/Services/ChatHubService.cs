@@ -17,6 +17,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Oqtane.Modules;
 using System.Threading;
 using System.Threading.Channels;
+using System.Diagnostics;
 
 namespace Oqtane.ChatHubs.Services
 {
@@ -160,16 +161,23 @@ namespace Oqtane.ChatHubs.Services
 
         public async Task StartStreaming(int roomId)
         {
-            await this.VideoService.InitVideoJs();
-            await this.VideoService.StartVideo(roomId);
+            try
+            {
+                await this.VideoService.InitVideoJs();
+                await this.VideoService.StartVideo(roomId);
 
-            CancellationTokenSource tokenSource = new CancellationTokenSource();
-            CancellationToken token = tokenSource.Token;
+                CancellationTokenSource tokenSource = new CancellationTokenSource();
+                CancellationToken token = tokenSource.Token;
 
-            Task task = new Task(async () => await this.RunStreamTask(roomId, token), token);
+                Task task = new Task(async () => await this.RunStreamTask(roomId, token), token);
 
-            this.AddStreamTask(roomId, task, tokenSource);
-            task.Start();
+                this.AddStreamTask(roomId, task, tokenSource);
+                task.Start();
+            }
+            catch (Exception ex)
+            {
+                this.HandleException(ex);
+            }
         }
 
         public void AddStreamTask(int roomId, Task task, CancellationTokenSource tokenSource)
@@ -184,17 +192,17 @@ namespace Oqtane.ChatHubs.Services
         {
             while (true)
             {
+                if (token.IsCancellationRequested)
+                {
+                    break;
+                }
+
                 await this.VideoService.DrawImage(roomId);
                 string str = await this.VideoService.GetImageAsBase64String(roomId);
 
                 if(!string.IsNullOrEmpty(str))
                 {
                     await this.UploadStream(str, roomId);
-                }
-
-                if (token.IsCancellationRequested)
-                {
-                    break;
                 }
 
                 await Task.Delay(200);
@@ -237,12 +245,12 @@ namespace Oqtane.ChatHubs.Services
 
         public async void OnDownloadStreamExecute(object sender, dynamic item)
         {
-            string stream = item.stream;
+            string base64 = item.stream;
             int roomId = item.roomId;
 
             try
             {
-                await this.VideoService.SetImage(stream, roomId);
+                await this.VideoService.SetImage(base64, roomId);
             }
             catch(Exception ex)
             {
