@@ -54,47 +54,147 @@
 
     window.__jsstreams = function () {
 
-        __obj = {
+        ___obj = {
 
             videolocalid: '#chathubs-video-local-',
+            videoremoteid: '#chathubs-video-remote-',
             canvaslocalid: '#chathubs-canvas-local-',
             canvasremoteid: '#chathubs-canvas-remote-',
+
+            videoMimeTypeObject: { mimeType: 'video/webm;codecs="opus,vp9"' },
 
             canvaslocalwidth: 100,
             canvaslocalheight: 100,
 
-            livestream: function (roomId) {
+            livestream: function (roomId, mediaStream) {
 
-                this.videolocalid = self.__obj.videolocalid + roomId;
+                __selflivestream = this;
+
+                this.videolocalid = self.___obj.videolocalid + roomId;
                 this.getvideolocaldomelement = function () {
                     return document.querySelector(this.videolocalid);
                 };
 
-                this.canvaslocalid = self.__obj.canvaslocalid + roomId;
+                this.videoremoteid = self.___obj.videoremoteid + roomId;
+                this.getvideoremotedomelement = function () {
+                    return document.querySelector(this.videoremoteid);
+                };
+
+                this.canvaslocalid = self.___obj.canvaslocalid + roomId;
                 this.getcanvaslocaldomelement = function () {
                     return document.querySelector(this.canvaslocalid);
                 };
 
-                this.canvasremoteid = self.__obj.canvasremoteid + roomId;
+                this.canvasremoteid = self.___obj.canvasremoteid + roomId;
                 this.getcanvasremotedomelement = function () {
                     return document.querySelector(this.canvasremoteid);
                 };
+
+                this.vElement = this.getvideolocaldomelement();
+                this.vElement.srcObject = mediaStream;
+                this.vElement.onloadedmetadata = function (e) {
+                    __selflivestream.vElement.play();
+                };
+
+                this.localmediasegments = []; this.remotemediasegments = [];
+                this.addMediaSegment = function (item) {
+                    this.localmediasegments.push(item);
+                };
+
+                this.mediaSource = new MediaSource();
+
+                this.options = { mimeType: 'video/webm;codecs="opus,vp9"', videoBitsPerSecond: 6000, audioBitsPerSecond: 100000 };
+                this.recorder = new MediaRecorder(mediaStream, this.options);
+
+                this.buffertime = 3000;
+                this.recorder.start(this.buffertime);
+                console.log('buffering livestream: please wait: ' + this.buffertime + 's');
+
+                this.mediaSource.addEventListener('sourceopen', function (event) {
+
+                    if (!('MediaSource' in window) || !(MediaSource.isTypeSupported(___obj.videoMimeTypeObject.mimeType))) {
+
+                        console.error('Unsupported MIME type or codec: ', self.videostreams.videoMimeTypeObject.mimeType);
+                    }
+
+                    __selflivestream.sourcebuffer = __selflivestream.mediaSource.addSourceBuffer(___obj.videoMimeTypeObject.mimeType);
+                    __selflivestream.sourcebuffer.addEventListener('updateend', function (e) { });
+                });
+                this.mediaSource.addEventListener('error', function (e) { console.log(e) }, false);
+
+                this.mediaSource.addEventListener('sourceclose', function () { console.log("on media source close"); });
+                this.mediaSource.addEventListener('sourceended', function () { console.log("on media source ended"); });
+
+                this.recorder.ondataavailable = (event) => {
+
+                    try {
+
+                        if (event.data.size >= 0) {
+
+                            __selflivestream.localmediasegments.push(event.data);
+
+                            if (!__selflivestream.sourcebuffer.updating) {
+
+                                var item = __selflivestream.localmediasegments.shift();
+                                __selflivestream.appendBuffer(item);
+                            }
+                        }
+                    }
+                    catch (error) {
+                        console.log(error);
+                    }
+                };
+                this.appendBuffer = function (chunk) {
+
+                    var reader = new FileReader();
+                    reader.onload = function (event) {
+                        __selflivestream.sourcebuffer.appendBuffer(new Uint8Array(event.target.result));
+                    };
+                    reader.readAsArrayBuffer(chunk);
+                };
+
+                this.video = this.getvideoremotedomelement();
+                this.video.preload = 'metadata';
+                this.video.width = 640;
+                this.video.height = 480;
+                this.video.autoplay = true;
+                this.video.controls = true;
+                this.video.muted = false;
+
+                this.video.src = URL.createObjectURL(this.mediaSource);
+                this.video.onloadedmetadata = function () {
+
+                    __selflivestream.video.play();
+                };
+
+                /*
+                this.output = this.getcanvaslocaldomelement();
+                this.ctx = this.output.getContext('2d');
+
+                this.loop = function () {
+
+                    __selflivestream.ctx.drawImage(__selflivestream.video, 0, 0);
+                    if (!__selflivestream.video.paused) {
+                        requestAnimationFrame(__selflivestream.loop);
+                    }
+                };
+                */
             },
             livestreams: [],
             addlivestream: function (obj) {
 
-                var item = self.__obj.getlivestream(obj.id);
+                var item = self.___obj.getlivestream(obj.id);
                 if (item !== null) {
-                    self.__obj.livestreams.push(obj);
+                    self.___obj.livestreams.push(obj);
                 }
             },
             removelivestream: function (roomId) {
 
-                self.__obj.livestreams = self.__obj.livestreams.filter(item => item.id !== roomId);
+                self.___obj.livestreams = self.___obj.livestreams.filter(item => item.id !== roomId);
             },
             getlivestream: function (roomId) {
 
-                return self.__obj.livestreams.find(item => item.id === roomId);
+                return self.___obj.livestreams.find(item => item.id === roomId);
             },
             constrains: {
                 audio: true,
@@ -108,21 +208,14 @@
                 navigator.mediaDevices.getUserMedia(this.constrains)
                     .then(function (mediaStream) {
 
-                        var livestream = new self.__obj.livestream(roomId);
-
-                        var vElement = livestream.getvideolocaldomelement();
-                        vElement.srcObject = mediaStream;
-                        vElement.onloadedmetadata = function (e) {
-                            vElement.play();
-                        };
-
+                        var livestream = new self.___obj.livestream(roomId, mediaStream);
                         var livestreamdicitem = {
                             id: roomId,
                             item: livestream,
                         };
 
-                        self.__obj.addlivestream(livestreamdicitem);
-                        self.__obj.resizecanvas();
+                        self.___obj.addlivestream(livestreamdicitem);
+                        self.___obj.resizecanvas();
                     })
                     .catch(function (ex) {
                         console.log(ex.message);
@@ -130,10 +223,10 @@
             },
             captureaudio: function (roomId) {
 
-            },            
+            },
             drawimage: function (roomId) {
 
-                var livestream = self.__obj.getlivestream(roomId);
+                var livestream = self.___obj.getlivestream(roomId);
                 if (livestream !== undefined) {
                     var canvas = livestream.item.getcanvaslocaldomelement();
                     if (canvas !== null) {
@@ -146,7 +239,7 @@
             },
             getimageasbase64string: function (roomId) {
 
-                var livestream = self.__obj.getlivestream(roomId);
+                var livestream = self.___obj.getlivestream(roomId);
                 if (livestream !== undefined) {
                     var canvas = livestream.item.getcanvaslocaldomelement();
                     if (canvas !== null) {
@@ -157,7 +250,7 @@
             },
             stopvideo: function (roomId) {
 
-                var livestream = self.__obj.getlivestream(roomId);
+                var livestream = self.___obj.getlivestream(roomId);
                 if (livestream !== undefined) {
                     var video = livestream.item.getvideolocaldomelement();
                     if (video !== null) {
@@ -170,12 +263,12 @@
                         video.srcObject = null;
                     }
 
-                    self.__obj.removelivestream(roomId);
+                    self.___obj.removelivestream(roomId);
                 }
             },
             setimage: function (base64ImageString, roomId) {
 
-                var livestream = self.__obj.getlivestream(roomId);
+                var livestream = self.___obj.getlivestream(roomId);
                 if (livestream !== undefined) {
                     var canvas = livestream.item.getcanvasremotedomelement();
                     if (canvas !== null) {
@@ -184,16 +277,40 @@
                         var img = new Image();
                         img.onload = function () {
 
-                            self.__obj.drawimageextension(ctx, img, 0, 0, 640, 480, 0.5, 0.5);
+                            //self.___obj.drawimageextension(ctx, img, 0, 0, 640, 480, 0.5, 0.5);
                         };
 
                         img.src = base64ImageString;
                     }
                 }
             },
+            readAsDataUrlAsync: function (blob) {
+
+                return new Promise((resolve, reject) => {
+
+                    let fileReader = new window.FileReader();
+                    fileReader.onload = () => {
+
+                        resolve(fileReader.result);
+                    };
+                    fileReader.readAsDataURL(blob);
+                })
+            },
+            readAsArrayBufferAsync: function (blob) {
+
+                return new Promise((resolve, reject) => {
+
+                    let fileReader = new window.FileReader();
+                    fileReader.onload = () => {
+
+                        resolve(fileReader.result);
+                    };
+                    fileReader.readAsArrayBuffer(blob);
+                })
+            },
             resizecanvas: function (roomId) {
 
-                var livestream = self.__obj.getlivestream(roomId);
+                var livestream = self.___obj.getlivestream(roomId);
                 if (livestream !== undefined) {
                     var canvas = livestream.item.getcanvasremotedomelement();
                     if (canvas !== null) {
@@ -235,7 +352,7 @@
                     cx, cy, cw, ch, ar = 1;
 
                 if (nw < w) ar = w / nw;
-                if (Math.abs(ar - 1) < 1e-14 && nh < h) ar = h / nh;  // updated
+                if (Math.abs(ar - 1) < 1e-14 && nh < h) ar = h / nh;
                 nw *= ar;
                 nh *= ar;
 
