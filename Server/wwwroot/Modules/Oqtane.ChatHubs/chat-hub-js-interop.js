@@ -97,9 +97,6 @@
                 };
 
                 this.localmediasegments = []; this.remotemediasegments = [];
-                this.addMediaSegment = function (item) {
-                    this.localmediasegments.push(item);
-                };
 
                 this.mediaSource = new MediaSource();
 
@@ -160,25 +157,9 @@
                 this.video.autoplay = true;
                 this.video.controls = true;
                 this.video.muted = false;
-
                 this.video.src = URL.createObjectURL(this.mediaSource);
-                this.video.onloadedmetadata = function () {
+                //this.video.onloadedmetadata = function () { __selflivestream.video.play(); };
 
-                    __selflivestream.video.play();
-                };
-
-                /*
-                this.output = this.getcanvaslocaldomelement();
-                this.ctx = this.output.getContext('2d');
-
-                this.loop = function () {
-
-                    __selflivestream.ctx.drawImage(__selflivestream.video, 0, 0);
-                    if (!__selflivestream.video.paused) {
-                        requestAnimationFrame(__selflivestream.loop);
-                    }
-                };
-                */
             },
             livestreams: [],
             addlivestream: function (obj) {
