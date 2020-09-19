@@ -356,8 +356,8 @@ namespace Oqtane.ChatHubs
             var room = this.ChatHubService.Rooms.FirstOrDefault(item => item.Id.ToString() == this.ChatHubService.ContextRoomId);
             if (room != null)
             {
-                this.ChatHubService.StopStreaming(int.Parse(this.ChatHubService.ContextRoomId));
-                await this.VideoService.StopVideo(int.Parse(this.ChatHubService.ContextRoomId));
+                //this.ChatHubService.StopStreaming(int.Parse(this.ChatHubService.ContextRoomId));
+                await this.VideoService.CloseLivestream(int.Parse(this.ChatHubService.ContextRoomId));
             }
         }
         public void Hidden(BSTabEvent e)

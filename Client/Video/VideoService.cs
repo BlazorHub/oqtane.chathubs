@@ -46,6 +46,11 @@ namespace Oqtane.ChatHubs
             await this.JSRuntime.InvokeVoidAsync("___obj.startvideo", roomId, _jsRuntimeObjectRef);
         }
 
+        public async Task CloseLivestream(int roomId)
+        {
+            await this.JSRuntime.InvokeVoidAsync("___obj.closelivestream", roomId, _jsRuntimeObjectRef);
+        }
+
         public async Task SetItem(string item, int roomId)
         {
             await this.JSRuntime.InvokeVoidAsync("___obj.setitem", item, roomId, _jsRuntimeObjectRef);
@@ -69,11 +74,6 @@ namespace Oqtane.ChatHubs
         public async Task<string> GetImageAsBase64String(int roomId)
         {
             return await this.JSRuntime.InvokeAsync<string>("___obj.getimageasbase64string", roomId, _jsRuntimeObjectRef);
-        }
-
-        public async Task StopVideo(int roomId)
-        {
-            await this.JSRuntime.InvokeVoidAsync("___obj.stopvideo", roomId, _jsRuntimeObjectRef);
         }
 
         public async Task SetImage(string image, int roomId)

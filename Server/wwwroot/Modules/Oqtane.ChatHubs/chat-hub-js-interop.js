@@ -70,6 +70,9 @@
 
                 __selflivestream = this;
 
+                this.id = roomId;
+                this.mediaStream = mediaStream;
+
                 this.videolocalid = self.___obj.videolocalid + roomId;
                 this.getvideolocaldomelement = function () {
                     return document.querySelector(this.videolocalid);
@@ -91,7 +94,7 @@
                 };
 
                 this.vElement = this.getvideolocaldomelement();
-                this.vElement.srcObject = mediaStream;
+                this.vElement.srcObject = this.mediaStream;
                 this.vElement.onloadedmetadata = function (e) {
                     __selflivestream.vElement.play();
                 };
@@ -101,7 +104,7 @@
                 this.mediaSource = new MediaSource();
 
                 this.options = { mimeType: ___obj.videoMimeTypeObject.mimeType, videoBitsPerSecond: 100000, audioBitsPerSecond: 100000, ignoreMutedMedia: true };
-                this.recorder = new MediaRecorder(mediaStream, this.options);
+                this.recorder = new MediaRecorder(this.mediaStream, this.options);
 
                 this.requestDataInterval = 120;
                 this.recorder.start(this.requestDataInterval);
@@ -244,8 +247,34 @@
                     livestream.item.appendBuffer(base64str);
                 }
             },
-            captureaudio: function (roomId) {
+            closelivestream: function (roomId) {
 
+                var livestream = self.___obj.getlivestream(roomId);
+                if (livestream !== undefined) {
+
+                    var localElement = livestream.item.getvideolocaldomelement();
+                    if (localElement !== null) {
+                        livestream.item.recorder.stop();
+                        livestream.item.mediaStream.getTracks().forEach(track => track.stop());
+                    }
+
+                    var remoteElement = livestream.item.getvideoremotedomelement();
+                    if (remoteElement !== null) {
+                        self.___obj.stopStreamedVideo(remoteElement);
+                    }
+
+                    self.___obj.removelivestream(roomId);
+                }
+            },
+            stopStreamedVideo: function (videoElem) {
+                const stream = videoElem.srcObject;
+                const tracks = stream.getTracks();
+
+                tracks.forEach(function (track) {
+                    track.stop();
+                });
+
+                videoElem.srcObject = null;
             },
             drawimage: function (roomId) {
 
@@ -269,24 +298,6 @@
                         var dataUrl = canvas.toDataURL("image/jpeg", 0.5);
                         return dataUrl;
                     }
-                }
-            },
-            stopvideo: function (roomId) {
-
-                var livestream = self.___obj.getlivestream(roomId);
-                if (livestream !== undefined) {
-                    var video = livestream.item.getvideolocaldomelement();
-                    if (video !== null) {
-                        var stream = video.srcObject;
-                        var tracks = stream.getTracks();
-                        for (var i = 0; i < tracks.length; i++) {
-                            var track = tracks[i];+
-                            track.stop();
-                        }
-                        video.srcObject = null;
-                    }
-
-                    self.___obj.removelivestream(roomId);
                 }
             },
             setimage: function (base64ImageString, roomId) {
