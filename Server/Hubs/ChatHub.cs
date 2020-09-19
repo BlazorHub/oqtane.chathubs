@@ -267,21 +267,15 @@ namespace Oqtane.ChatHubs.Hubs
         }
 
         [AllowAnonymous]
-        public async IAsyncEnumerable<char> UploadBytes(string item, int roomId, [EnumeratorCancellation] CancellationToken cancellationToken)
+        public async Task UploadBytes(string item, int roomId)
         {
 
             ChatHubUser user = await this.GetChatHubUserAsync();
 
             var connectionsIds = this.chatHubService.GetAllExceptConnectionIds(user);
-            connectionsIds.Add(Context.ConnectionId);
+            //connectionsIds.Add(Context.ConnectionId);
 
             await Clients.GroupExcept(roomId.ToString(), connectionsIds).SendAsync("DownloadBytes", item, roomId);
-
-            for (var i = 0; i < item.Length; i++)
-            {
-                cancellationToken.ThrowIfCancellationRequested();
-                yield return item[i];
-            }
 
         }
         [AllowAnonymous]

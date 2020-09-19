@@ -217,31 +217,16 @@ namespace Oqtane.ChatHubs.Services
             }
         }
 
-        private async void OnDataAvailableEventHandlerExecute(object sender, dynamic e)
+        public async void OnDataAvailableEventHandlerExecute(object sender, dynamic e)
         {
             string item = e.item;
             int roomId = e.roomId;
 
-            var cancellationTokenSource = new CancellationTokenSource();
-            
-            await this.Connection.StreamAsChannelAsync<char>("UploadBytes", item, roomId, cancellationTokenSource.Token).ContinueWith(async (task) =>
+            await this.Connection.InvokeAsync("UploadBytes", item, roomId).ContinueWith((task) =>
             {
                 if (task.IsCompleted)
                 {
                     this.HandleException(task);
-                    ChannelReader<char> channel = task.Result;
-
-                    string result = string.Empty;
-
-                    while (await channel.WaitToReadAsync())
-                    {
-                        while (channel.TryRead(out var ch4r))
-                        {
-                            result += ch4r;
-                        }
-                    }
-
-                    this.OnDownloadBytesExecuteAsync(this, new { item = result, roomId = roomId });
                 }
             });
         }

@@ -103,7 +103,7 @@
                 this.options = { mimeType: ___obj.videoMimeTypeObject.mimeType, videoBitsPerSecond: 100000, audioBitsPerSecond: 100000, ignoreMutedMedia: true };
                 this.recorder = new MediaRecorder(mediaStream, this.options);
 
-                this.requestDataInterval = 150;
+                this.requestDataInterval = 120;
                 this.recorder.start(this.requestDataInterval);
                 console.log('buffering livestream: please wait: ' + this.requestDataInterval + 's');
 
