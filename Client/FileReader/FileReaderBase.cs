@@ -21,9 +21,9 @@ namespace Oqtane.ChatHubs
         protected HttpClient HttpClient { get; set; }
         [Inject]
         protected SiteState SiteState { get; set; }
-
-        [Parameter]
+        [Inject]
         public IChatHubService ChatHubService { get; set; }
+
         [Parameter]
         public string ModuleId { get; set; }
         [Parameter]
