@@ -16,7 +16,8 @@ using Oqtane.ChatHubs.Services;
 using Oqtane.ChatHubs.Repository;
 using Microsoft.AspNetCore.Http;
 using Oqtane.ChatHubs.Commands;
-using System.Threading.Channels;
+using System.Threading;
+using System.Runtime.CompilerServices;
 
 namespace Oqtane.ChatHubs.Hubs
 {
@@ -266,12 +267,28 @@ namespace Oqtane.ChatHubs.Hubs
         }
 
         [AllowAnonymous]
-        public async IAsyncEnumerable<char> UploadStream(string stream, int roomId)
+        public async IAsyncEnumerable<char> UploadBytes(string item, int roomId, [EnumeratorCancellation] CancellationToken cancellationToken)
         {
+
             ChatHubUser user = await this.GetChatHubUserAsync();
 
             var connectionsIds = this.chatHubService.GetAllExceptConnectionIds(user);
             connectionsIds.Add(Context.ConnectionId);
+
+            await Clients.GroupExcept(roomId.ToString(), connectionsIds).SendAsync("DownloadBytes", item, roomId);
+
+            for (var i = 0; i < item.Length; i++)
+            {
+                cancellationToken.ThrowIfCancellationRequested();
+                yield return item[i];
+            }
+
+        }
+        [AllowAnonymous]
+        public async IAsyncEnumerable<char> UploadStream(string stream, int roomId)
+        {
+            ChatHubUser user = await this.GetChatHubUserAsync();
+            var connectionsIds = this.chatHubService.GetAllExceptConnectionIds(user);
 
             await Clients.GroupExcept(roomId.ToString(), connectionsIds).SendAsync("DownloadStream", stream, roomId);
 

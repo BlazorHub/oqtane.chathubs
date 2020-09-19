@@ -2,6 +2,7 @@
 using Oqtane.ChatHubs.Client.Video;
 using Oqtane.Modules;
 using Oqtane.Services;
+using System;
 using System.Net.Http;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
@@ -21,6 +22,8 @@ namespace Oqtane.ChatHubs
         private readonly HttpClient HttpClient;
         private readonly IJSRuntime JSRuntime;
 
+        public static event EventHandler<dynamic> OnDataAvailableEventHandler;
+
         public VideoService(HttpClient httpClient, IJSRuntime JSRuntime) : base(httpClient)
         {
             this.HttpClient = httpClient;
@@ -32,9 +35,20 @@ namespace Oqtane.ChatHubs
             this._jsRuntimeObjectRef = await this.JSRuntime.InvokeAsync<JsRuntimeObjectRef>("__initjsstreams");
         }
 
+        [JSInvokable("OnDataAvailable")]
+        public static void OnDataAvailable(string item, int roomId)
+        {
+            OnDataAvailableEventHandler?.Invoke(typeof(VideoService), new { item = item, roomId = roomId });
+        }
+
         public async Task StartVideo(int roomId)
         {
             await this.JSRuntime.InvokeVoidAsync("___obj.startvideo", roomId, _jsRuntimeObjectRef);
+        }
+
+        public async Task SetItem(string item, int roomId)
+        {
+            await this.JSRuntime.InvokeVoidAsync("___obj.setitem", item, roomId, _jsRuntimeObjectRef);
         }
 
         public async Task<string> GetVideo(int roomId)

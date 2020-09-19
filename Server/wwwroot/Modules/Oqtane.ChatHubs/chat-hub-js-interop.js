@@ -61,7 +61,7 @@
             canvaslocalid: '#chathubs-canvas-local-',
             canvasremoteid: '#chathubs-canvas-remote-',
 
-            videoMimeTypeObject: { mimeType: 'video/webm;codecs="opus,vp9"' },
+            videoMimeTypeObject: { mimeType: 'video/webm;codecs=opus,vp9' },
 
             canvaslocalwidth: 100,
             canvaslocalheight: 100,
@@ -100,12 +100,12 @@
 
                 this.mediaSource = new MediaSource();
 
-                this.options = { mimeType: 'video/webm;codecs="opus,vp9"', videoBitsPerSecond: 6000, audioBitsPerSecond: 100000 };
+                this.options = { mimeType: ___obj.videoMimeTypeObject.mimeType, videoBitsPerSecond: 100000, audioBitsPerSecond: 100000, ignoreMutedMedia: true };
                 this.recorder = new MediaRecorder(mediaStream, this.options);
 
-                this.buffertime = 3000;
-                this.recorder.start(this.buffertime);
-                console.log('buffering livestream: please wait: ' + this.buffertime + 's');
+                console.log('buffering livestream: please wait: ' + this.requestDataInterval + 's');
+                this.requestDataInterval = 150;
+                this.recorder.start(this.requestDataInterval);
 
                 this.mediaSource.addEventListener('sourceopen', function (event) {
 
@@ -117,31 +117,18 @@
                     __selflivestream.sourcebuffer = __selflivestream.mediaSource.addSourceBuffer(___obj.videoMimeTypeObject.mimeType);
                     __selflivestream.sourcebuffer.addEventListener('updateend', function (e) { });
                 });
-                this.mediaSource.addEventListener('error', function (e) { console.log(e) }, false);
-
+                this.mediaSource.addEventListener('error', function () { console.error('on media source error'); });
                 this.mediaSource.addEventListener('sourceclose', function () { console.log("on media source close"); });
                 this.mediaSource.addEventListener('sourceended', function () { console.log("on media source ended"); });
 
                 this.recorder.ondataavailable = (event) => {
 
-                    try {
+                    if (event.data.size >= 0) {
 
-                        if (event.data.size >= 0) {
-
-                            __selflivestream.localmediasegments.push(event.data);
-
-                            if (!__selflivestream.sourcebuffer.updating) {
-
-                                var item = __selflivestream.localmediasegments.shift();
-                                __selflivestream.appendBuffer(item);
-                            }
-                        }
-                    }
-                    catch (error) {
-                        console.log(error);
+                        __selflivestream.broadcastVideoData(event.data);
                     }
                 };
-                this.appendBuffer = function (chunk) {
+                this.appendBufferLocalChunkDeprecated = function (chunk) {
 
                     var reader = new FileReader();
                     reader.onload = function (event) {
@@ -149,14 +136,59 @@
                     };
                     reader.readAsArrayBuffer(chunk);
                 };
+                this.appendBuffer = function (base64str) {
+
+                    try {
+
+                        var blob = __selflivestream.base64ToBlob(base64str);
+                        var reader = new FileReader();
+                        reader.onloadend = function (event) {
+
+                            __selflivestream.remotemediasegments.push(reader.result);
+
+                            if (!__selflivestream.sourcebuffer.updating && __selflivestream.mediaSource.readyState === 'open') {
+
+                                var item = __selflivestream.remotemediasegments.shift();
+                                __selflivestream.sourcebuffer.appendBuffer(new Uint8Array(item));
+                            }
+                        }
+                        reader.readAsArrayBuffer(blob);
+                    }
+                    catch (ex) {
+                        console.error(ex);
+                    }
+                };
+                this.base64ToBlob = function (base64str) {
+
+                    var byteString = atob(base64str.split('base64,')[1]);
+                    var arrayBuffer = new ArrayBuffer(byteString.length);
+
+                    var bytes = new Uint8Array(arrayBuffer);
+                    for (var i = 0; i < byteString.length; i++) {
+                        bytes[i] = byteString.charCodeAt(i);
+                    }
+
+                    var blob = new Blob([arrayBuffer], { type: ___obj.videoMimeTypeObject.mimeType });
+                    return blob;
+                };
+                this.broadcastVideoData = function (chunk) {
+
+                    var reader = new FileReader();
+                    reader.onloadend = async function (event) {
+
+                        var dataURI = event.target.result;
+                        DotNet.invokeMethodAsync("Oqtane.ChatHubs.Client.Oqtane", 'OnDataAvailable', dataURI, roomId);
+                    }
+                    reader.readAsDataURL(chunk);
+                };
 
                 this.video = this.getvideoremotedomelement();
-                this.video.preload = 'metadata';
-                this.video.width = 640;
-                this.video.height = 480;
+                this.video.preload = 'auto';
+                this.video.width = 320;
+                this.video.height = 240;
                 this.video.autoplay = true;
-                this.video.controls = true;
-                this.video.muted = false;
+                this.video.controls = false;
+                this.video.muted = true;
                 this.video.src = URL.createObjectURL(this.mediaSource);
                 //this.video.onloadedmetadata = function () { __selflivestream.video.play(); };
 
@@ -180,8 +212,8 @@
             constrains: {
                 audio: true,
                 video: {
-                    width: { min: 640, ideal: 720, max: 1024 },
-                    height: { min: 480, ideal: 576, max: 512 }
+                    width: { min: 320, ideal: 320, max: 320 },
+                    height: { min: 240, ideal: 240, max: 240 }
                 }
             },
             startvideo: function (roomId) {
@@ -201,6 +233,14 @@
                     .catch(function (ex) {
                         console.log(ex.message);
                     });
+            },
+            setitem: function (base64str, roomId) {
+
+                var livestream = self.___obj.getlivestream(roomId);
+                if (livestream !== undefined) {
+
+                    livestream.item.appendBuffer(base64str);
+                }
             },
             captureaudio: function (roomId) {
 

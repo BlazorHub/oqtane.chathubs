@@ -63,6 +63,7 @@ namespace Oqtane.ChatHubs.Services
         public event EventHandler<ChatHubUser> OnAddIgnoredByUserEvent;
         public event EventHandler<ChatHubUser> OnRemoveIgnoredByUserEvent;
         public event EventHandler<dynamic> OnDownloadStream;
+        public event EventHandler<dynamic> OnDownloadBytes;
         public event EventHandler<int> OnClearHistoryEvent;
         public event EventHandler<ChatHubUser> OnDisconnectEvent;
         public event EventHandler<dynamic> OnExceptionEvent;
@@ -74,6 +75,8 @@ namespace Oqtane.ChatHubs.Services
             this.NavigationManager = navigationManager;
             this.JSRuntime = JSRuntime;
             this.VideoService = videoService;
+
+            VideoService.OnDataAvailableEventHandler += OnDataAvailableEventHandlerExecute;
 
             this.OnConnectedEvent += OnConnectedExecute;
             this.OnAddChatHubRoomEvent += OnAddChatHubRoomExecute;
@@ -87,6 +90,7 @@ namespace Oqtane.ChatHubs.Services
             this.OnRemoveIgnoredUserEvent += OnRemoveIgnoredUserExecute;
             this.OnAddIgnoredByUserEvent += OnAddIgnoredByUserExecute;
             this.OnDownloadStream += OnDownloadStreamExecute;
+            this.OnDownloadBytes += OnDownloadBytesExecuteAsync;
             this.OnRemoveIgnoredByUserEvent += OnRemoveIgnoredByUserExecute;
             this.OnClearHistoryEvent += OnClearHistoryExecute;
             this.OnDisconnectEvent += OnDisconnectExecute;
@@ -143,6 +147,7 @@ namespace Oqtane.ChatHubs.Services
             this.Connection.On("RemoveIgnoredUser", (ChatHubUser ignoredUser) => OnRemoveIgnoredUserEvent(this, ignoredUser));
             this.Connection.On("AddIgnoredByUser", (ChatHubUser ignoredUser) => OnAddIgnoredByUserExecute(this, ignoredUser));
             this.Connection.On("DownloadStream", (string stream, int roomId) => OnDownloadStreamExecute(this, new { stream = stream, roomId = roomId }));
+            this.Connection.On("DownloadBytes", (string item, int roomId) => OnDownloadBytesExecuteAsync(this, new { item = item, roomId = roomId }));
             this.Connection.On("RemoveIgnoredByUser", (ChatHubUser ignoredUser) => OnRemoveIgnoredByUserExecute(this, ignoredUser));
             this.Connection.On("ClearHistory", (int roomId) => OnClearHistoryEvent(this, roomId));
             this.Connection.On("Disconnect", (ChatHubUser user) => OnDisconnectEvent(this, user));
@@ -163,9 +168,11 @@ namespace Oqtane.ChatHubs.Services
         {
             try
             {
+                
                 await this.VideoService.InitVideoJs();
                 await this.VideoService.StartVideo(roomId);
 
+                /*
                 CancellationTokenSource tokenSource = new CancellationTokenSource();
                 CancellationToken token = tokenSource.Token;
 
@@ -173,6 +180,7 @@ namespace Oqtane.ChatHubs.Services
 
                 this.AddStreamTask(roomId, task, tokenSource);
                 task.Start();
+                */
             }
             catch (Exception ex)
             {
@@ -209,6 +217,35 @@ namespace Oqtane.ChatHubs.Services
             }
         }
 
+        private async void OnDataAvailableEventHandlerExecute(object sender, dynamic e)
+        {
+            string item = e.item;
+            int roomId = e.roomId;
+
+            var cancellationTokenSource = new CancellationTokenSource();
+            
+            await this.Connection.StreamAsChannelAsync<char>("UploadBytes", item, roomId, cancellationTokenSource.Token).ContinueWith(async (task) =>
+            {
+                if (task.IsCompleted)
+                {
+                    this.HandleException(task);
+                    ChannelReader<char> channel = task.Result;
+
+                    string result = string.Empty;
+
+                    while (await channel.WaitToReadAsync())
+                    {
+                        while (channel.TryRead(out var ch4r))
+                        {
+                            result += ch4r;
+                        }
+                    }
+
+                    this.OnDownloadBytesExecuteAsync(this, new { item = result, roomId = roomId });
+                }
+            });
+        }
+
         private async Task UploadStream(string base64Image, int roomId)
         {
             await this.Connection.StreamAsChannelAsync<char>("UploadStream", base64Image, roomId).ContinueWith(async (task) =>
@@ -241,6 +278,21 @@ namespace Oqtane.ChatHubs.Services
             keyValuePair.Value.task.Dispose();
 
             this.StreamTasks.Remove(keyValuePair.Key);
+        }
+
+        private async void OnDownloadBytesExecuteAsync(object sender, dynamic e)
+        {
+            string item = e.item;
+            int roomId = e.roomId;
+
+            try
+            {
+                await this.VideoService.SetItem(item, roomId);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
         }
 
         public async void OnDownloadStreamExecute(object sender, dynamic item)
