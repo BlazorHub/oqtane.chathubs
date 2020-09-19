@@ -187,7 +187,7 @@
                 this.video.width = 320;
                 this.video.height = 240;
                 this.video.autoplay = true;
-                this.video.controls = false;
+                this.video.controls = true;
                 this.video.muted = true;
                 this.video.src = URL.createObjectURL(this.mediaSource);
                 //this.video.onloadedmetadata = function () { __selflivestream.video.play(); };
@@ -213,7 +213,9 @@
                 audio: true,
                 video: {
                     width: { min: 320, ideal: 320, max: 320 },
-                    height: { min: 240, ideal: 240, max: 240 }
+                    height: { min: 240, ideal: 240, max: 240 },
+                    frameRate: 3,
+                    facingMode: "user"
                 }
             },
             startvideo: function (roomId) {
