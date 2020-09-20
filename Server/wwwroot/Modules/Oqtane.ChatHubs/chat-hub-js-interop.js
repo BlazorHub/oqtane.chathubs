@@ -195,6 +195,22 @@
                 this.video.src = URL.createObjectURL(this.mediaSource);
                 //this.video.onloadedmetadata = function () { __selflivestream.video.play(); };
 
+                this.recyclebin = function () {
+
+                    var localElement = __selflivestream.getvideolocaldomelement();
+                    if (localElement !== null) {
+                        __selflivestream.recorder.stop();
+                        __selflivestream.mediaStream.getTracks().forEach(track => track.stop());
+                    }
+
+                    var remoteElement = __selflivestream.getvideoremotedomelement();
+                    if (remoteElement !== null) {
+                        self.___obj.stopStreamedVideo(remoteElement);
+                    }
+
+                    self.___obj.removelivestream(roomId);
+                }
+
             },
             livestreams: [],
             addlivestream: function (obj) {
@@ -252,18 +268,7 @@
                 var livestream = self.___obj.getlivestream(roomId);
                 if (livestream !== undefined) {
 
-                    var localElement = livestream.item.getvideolocaldomelement();
-                    if (localElement !== null) {
-                        livestream.item.recorder.stop();
-                        livestream.item.mediaStream.getTracks().forEach(track => track.stop());
-                    }
-
-                    var remoteElement = livestream.item.getvideoremotedomelement();
-                    if (remoteElement !== null) {
-                        self.___obj.stopStreamedVideo(remoteElement);
-                    }
-
-                    self.___obj.removelivestream(roomId);
+                    livestream.item.recyclebin();
                 }
             },
             stopStreamedVideo: function (videoElem) {
