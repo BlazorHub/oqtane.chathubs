@@ -17,6 +17,12 @@
     body * { border-radius: 0px; -webkit-border-radius: 0px; -moz-border-radius: 0px; }
     */
 
+    .chathubs-container {
+        min-height: 1000px;
+        background-color: #ffffdd;
+        border: 1px solid #dddddd;
+    }
+
     .chathub-font-size-075rem {
         font-size: 0.75rem;
     }
@@ -40,7 +46,7 @@
 
 </style>
 
-<div id="chathub-module-@ModuleState.ModuleId" class="p-sm-3 bg-light" style="height:1000px;">
+<div id="chathub-module-@ModuleState.ModuleId" class="p-sm-3 chathubs-container">
 
     @if (UserSecurity.IsAuthorized(PageState.User, PermissionNames.Edit, PageState.Page.Permissions))
     {
