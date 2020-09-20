@@ -187,6 +187,20 @@ namespace Oqtane.ChatHubs.Services
                 this.HandleException(ex);
             }
         }
+        public async void StopStreaming(int roomId)
+        {
+
+            await this.VideoService.CloseLivestream(roomId);
+            
+            /*
+            KeyValuePair<int, dynamic> keyValuePair = this.StreamTasks.FirstOrDefault(item => item.Key == roomId);
+
+            keyValuePair.Value.tokenSource.Cancel();
+            keyValuePair.Value.task.Dispose();
+
+            this.StreamTasks.Remove(keyValuePair.Key);
+            */
+        }
 
         public void AddStreamTask(int roomId, Task task, CancellationTokenSource tokenSource)
         {
@@ -253,16 +267,6 @@ namespace Oqtane.ChatHubs.Services
                     this.OnDownloadStreamExecute(this, new { stream = result, roomId = roomId });
                 }
             });
-        }
-
-        public void StopStreaming(int roomId)
-        {
-            KeyValuePair<int, dynamic> keyValuePair = this.StreamTasks.FirstOrDefault(item => item.Key == roomId);
-
-            keyValuePair.Value.tokenSource.Cancel();
-            keyValuePair.Value.task.Dispose();
-
-            this.StreamTasks.Remove(keyValuePair.Key);
         }
 
         private async void OnDownloadBytesExecuteAsync(object sender, dynamic e)

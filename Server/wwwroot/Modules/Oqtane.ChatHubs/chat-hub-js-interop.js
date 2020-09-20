@@ -199,13 +199,15 @@
 
                     var localElement = __selflivestream.getvideolocaldomelement();
                     if (localElement !== null) {
+
                         __selflivestream.recorder.stop();
                         __selflivestream.mediaStream.getTracks().forEach(track => track.stop());
                     }
 
                     var remoteElement = __selflivestream.getvideoremotedomelement();
                     if (remoteElement !== null) {
-                        self.___obj.stopStreamedVideo(remoteElement);
+
+                        __selflivestream.mediaSource.endOfStream();
                     }
 
                     self.___obj.removelivestream(roomId);
@@ -270,16 +272,6 @@
 
                     livestream.item.recyclebin();
                 }
-            },
-            stopStreamedVideo: function (videoElem) {
-                const stream = videoElem.srcObject;
-                const tracks = stream.getTracks();
-
-                tracks.forEach(function (track) {
-                    track.stop();
-                });
-
-                videoElem.srcObject = null;
             },
             drawimage: function (roomId) {
 
