@@ -98,6 +98,7 @@
                 this.vElement.onloadedmetadata = function (e) {
                     __selflivestream.vElement.play();
                 };
+                this.vElement.muted = true;
 
                 this.localmediasegments = []; this.remotemediasegments = [];
 
@@ -123,6 +124,16 @@
                 this.mediaSource.addEventListener('error', function () { console.error('on media source error'); });
                 this.mediaSource.addEventListener('sourceclose', function () { console.log("on media source close"); });
                 this.mediaSource.addEventListener('sourceended', function () { console.log("on media source ended"); });
+
+                this.video = this.getvideoremotedomelement();
+                this.video.preload = 'auto';
+                this.video.width = 320;
+                this.video.height = 240;
+                this.video.autoplay = true;
+                this.video.controls = true;
+                this.video.muted = true;
+                this.video.src = URL.createObjectURL(this.mediaSource);
+                //this.video.onloadedmetadata = function () { __selflivestream.video.play(); };
 
                 this.recorder.ondataavailable = (event) => {
 
@@ -187,16 +198,6 @@
                     reader.readAsDataURL(chunk);
                 };
 
-                this.video = this.getvideoremotedomelement();
-                this.video.preload = 'auto';
-                this.video.width = 320;
-                this.video.height = 240;
-                this.video.autoplay = true;
-                this.video.controls = true;
-                this.video.muted = true;
-                this.video.src = URL.createObjectURL(this.mediaSource);
-                //this.video.onloadedmetadata = function () { __selflivestream.video.play(); };
-
                 this.recyclebin = function () {
 
                     var localElement = __selflivestream.getvideolocaldomelement();
@@ -240,7 +241,7 @@
                 video: {
                     width: { min: 320, ideal: 320, max: 320 },
                     height: { min: 240, ideal: 240, max: 240 },
-                    frameRate: 3,
+                    frameRate: 60,
                     facingMode: "user"
                 }
             },
