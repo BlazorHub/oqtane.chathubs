@@ -106,7 +106,7 @@
                 this.options = { mimeType: ___obj.videoMimeTypeObject.mimeType, videoBitsPerSecond: 100000, audioBitsPerSecond: 100000, ignoreMutedMedia: true };
                 this.recorder = new MediaRecorder(this.mediaStream, this.options);
 
-                this.requestDataInterval = 120;
+                this.requestDataInterval = 250;
                 this.recorder.start(this.requestDataInterval);
                 console.log('buffering livestream: please wait: ' + this.requestDataInterval + 's');
 
@@ -207,7 +207,10 @@
                     var remoteElement = __selflivestream.getvideoremotedomelement();
                     if (remoteElement !== null) {
 
-                        __selflivestream.mediaSource.endOfStream();
+                        if (__selflivestream.mediaSource.readyState === 'open') {
+
+                            __selflivestream.mediaSource.endOfStream();
+                        }
                     }
 
                     self.___obj.removelivestream(roomId);

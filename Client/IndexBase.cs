@@ -35,7 +35,7 @@ namespace Oqtane.ChatHubs
         [Inject]
         protected BlazorAlertsService BlazorAlertsService { get; set; }
         [Inject]
-        public IChatHubService ChatHubService { get; set; }
+        protected IChatHubService ChatHubService { get; set; }
         [Inject]
         protected VideoService VideoService { get; set; }
         public BrowserResizeService BrowserResizeService { get; set; }
