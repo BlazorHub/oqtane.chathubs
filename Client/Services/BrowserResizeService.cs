@@ -9,13 +9,13 @@ namespace Oqtane.ChatHubs.Services
 {
     public class BrowserResizeService : ServiceBase, IService
     {
-        private readonly IJSRuntime _jsRuntime;
+        private readonly IJSRuntime JSRuntime;
 
         public static event Func<Task> OnResize;
 
-        public BrowserResizeService(HttpClient http, IJSRuntime jsRuntime) : base(http)
+        public BrowserResizeService(HttpClient http, IJSRuntime JSRuntime) : base(http)
         {
-            _jsRuntime = jsRuntime;
+            this.JSRuntime = JSRuntime;
         }
 
         [JSInvokable("OnBrowserResize")]
@@ -26,12 +26,12 @@ namespace Oqtane.ChatHubs.Services
 
         public async Task<int> GetInnerHeight()
         {
-            return await _jsRuntime.InvokeAsync<int>("browserResize.getInnerHeight");
+            return await this.JSRuntime.InvokeAsync<int>("browserResize.getInnerHeight");
         }
 
         public async Task<int> GetInnerWidth()
         {
-            return await _jsRuntime.InvokeAsync<int>("browserResize.getInnerWidth");
+            return await this.JSRuntime.InvokeAsync<int>("browserResize.getInnerWidth");
         }
     }
 }

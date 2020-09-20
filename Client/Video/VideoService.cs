@@ -1,9 +1,11 @@
 ﻿using Microsoft.JSInterop;
 using Oqtane.ChatHubs.Client.Video;
+using Oqtane.ChatHubs.Services;
 using Oqtane.Modules;
 using Oqtane.Services;
 using System;
 using System.Net.Http;
+using System.Runtime.CompilerServices;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
@@ -13,6 +15,7 @@ namespace Oqtane.ChatHubs
     {
 
         private JsRuntimeObjectRef _jsRuntimeObjectRef;
+        private ChatHubService ChatHubService { get; set; }
         public class JsRuntimeObjectRef
         {
             [JsonPropertyName("__jsObjectRefId")]
@@ -36,9 +39,10 @@ namespace Oqtane.ChatHubs
         }
 
         [JSInvokable("OnDataAvailable")]
-        public static void OnDataAvailable(string item, int roomId)
+        public static object OnDataAvailable(string item, int roomId)
         {
             OnDataAvailableEventHandler?.Invoke(typeof(VideoService), new { item = item, roomId = roomId });
+            return new { msg = "room id: " + roomId + "; data: " + item };
         }
 
         public async Task StartVideo(int roomId)

@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.IO;
 using System.Net.Http;
 using System.Threading.Tasks;
-using Blazor.FileReader;
 using Oqtane.Shared;
 using Oqtane.ChatHubs.Services;
 using Microsoft.AspNetCore.Components;
+using Blazor.FileReader;
 
 namespace Oqtane.ChatHubs
 {

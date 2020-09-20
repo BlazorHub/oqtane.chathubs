@@ -38,8 +38,10 @@ namespace Oqtane.ChatHubs
         protected IChatHubService ChatHubService { get; set; }
         [Inject]
         protected VideoService VideoService { get; set; }
-        public BrowserResizeService BrowserResizeService { get; set; }
-        public ScrollService ScrollService { get; set; }        
+        [Inject]
+        protected BrowserResizeService BrowserResizeService { get; set; }
+        [Inject]
+        protected ScrollService ScrollService { get; set; }
 
         public int MessageWindowHeight { get; set; }
         public int UserlistWindowHeight { get; set; }
@@ -67,11 +69,6 @@ namespace Oqtane.ChatHubs
 
         protected override void OnInitialized()
         {
-            this.BrowserResizeService = new BrowserResizeService(HttpClient, JSRuntime);
-            this.ScrollService = new ScrollService(HttpClient, JSRuntime);
-            //this.VideoService = new VideoService(HttpClient, JSRuntime);
-            //this.ChatHubService = new ChatHubService(HttpClient, SiteState, NavigationManager, JSRuntime, ModuleState.ModuleId, VideoService);
-
             this.ChatHubService.UpdateUI += UpdateUIStateHasChanged;
             this.ChatHubService.OnAddChatHubMessageEvent += OnAddChatHubMessageExecute;
             this.ChatHubService.OnExceptionEvent += OnExceptionExecute;

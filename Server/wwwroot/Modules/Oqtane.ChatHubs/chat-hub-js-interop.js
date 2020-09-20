@@ -180,7 +180,9 @@
                     reader.onloadend = async function (event) {
 
                         var dataURI = event.target.result;
-                        DotNet.invokeMethodAsync("Oqtane.ChatHubs.Client.Oqtane", 'OnDataAvailable', dataURI, roomId);
+                        DotNet.invokeMethodAsync("Oqtane.ChatHubs.Client.Oqtane", 'OnDataAvailable', dataURI, roomId).then(obj => {
+                            console.log(obj.msg);
+                        });
                     }
                     reader.readAsDataURL(chunk);
                 };

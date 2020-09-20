@@ -76,7 +76,7 @@ namespace Oqtane.ChatHubs.Services
             this.JSRuntime = JSRuntime;
             this.VideoService = videoService;
 
-            VideoService.OnDataAvailableEventHandler += OnDataAvailableEventHandlerExecute;
+            VideoService.OnDataAvailableEventHandler += async (item, roomId) => await OnDataAvailableEventHandlerExecute(item, roomId);
 
             this.OnConnectedEvent += OnConnectedExecute;
             this.OnAddChatHubRoomEvent += OnAddChatHubRoomExecute;
@@ -231,7 +231,7 @@ namespace Oqtane.ChatHubs.Services
             }
         }
 
-        public async void OnDataAvailableEventHandlerExecute(object sender, dynamic e)
+        public async Task OnDataAvailableEventHandlerExecute(object sender, dynamic e)
         {
             string item = e.item;
             int roomId = e.roomId;

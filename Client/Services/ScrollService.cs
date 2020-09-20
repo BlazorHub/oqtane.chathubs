@@ -8,16 +8,17 @@ namespace Oqtane.ChatHubs.Services
 {
     public class ScrollService : ServiceBase, IService
     {
-        private readonly IJSRuntime _jsRuntime;
 
-        public ScrollService(HttpClient http, IJSRuntime jsRuntime) : base(http)
+        private readonly IJSRuntime JSRuntime;
+
+        public ScrollService(HttpClient httpClient, IJSRuntime jsRuntime) : base(httpClient)
         {
-            _jsRuntime = jsRuntime;
+            this.JSRuntime = jsRuntime;
         }
 
         public async Task ScrollToBottom(string element, int time)
         {
-            await _jsRuntime.InvokeAsync<object>("scroll.scrollToBottom", element, time);
+            await this.JSRuntime.InvokeAsync<object>("scroll.scrollToBottom", element, time);
         }
 
     }
