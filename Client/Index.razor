@@ -21,6 +21,7 @@
         min-height: 1000px;
         background-color: #ffffdd;
         border: 1px solid #dddddd;
+        display: none;
     }
 
     .chathub-font-size-075rem {
@@ -191,7 +192,7 @@
 
                     @foreach (ChatHubRoom room in ChatHubService.Rooms)
                     {
-                        <BSTab @key="room" Id="@room.Id.ToString()">
+                        <BSTab @key="room" Id="@room.Id.ToString()" InitialSelection="@(ChatHubService.ContextRoomId == room.Id.ToString())">
                             <BSTabLabel>
 
                                 @room.Title&nbsp;

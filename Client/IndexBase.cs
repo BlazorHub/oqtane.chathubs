@@ -83,7 +83,7 @@ namespace Oqtane.ChatHubs
                 await JSRuntime.InvokeAsync<object>("browserResize.registerResizeCallback");
                 await BrowserHasResized();
 
-                //await JsRuntime.InvokeAsync<object>("showChatPage");
+                await this.JSRuntime.InvokeVoidAsync("showchathubscontainer");
             }
 
             await base.OnAfterRenderAsync(firstRender);

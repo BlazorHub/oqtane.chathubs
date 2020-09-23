@@ -52,6 +52,12 @@
         document.body.removeChild(link);
     };
 
+    window.showchathubscontainer = function () {
+
+        var $chathubscontainer = $(".chathubs-container");
+        $chathubscontainer.fadeIn(200);
+    };
+
     window.__jsstreams = function () {
 
         __obj = {
@@ -228,7 +234,7 @@
             removelivestream: function (roomId) {
 
                 self.__obj.livestreams = self.__obj.livestreams.filter(item => item.id !== roomId);
-            },            
+            },
             startvideo: function (roomId) {
 
                 navigator.mediaDevices.getUserMedia(this.constrains)
