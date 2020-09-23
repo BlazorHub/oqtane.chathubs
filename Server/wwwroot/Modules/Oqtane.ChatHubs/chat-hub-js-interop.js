@@ -59,8 +59,6 @@
             videolocalid: '#chathubs-video-local-',
             videoremoteid: '#chathubs-video-remote-',
             videoMimeTypeObject: { mimeType: 'video/webm;codecs=opus,vp9' },
-            canvaslocalwidth: 100,
-            canvaslocalheight: 100,
             constrains: {
                 audio: true,
                 video: {
