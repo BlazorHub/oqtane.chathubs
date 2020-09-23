@@ -51,7 +51,6 @@ namespace Oqtane.ChatHubs.Services
         public event EventHandler<ChatHubUser> OnRemoveIgnoredUserEvent;
         public event EventHandler<ChatHubUser> OnAddIgnoredByUserEvent;
         public event EventHandler<ChatHubUser> OnRemoveIgnoredByUserEvent;
-        public event EventHandler<dynamic> OnDownloadStream;
         public event EventHandler<int> OnClearHistoryEvent;
         public event EventHandler<ChatHubUser> OnDisconnectEvent;
         public event EventHandler<dynamic> OnExceptionEvent;

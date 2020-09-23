@@ -32,28 +32,24 @@
 
 <div>
 
-    @if (true || ChatHubService.StreamTasks.Any())
-    {
     <div class="d-flex align-items-center bd-highlight my-1">
 
         @if (true || ChatHubService.ConnectedUser.UserId == ChatHubRoom.CreatorId)
         {
-            <div class="p-1 bd-highlight bg-white border border-light">
-                <pre class="bg-light">Local Video</pre>
-                <video id="chathubs-video-local-@ChatHubRoom.Id" class="my-1" controls autoplay></video>
-                <canvas id="chathubs-canvas-local-@ChatHubRoom.Id" class="d-none"></canvas>
+            <div class="p-2 bd-highlight bg-white border border-light">
+                <pre class="bg-light px-4 py-2 mb-1">Local Video</pre>
+                <video id="chathubs-video-local-@ChatHubRoom.Id" class="my-1" controls></video>
             </div>
         }
         @if (true)
         {
-            <div class="p-1 bd-highlight bg-white border border-light">
-                <pre class="bg-light">Remote Video</pre>
-                <video id="chathubs-video-remote-@ChatHubRoom.Id" class="my-1"></video>
-                <canvas id="chathubs-canvas-remote-@ChatHubRoom.Id" class="d-none"></canvas>
+            <div class="p-2 bd-highlight bg-white border border-light">
+                <pre class="bg-light px-4 py-2 mb-1">Remote Video</pre>
+                <video id="chathubs-video-remote-@ChatHubRoom.Id" class="my-1" controls></video>
             </div>
         }
+
     </div>
-    }
 
 </div>
 

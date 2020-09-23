@@ -58,14 +58,18 @@
 
             videolocalid: '#chathubs-video-local-',
             videoremoteid: '#chathubs-video-remote-',
-            canvaslocalid: '#chathubs-canvas-local-',
-            canvasremoteid: '#chathubs-canvas-remote-',
-
             videoMimeTypeObject: { mimeType: 'video/webm;codecs=opus,vp9' },
-
             canvaslocalwidth: 100,
             canvaslocalheight: 100,
-
+            constrains: {
+                audio: true,
+                video: {
+                    width: { min: 320, ideal: 320, max: 320 },
+                    height: { min: 240, ideal: 240, max: 240 },
+                    frameRate: 60,
+                    facingMode: "user"
+                }
+            },
             livestream: function (roomId, mediaStream) {
 
                 __selflivestream = this;
@@ -83,21 +87,13 @@
                     return document.querySelector(this.videoremoteid);
                 };
 
-                this.canvaslocalid = self.__obj.canvaslocalid + roomId;
-                this.getcanvaslocaldomelement = function () {
-                    return document.querySelector(this.canvaslocalid);
-                };
-
-                this.canvasremoteid = self.__obj.canvasremoteid + roomId;
-                this.getcanvasremotedomelement = function () {
-                    return document.querySelector(this.canvasremoteid);
-                };
-
                 this.vElement = this.getvideolocaldomelement();
                 this.vElement.srcObject = this.mediaStream;
                 this.vElement.onloadedmetadata = function (e) {
                     __selflivestream.vElement.play();
                 };
+                this.vElement.autoplay = true;
+                this.vElement.controls = true;
                 this.vElement.muted = true;
 
                 this.localmediasegments = []; this.remotemediasegments = [];
@@ -220,6 +216,10 @@
 
             },
             livestreams: [],
+            getlivestream: function (roomId) {
+
+                return self.__obj.livestreams.find(item => item.id === roomId);
+            },
             addlivestream: function (obj) {
 
                 var item = self.__obj.getlivestream(obj.id);
@@ -230,20 +230,7 @@
             removelivestream: function (roomId) {
 
                 self.__obj.livestreams = self.__obj.livestreams.filter(item => item.id !== roomId);
-            },
-            getlivestream: function (roomId) {
-
-                return self.__obj.livestreams.find(item => item.id === roomId);
-            },
-            constrains: {
-                audio: true,
-                video: {
-                    width: { min: 320, ideal: 320, max: 320 },
-                    height: { min: 240, ideal: 240, max: 240 },
-                    frameRate: 60,
-                    facingMode: "user"
-                }
-            },
+            },            
             startvideo: function (roomId) {
 
                 navigator.mediaDevices.getUserMedia(this.constrains)
@@ -256,13 +243,12 @@
                         };
 
                         self.__obj.addlivestream(livestreamdicitem);
-                        self.__obj.resizecanvas();
                     })
                     .catch(function (ex) {
                         console.log(ex.message);
                     });
             },
-            setitem: function (base64str, roomId) {
+            appendbuffer: function (base64str, roomId) {
 
                 var livestream = self.__obj.getlivestream(roomId);
                 if (livestream !== undefined) {
@@ -276,48 +262,6 @@
                 if (livestream !== undefined) {
 
                     livestream.item.recyclebin();
-                }
-            },
-            drawimage: function (roomId) {
-
-                var livestream = self.__obj.getlivestream(roomId);
-                if (livestream !== undefined) {
-                    var canvas = livestream.item.getcanvaslocaldomelement();
-                    if (canvas !== null) {
-                        var ctx = canvas.getContext('2d');
-                        var img = livestream.item.getvideolocaldomelement();
-
-                        ctx.drawImage(img, 0, 0);
-                    }
-                }
-            },
-            getimageasbase64string: function (roomId) {
-
-                var livestream = self.__obj.getlivestream(roomId);
-                if (livestream !== undefined) {
-                    var canvas = livestream.item.getcanvaslocaldomelement();
-                    if (canvas !== null) {
-                        var dataUrl = canvas.toDataURL("image/jpeg", 0.5);
-                        return dataUrl;
-                    }
-                }
-            },
-            setimage: function (base64ImageString, roomId) {
-
-                var livestream = self.__obj.getlivestream(roomId);
-                if (livestream !== undefined) {
-                    var canvas = livestream.item.getcanvasremotedomelement();
-                    if (canvas !== null) {
-                        var ctx = canvas.getContext('2d');
-
-                        var img = new Image();
-                        img.onload = function () {
-
-                            //self.__obj.drawimageextension(ctx, img, 0, 0, 640, 480, 0.5, 0.5);
-                        };
-
-                        img.src = base64ImageString;
-                    }
                 }
             },
             readAsDataUrlAsync: function (blob) {
@@ -343,67 +287,6 @@
                     };
                     fileReader.readAsArrayBuffer(blob);
                 })
-            },
-            resizecanvas: function (roomId) {
-
-                var livestream = self.__obj.getlivestream(roomId);
-                if (livestream !== undefined) {
-                    var canvas = livestream.item.getcanvasremotedomelement();
-                    if (canvas !== null) {
-
-                        var context = canvas.getContext('2d');
-
-                        window.addEventListener('resize', resizeCanvas, false);
-
-                        var resizeCanvas = function() {
-
-                            //canvas.width = window.innerWidth;
-                            //canvas.height = window.innerHeight;
-                        };
-                        resizeCanvas();
-                    }
-                }
-            },
-            drawimageextension: function (ctx, img, x, y, w, h, offsetX, offsetY) {
-
-                if (arguments.length === 2) {
-                    x = y = 0;
-                    w = ctx.canvas.width;
-                    h = ctx.canvas.height;
-                }
-
-                offsetX = typeof offsetX === "number" ? offsetX : 0.5;
-                offsetY = typeof offsetY === "number" ? offsetY : 0.5;
-
-                if (offsetX < 0) offsetX = 0;
-                if (offsetY < 0) offsetY = 0;
-                if (offsetX > 1) offsetX = 1;
-                if (offsetY > 1) offsetY = 1;
-
-                var iw = img.width,
-                    ih = img.height,
-                    r = Math.min(w / iw, h / ih),
-                    nw = iw * r,
-                    nh = ih * r,
-                    cx, cy, cw, ch, ar = 1;
-
-                if (nw < w) ar = w / nw;
-                if (Math.abs(ar - 1) < 1e-14 && nh < h) ar = h / nh;
-                nw *= ar;
-                nh *= ar;
-
-                cw = iw / (nw / w);
-                ch = ih / (nh / h);
-
-                cx = (iw - cw) * offsetX;
-                cy = (ih - ch) * offsetY;
-
-                if (cx < 0) cx = 0;
-                if (cy < 0) cy = 0;
-                if (cw > iw) cw = iw;
-                if (ch > ih) ch = ih;
-
-                ctx.drawImage(img, cx, cy, cw, ch, x, y, w, h);
             },
         };
     };

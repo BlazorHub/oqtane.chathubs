@@ -1,11 +1,9 @@
 ﻿using Microsoft.JSInterop;
 using Oqtane.ChatHubs.Client.Video;
-using Oqtane.ChatHubs.Services;
 using Oqtane.Modules;
 using Oqtane.Services;
 using System;
 using System.Net.Http;
-using System.Runtime.CompilerServices;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
@@ -55,34 +53,9 @@ namespace Oqtane.ChatHubs
             await this.JSRuntime.InvokeVoidAsync("__obj.closelivestream", roomId, _jsRuntimeObjectRef);
         }
 
-        public async Task SetItem(string item, int roomId)
+        public async Task AppendBuffer(string item, int roomId)
         {
-            await this.JSRuntime.InvokeVoidAsync("__obj.setitem", item, roomId, _jsRuntimeObjectRef);
-        }
-
-        public async Task<string> GetVideo(int roomId)
-        {
-            return await this.JSRuntime.InvokeAsync<string>("__obj.getvideo", roomId, _jsRuntimeObjectRef);
-        }
-
-        public async Task SetVideo(string base64, int roomId)
-        {
-            await this.JSRuntime.InvokeVoidAsync("__obj.setvideo", base64, roomId, _jsRuntimeObjectRef);
-        }
-
-        public async Task DrawImage(int roomId)
-        {
-            await this.JSRuntime.InvokeVoidAsync("__obj.drawimage", roomId, _jsRuntimeObjectRef);
-        }
-
-        public async Task<string> GetImageAsBase64String(int roomId)
-        {
-            return await this.JSRuntime.InvokeAsync<string>("__obj.getimageasbase64string", roomId, _jsRuntimeObjectRef);
-        }
-
-        public async Task SetImage(string image, int roomId)
-        {
-            await this.JSRuntime.InvokeVoidAsync("__obj.setimage", image, roomId, _jsRuntimeObjectRef);
+            await this.JSRuntime.InvokeVoidAsync("__obj.appendbuffer", item, roomId, _jsRuntimeObjectRef);
         }
 
     }

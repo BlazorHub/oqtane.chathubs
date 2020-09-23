@@ -278,19 +278,6 @@ namespace Oqtane.ChatHubs.Hubs
             await Clients.GroupExcept(roomId.ToString(), connectionsIds).SendAsync("DownloadBytes", item, roomId);
 
         }
-        [AllowAnonymous]
-        public async IAsyncEnumerable<char> UploadStream(string stream, int roomId)
-        {
-            ChatHubUser user = await this.GetChatHubUserAsync();
-            var connectionsIds = this.chatHubService.GetAllExceptConnectionIds(user);
-
-            await Clients.GroupExcept(roomId.ToString(), connectionsIds).SendAsync("DownloadStream", stream, roomId);
-
-            for(var i = 0; i < stream.Length; i++)
-            {
-                yield return stream[i];
-            }
-        }
 
         private async Task<bool> ExecuteCommandManager(ChatHubUser chatHubUser, string message, int roomId)
         {
