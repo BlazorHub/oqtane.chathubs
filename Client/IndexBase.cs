@@ -333,7 +333,7 @@ namespace Oqtane.ChatHubs
         
         public void OpenProfile_Clicked(int userId, int roomId)
         {
-            this.SettingsModalRef.Toggle();
+            this.SettingsModalRef.OpenDialog();
         }
 
         public void Show(BSTabEvent e)

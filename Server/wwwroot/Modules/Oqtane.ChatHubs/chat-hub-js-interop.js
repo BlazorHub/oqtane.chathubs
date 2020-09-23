@@ -54,7 +54,7 @@
 
     window.__jsstreams = function () {
 
-        ___obj = {
+        __obj = {
 
             videolocalid: '#chathubs-video-local-',
             videoremoteid: '#chathubs-video-remote-',
@@ -73,22 +73,22 @@
                 this.id = roomId;
                 this.mediaStream = mediaStream;
 
-                this.videolocalid = self.___obj.videolocalid + roomId;
+                this.videolocalid = self.__obj.videolocalid + roomId;
                 this.getvideolocaldomelement = function () {
                     return document.querySelector(this.videolocalid);
                 };
 
-                this.videoremoteid = self.___obj.videoremoteid + roomId;
+                this.videoremoteid = self.__obj.videoremoteid + roomId;
                 this.getvideoremotedomelement = function () {
                     return document.querySelector(this.videoremoteid);
                 };
 
-                this.canvaslocalid = self.___obj.canvaslocalid + roomId;
+                this.canvaslocalid = self.__obj.canvaslocalid + roomId;
                 this.getcanvaslocaldomelement = function () {
                     return document.querySelector(this.canvaslocalid);
                 };
 
-                this.canvasremoteid = self.___obj.canvasremoteid + roomId;
+                this.canvasremoteid = self.__obj.canvasremoteid + roomId;
                 this.getcanvasremotedomelement = function () {
                     return document.querySelector(this.canvasremoteid);
                 };
@@ -104,21 +104,21 @@
 
                 this.mediaSource = new MediaSource();
 
-                this.options = { mimeType: ___obj.videoMimeTypeObject.mimeType, videoBitsPerSecond: 100000, audioBitsPerSecond: 100000, ignoreMutedMedia: true };
+                this.options = { mimeType: __obj.videoMimeTypeObject.mimeType, videoBitsPerSecond: 100000, audioBitsPerSecond: 100000, ignoreMutedMedia: true };
                 this.recorder = new MediaRecorder(this.mediaStream, this.options);
 
-                this.requestDataInterval = 250;
+                this.requestDataInterval = 200;
                 this.recorder.start(this.requestDataInterval);
                 console.log('buffering livestream: please wait: ' + this.requestDataInterval + 's');
 
                 this.mediaSource.addEventListener('sourceopen', function (event) {
 
-                    if (!('MediaSource' in window) || !(MediaSource.isTypeSupported(___obj.videoMimeTypeObject.mimeType))) {
+                    if (!('MediaSource' in window) || !(MediaSource.isTypeSupported(__obj.videoMimeTypeObject.mimeType))) {
 
                         console.error('Unsupported MIME type or codec: ', self.videostreams.videoMimeTypeObject.mimeType);
                     }
 
-                    __selflivestream.sourcebuffer = __selflivestream.mediaSource.addSourceBuffer(___obj.videoMimeTypeObject.mimeType);
+                    __selflivestream.sourcebuffer = __selflivestream.mediaSource.addSourceBuffer(__obj.videoMimeTypeObject.mimeType);
                     __selflivestream.sourcebuffer.addEventListener('updateend', function (e) { });
                 });
                 this.mediaSource.addEventListener('error', function () { console.error('on media source error'); });
@@ -182,7 +182,7 @@
                         bytes[i] = byteString.charCodeAt(i);
                     }
 
-                    var blob = new Blob([arrayBuffer], { type: ___obj.videoMimeTypeObject.mimeType });
+                    var blob = new Blob([arrayBuffer], { type: __obj.videoMimeTypeObject.mimeType });
                     return blob;
                 };
                 this.broadcastVideoData = function (chunk) {
@@ -197,7 +197,6 @@
                     }
                     reader.readAsDataURL(chunk);
                 };
-
                 this.recyclebin = function () {
 
                     var localElement = __selflivestream.getvideolocaldomelement();
@@ -216,25 +215,25 @@
                         }
                     }
 
-                    self.___obj.removelivestream(roomId);
-                }
+                    self.__obj.removelivestream(roomId);
+                };
 
             },
             livestreams: [],
             addlivestream: function (obj) {
 
-                var item = self.___obj.getlivestream(obj.id);
+                var item = self.__obj.getlivestream(obj.id);
                 if (item !== null) {
-                    self.___obj.livestreams.push(obj);
+                    self.__obj.livestreams.push(obj);
                 }
             },
             removelivestream: function (roomId) {
 
-                self.___obj.livestreams = self.___obj.livestreams.filter(item => item.id !== roomId);
+                self.__obj.livestreams = self.__obj.livestreams.filter(item => item.id !== roomId);
             },
             getlivestream: function (roomId) {
 
-                return self.___obj.livestreams.find(item => item.id === roomId);
+                return self.__obj.livestreams.find(item => item.id === roomId);
             },
             constrains: {
                 audio: true,
@@ -250,14 +249,14 @@
                 navigator.mediaDevices.getUserMedia(this.constrains)
                     .then(function (mediaStream) {
 
-                        var livestream = new self.___obj.livestream(roomId, mediaStream);
+                        var livestream = new self.__obj.livestream(roomId, mediaStream);
                         var livestreamdicitem = {
                             id: roomId,
                             item: livestream,
                         };
 
-                        self.___obj.addlivestream(livestreamdicitem);
-                        self.___obj.resizecanvas();
+                        self.__obj.addlivestream(livestreamdicitem);
+                        self.__obj.resizecanvas();
                     })
                     .catch(function (ex) {
                         console.log(ex.message);
@@ -265,7 +264,7 @@
             },
             setitem: function (base64str, roomId) {
 
-                var livestream = self.___obj.getlivestream(roomId);
+                var livestream = self.__obj.getlivestream(roomId);
                 if (livestream !== undefined) {
 
                     livestream.item.appendBuffer(base64str);
@@ -273,7 +272,7 @@
             },
             closelivestream: function (roomId) {
 
-                var livestream = self.___obj.getlivestream(roomId);
+                var livestream = self.__obj.getlivestream(roomId);
                 if (livestream !== undefined) {
 
                     livestream.item.recyclebin();
@@ -281,7 +280,7 @@
             },
             drawimage: function (roomId) {
 
-                var livestream = self.___obj.getlivestream(roomId);
+                var livestream = self.__obj.getlivestream(roomId);
                 if (livestream !== undefined) {
                     var canvas = livestream.item.getcanvaslocaldomelement();
                     if (canvas !== null) {
@@ -294,7 +293,7 @@
             },
             getimageasbase64string: function (roomId) {
 
-                var livestream = self.___obj.getlivestream(roomId);
+                var livestream = self.__obj.getlivestream(roomId);
                 if (livestream !== undefined) {
                     var canvas = livestream.item.getcanvaslocaldomelement();
                     if (canvas !== null) {
@@ -305,7 +304,7 @@
             },
             setimage: function (base64ImageString, roomId) {
 
-                var livestream = self.___obj.getlivestream(roomId);
+                var livestream = self.__obj.getlivestream(roomId);
                 if (livestream !== undefined) {
                     var canvas = livestream.item.getcanvasremotedomelement();
                     if (canvas !== null) {
@@ -314,7 +313,7 @@
                         var img = new Image();
                         img.onload = function () {
 
-                            //self.___obj.drawimageextension(ctx, img, 0, 0, 640, 480, 0.5, 0.5);
+                            //self.__obj.drawimageextension(ctx, img, 0, 0, 640, 480, 0.5, 0.5);
                         };
 
                         img.src = base64ImageString;
@@ -347,7 +346,7 @@
             },
             resizecanvas: function (roomId) {
 
-                var livestream = self.___obj.getlivestream(roomId);
+                var livestream = self.__obj.getlivestream(roomId);
                 if (livestream !== undefined) {
                     var canvas = livestream.item.getcanvasremotedomelement();
                     if (canvas !== null) {

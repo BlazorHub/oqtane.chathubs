@@ -1,4 +1,5 @@
 ﻿using BlazorStrap;
+using MatBlazor;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 using Oqtane.ChatHubs.Services;
@@ -12,19 +13,23 @@ namespace Oqtane.ChatHubs
     public class SettingsModalBase : ModuleBase
     {
 
-        [Parameter]
+        [Inject]
         public IChatHubService ChatHubService { get; set; }
 
-        public BSModal CenteredBSModal;
+        public MatDialog SettingsDialog;
 
-        public void Toggle()
+        public bool DialogIsOpen { get; set; } = false;
+
+        public void OpenDialog()
         {
-            this.CenteredBSModal.Toggle();
+            this.DialogIsOpen = true;
+            StateHasChanged();
         }
 
-        public void BSModalOnToggle(MouseEventArgs e)
+        public void CloseDialog()
         {
-            this.Toggle();
+            this.DialogIsOpen = false;
+            StateHasChanged();
         }
 
     }

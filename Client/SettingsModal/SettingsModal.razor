@@ -2,92 +2,92 @@
 
 @inherits SettingsModalBase
 
-    <BSModal @ref="CenteredBSModal" IsCentered="true">
-        <BSModalHeader OnClick="@BSModalOnToggle">Account/Settings</BSModalHeader>
-        <BSModalBody>
+<MatDialog @ref="SettingsDialog" @bind-IsOpen="DialogIsOpen">
 
-            <BSTabGroup>
-                <BSTabList>
+    <MatDialogTitle>Account/Settings</MatDialogTitle>
 
-                    <BSTab>
-                        <BSTabLabel>Account Info</BSTabLabel>
-                        <BSTabContent>
+    <MatDialogContent>
 
-                            <div class="p-sm-3">
-                                Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.
-                            </div>
+        <MatTabGroup>
 
-                        </BSTabContent>
-                    </BSTab>
+            <MatTab>
+                <LabelContent>Account Info</LabelContent>
+                <ChildContent>
 
-                    <BSTab>
-                        <BSTabLabel><div><span class="oi oi-shield"></span> (@ChatHubService.IgnoredUsers?.Count())</div></BSTabLabel>
-                        <BSTabContent>
+                    <div class="p-sm-3">
+                        Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.
+                    </div>
 
-                            <div class="p-sm-3">
+                </ChildContent>
+            </MatTab>
 
-                                <h5>Ignolist</h5>
+            <MatTab>
+                <LabelContent><div><span class="oi oi-shield"></span> (@ChatHubService.IgnoredUsers?.Count())</div></LabelContent>
+                <ChildContent>
 
-                                @if (ChatHubService.IgnoredUsers == null || !ChatHubService.IgnoredUsers.Any())
-                                {
-                                    <div class="alert alert-info"><small>No one found yet</small></div>
-                                }
-                                else
-                                {
-                                    <table class="table table-sm">
-                                        <tbody>
-                                            @foreach (var ignoredUser in ChatHubService.IgnoredUsers)
-                                            {
+                    <div class="p-sm-3">
 
-                                                <tr>
-                                                    <td>@ignoredUser.DisplayName</td>
-                                                    <td>
-                                                        <button type="button" class="btn btn-sm btn-link" @onclick="() => ChatHubService.UnignoreUser_Clicked(ignoredUser.Username)">
-                                                            <span class="oi oi-x"></span>
-                                                        </button>
-                                                    </td>
-                                                </tr>
+                        <h5>Ignolist</h5>
 
-                                            }
-                                        </tbody>
-                                    </table>
-                                }
-
-                            </div>
-
-                        </BSTabContent>
-                    </BSTab>
-
-                    <BSTab>
-                        <BSTabLabel><div><span class="oi oi-bug"></span> (@ChatHubService.IgnoredByUsers?.Count())</div></BSTabLabel>
-                        <BSTabContent>
-
-                            <div class="p-sm-3">
-
-                                <h5>Ignored by list</h5>
-
-                                @if (ChatHubService.IgnoredByUsers == null || !ChatHubService.IgnoredByUsers.Any())
-                                {
-                                    <div class="alert alert-info"><small>No one found yet</small></div>
-                                }
-                                else
-                                {
-                                    @foreach (var ignoredByUser in ChatHubService.IgnoredByUsers)
+                        @if (ChatHubService.IgnoredUsers == null || !ChatHubService.IgnoredUsers.Any()) {
+                            <div class="alert alert-info"><small>No one found yet</small></div>
+                        }
+                        else
+                        {
+                            <table class="table table-sm">
+                                <tbody>
+                                    @foreach (var ignoredUser in ChatHubService.IgnoredUsers)
                                     {
-                                        <div>@ignoredByUser.DisplayName</div>
+                                        <tr>
+                                            <td>@ignoredUser.DisplayName</td>
+                                            <td>
+                                                <button type="button" class="btn btn-sm btn-link" @onclick="() => ChatHubService.UnignoreUser_Clicked(ignoredUser.Username)">
+                                                    <span class="oi oi-x"></span>
+                                                </button>
+                                            </td>
+                                        </tr>
                                     }
-                                }
+                                </tbody>
+                            </table>
+                        }
 
-                            </div>
+                    </div>
 
-                        </BSTabContent>
-                    </BSTab>
-                </BSTabList>
-                <BSTabSelectedContent />
+                </ChildContent>
+            </MatTab>
 
-            </BSTabGroup>
-        </BSModalBody>
-        <BSModalFooter>
-            <BSButton Color="Color.Link" @onclick="@BSModalOnToggle">Close</BSButton>
-        </BSModalFooter>
-    </BSModal>
+            <MatTab>
+                <LabelContent><div><span class="oi oi-bug"></span> (@ChatHubService.IgnoredUsers?.Count())</div></LabelContent>
+                <ChildContent>
+
+                    <div class="p-sm-3">
+
+                        <h5>Ignored by list</h5>
+
+                        @if (ChatHubService.IgnoredUsers == null || !ChatHubService.IgnoredUsers.Any())
+                        {
+                            <div class="alert alert-info"><small>No one found yet</small></div>
+                        }
+                        else
+                        {
+                            @foreach (var ignoredUser in ChatHubService.IgnoredUsers)
+                            {
+                                <div>@ignoredUser.DisplayName</div>
+
+                            }
+                        }
+
+                    </div>
+
+                </ChildContent>
+            </MatTab>
+
+        </MatTabGroup>
+
+        <div class="my-3">
+            <button type="button" class="btn btn-sm btn-primary" @onclick="() => CloseDialog()">Close</button>
+        </div>
+
+    </MatDialogContent>
+
+</MatDialog>

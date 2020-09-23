@@ -14,8 +14,8 @@ namespace Oqtane.ChatHubs
     public class VideoService : ServiceBase, IService, IVideoService
     {
 
-        private JsRuntimeObjectRef _jsRuntimeObjectRef;
-        private ChatHubService ChatHubService { get; set; }
+        private JsRuntimeObjectRef _jsRuntimeObjectRef { get; set; }
+
         public class JsRuntimeObjectRef
         {
             [JsonPropertyName("__jsObjectRefId")]
@@ -47,42 +47,42 @@ namespace Oqtane.ChatHubs
 
         public async Task StartVideo(int roomId)
         {
-            await this.JSRuntime.InvokeVoidAsync("___obj.startvideo", roomId, _jsRuntimeObjectRef);
+            await this.JSRuntime.InvokeVoidAsync("__obj.startvideo", roomId, _jsRuntimeObjectRef);
         }
 
         public async Task CloseLivestream(int roomId)
         {
-            await this.JSRuntime.InvokeVoidAsync("___obj.closelivestream", roomId, _jsRuntimeObjectRef);
+            await this.JSRuntime.InvokeVoidAsync("__obj.closelivestream", roomId, _jsRuntimeObjectRef);
         }
 
         public async Task SetItem(string item, int roomId)
         {
-            await this.JSRuntime.InvokeVoidAsync("___obj.setitem", item, roomId, _jsRuntimeObjectRef);
+            await this.JSRuntime.InvokeVoidAsync("__obj.setitem", item, roomId, _jsRuntimeObjectRef);
         }
 
         public async Task<string> GetVideo(int roomId)
         {
-            return await this.JSRuntime.InvokeAsync<string>("___obj.getvideo", roomId, _jsRuntimeObjectRef);
+            return await this.JSRuntime.InvokeAsync<string>("__obj.getvideo", roomId, _jsRuntimeObjectRef);
         }
 
         public async Task SetVideo(string base64, int roomId)
         {
-            await this.JSRuntime.InvokeVoidAsync("___obj.setvideo", base64, roomId, _jsRuntimeObjectRef);
+            await this.JSRuntime.InvokeVoidAsync("__obj.setvideo", base64, roomId, _jsRuntimeObjectRef);
         }
 
         public async Task DrawImage(int roomId)
         {
-            await this.JSRuntime.InvokeVoidAsync("___obj.drawimage", roomId, _jsRuntimeObjectRef);
+            await this.JSRuntime.InvokeVoidAsync("__obj.drawimage", roomId, _jsRuntimeObjectRef);
         }
 
         public async Task<string> GetImageAsBase64String(int roomId)
         {
-            return await this.JSRuntime.InvokeAsync<string>("___obj.getimageasbase64string", roomId, _jsRuntimeObjectRef);
+            return await this.JSRuntime.InvokeAsync<string>("__obj.getimageasbase64string", roomId, _jsRuntimeObjectRef);
         }
 
         public async Task SetImage(string image, int roomId)
         {
-            await this.JSRuntime.InvokeVoidAsync("___obj.setimage", image, roomId, _jsRuntimeObjectRef);
+            await this.JSRuntime.InvokeVoidAsync("__obj.setimage", image, roomId, _jsRuntimeObjectRef);
         }
 
     }

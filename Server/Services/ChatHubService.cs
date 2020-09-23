@@ -70,6 +70,7 @@ namespace Oqtane.ChatHubs.Services
                 DisplayName = user.DisplayName,
                 Connections = connections,
                 Settings = chatHubSettingClientModel,
+                UserlistItemCollapsed = user.UserlistItemCollapsed,
                 CreatedOn = user.CreatedOn,
                 CreatedBy = user.CreatedBy,
                 ModifiedOn = user.ModifiedOn,

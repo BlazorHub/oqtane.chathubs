@@ -43,7 +43,6 @@
         padding-left: 0px !important;
         padding-right: 0px !important;
     }
-
 </style>
 
 <div id="chathub-module-@ModuleState.ModuleId" class="p-sm-3 chathubs-container">
@@ -183,7 +182,7 @@
                                         <h1 class="display-4">Fluid jumbotron</h1>
                                         <p class="lead">This is a simple hero unit, a simple jumbotron-style component for calling extra attention to featured content or information.</p>
 
-                                        <ActionLink Action="Add" Security="SecurityAccessLevel.Anonymous" Text="Add Room" />                                        
+                                        <ActionLink Action="Add" Security="SecurityAccessLevel.Anonymous" Text="Add Room" />
                                     </div>
                                 </div>
                             </BSTabContent>
@@ -202,7 +201,7 @@
                             </BSTabLabel>
                             <BSTabContent>
 
-                                <VideoComponent ChatHubService="@ChatHubService" ChatHubRoom="@room"></VideoComponent>
+                                <VideoComponent ChatHubRoom="@room"></VideoComponent>
 
                                 <div class="d-flex">
                                     <div class="flex-fill flex-grow-1 @(room.ShowUserlist ? "d-none" : "d-flex")">
@@ -211,7 +210,6 @@
                                             <div id="message-window-@ModuleState.ModuleId-@room.Id" style="height: @(string.Format("{0}px", MessageWindowHeight)); overflow: auto;">
 
                                                 <h3>@room.Content</h3>
-
                                                 <br />
 
                                                 <MessageTemplate Messages="@room.Messages.OrderBy(item => item.ModifiedOn).ThenBy(item => item.Id)" Context="item">
@@ -429,11 +427,14 @@
                                                                                     <strong class="align-middle" style="height: 16px;">@user.DisplayName</strong>
                                                                                 </BSButton>
                                                                             </BSCard>
-                                                                            <BSCollapse IsOpen="@user.UserlistItemCollapsed">
-                                                                                <BSCard CardType="CardType.Text">
-                                                                                    <button type="button" class="btn btn-sm btn-link" @onclick="() => OpenProfile_Clicked(user.UserId, room.Id)">Profil/Einstellungen</button>
+                                                                            @if (user.UserlistItemCollapsed)
+                                                                            {
+                                                                                <BSCard CardType="CardType.Body">
+                                                                                    <BSCard CardType="CardType.Text">
+                                                                                        <button type="button" class="btn btn-sm btn-link" @onclick="() => OpenProfile_Clicked(user.UserId, room.Id)">Profil/Einstellungen</button>
+                                                                                    </BSCard>
                                                                                 </BSCard>
-                                                                            </BSCollapse>
+                                                                            }
                                                                         </BSCard>
                                                                     }
                                                                     else
@@ -444,11 +445,14 @@
                                                                                     <span class="align-middle" style="height: 16px;">@user.DisplayName</span>
                                                                                 </BSButton>
                                                                             </BSCard>
-                                                                            <BSCollapse IsOpen="@user.UserlistItemCollapsed">
-                                                                                <BSCard CardType="CardType.Text">
-                                                                                    <button type="button" class="btn btn-sm btn-link" @onclick="() => ChatHubService.IgnoreUser_Clicked(user.UserId, room.Id, user.Username)">Benutzer Ignorieren</button>
+                                                                            @if (user.UserlistItemCollapsed)
+                                                                            {
+                                                                                <BSCard CardType="CardType.Body">
+                                                                                    <BSCard CardType="CardType.Text">
+                                                                                        <button type="button" class="btn btn-sm btn-link" @onclick="() => ChatHubService.IgnoreUser_Clicked(user.UserId, room.Id, user.Username)">Benutzer Ignorieren</button>
+                                                                                    </BSCard>
                                                                                 </BSCard>
-                                                                            </BSCollapse>
+                                                                            }
                                                                         </BSCard>
                                                                     }
                                                                 }
@@ -494,7 +498,7 @@
                                                     </ChildContent>
 
                                                 </MatTab>
-                                                
+
                                                 <MatTab>
 
                                                     <LabelContent><div><span class="oi oi-list"></span> (@ChatHubService.Invitations.Count())</div></LabelContent>
@@ -564,4 +568,4 @@
 </div>
 
 <ImageModal @ref="ImageModalRef"></ImageModal>
-<SettingsModal @ref="SettingsModalRef" ChatHubService="@ChatHubService"></SettingsModal>
+<SettingsModal @ref="SettingsModalRef"></SettingsModal>
