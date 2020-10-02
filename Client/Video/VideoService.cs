@@ -43,19 +43,36 @@ namespace Oqtane.ChatHubs
             return new { msg = "room id: " + roomId + "; data: " + item };
         }
 
-        public async Task StartVideo(int roomId)
+        public async Task StartBroadcasting(int roomId)
         {
-            await this.JSRuntime.InvokeVoidAsync("__obj.startvideo", roomId, _jsRuntimeObjectRef);
+            if (this._jsRuntimeObjectRef != null)
+            {
+                await this.JSRuntime.InvokeVoidAsync("__obj.startbroadcasting", roomId, _jsRuntimeObjectRef);
+            }
+        }
+
+        public async Task StartStreaming(int roomId)
+        {
+            if (this._jsRuntimeObjectRef != null)
+            {
+                await this.JSRuntime.InvokeVoidAsync("__obj.startstreaming", roomId, _jsRuntimeObjectRef);
+            }
         }
 
         public async Task CloseLivestream(int roomId)
         {
-            await this.JSRuntime.InvokeVoidAsync("__obj.closelivestream", roomId, _jsRuntimeObjectRef);
+            if (this._jsRuntimeObjectRef != null)
+            {
+                await this.JSRuntime.InvokeVoidAsync("__obj.closelivestream", roomId, _jsRuntimeObjectRef);
+            }
         }
 
         public async Task AppendBuffer(string item, int roomId)
         {
-            await this.JSRuntime.InvokeVoidAsync("__obj.appendbuffer", item, roomId, _jsRuntimeObjectRef);
+            if (this._jsRuntimeObjectRef != null)
+            {
+                await this.JSRuntime.InvokeVoidAsync("__obj.appendbuffer", item, roomId, _jsRuntimeObjectRef);
+            }
         }
 
     }

@@ -1,13 +1,13 @@
 # Oqtane ChatHub Module
 
-The Oqtane Framework allows developers to create external modules.
+The Oqtane Framework allows developers to create external modules. Post issues anytime you want it is okay and appreciated i will reply as soon as im ready and fixed it anyhow. 
 
 # Getting Started For Oqtane ChatHub Module Dev
 
 - [x] Get familiar with the [Oqtane Framework](https://github.com/oqtane/oqtane.framework).
 - [x] Clone the Oqtane Github Repository in Visual Studio Team Explorer.
 - [x] Clone the Oqtane ChatHub Module in VS Team Explorer and build in debug and release mode.
-- [ ] get it work somehow good luck
+- [ ] get it work somehow good luck anyway
 
 Edit startup.cs:
 ```C#

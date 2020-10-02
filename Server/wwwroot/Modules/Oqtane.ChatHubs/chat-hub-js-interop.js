@@ -74,11 +74,11 @@
                     facingMode: "user"
                 }
             },
-            livestream: function (roomId, mediaStream) {
+            locallivestream: function (roomId, mediaStream) {
 
-                __selflivestream = this;
-
+                __selflocallivestream = this;
                 this.id = roomId;
+
                 this.mediaStream = mediaStream;
 
                 this.videolocalid = self.__obj.videolocalid + roomId;
@@ -86,31 +86,66 @@
                     return document.querySelector(this.videolocalid);
                 };
 
-                this.videoremoteid = self.__obj.videoremoteid + roomId;
-                this.getvideoremotedomelement = function () {
-                    return document.querySelector(this.videoremoteid);
-                };
-
                 this.vElement = this.getvideolocaldomelement();
                 this.vElement.srcObject = this.mediaStream;
                 this.vElement.onloadedmetadata = function (e) {
-                    __selflivestream.vElement.play();
+                    __selflocallivestream.vElement.play();
                 };
                 this.vElement.autoplay = true;
                 this.vElement.controls = true;
                 this.vElement.muted = true;
 
-                this.localmediasegments = []; this.remotemediasegments = [];
-
-                this.mediaSource = new MediaSource();
-
                 this.options = { mimeType: __obj.videoMimeTypeObject.mimeType, videoBitsPerSecond: 100000, audioBitsPerSecond: 100000, ignoreMutedMedia: true };
                 this.recorder = new MediaRecorder(this.mediaStream, this.options);
 
                 this.requestDataInterval = 200;
-                this.recorder.start(this.requestDataInterval);
-                console.log('buffering livestream: please wait: ' + this.requestDataInterval + 's');
+                this.recorder.start(this.requestDataInterval); console.log('buffering livestream: please wait: ' + this.requestDataInterval + 's');
 
+                this.recorder.ondataavailable = (event) => {
+
+                    if (event.data.size >= 0) {
+
+                        __selflocallivestream.broadcastvideodata(event.data);
+                    }
+                };
+                this.broadcastvideodata = function (chunk) {
+
+                    var reader = new FileReader();
+                    reader.onloadend = async function (event) {
+
+                        var dataURI = event.target.result;
+                        DotNet.invokeMethodAsync("Oqtane.ChatHubs.Client.Oqtane", 'OnDataAvailable', dataURI, roomId).then(obj => {
+                            console.log(obj.msg);
+                        });
+                    }
+                    reader.readAsDataURL(chunk);
+                };
+
+                this.recyclebin = function () {
+
+                    var localElement = __selflocallivestream.getvideolocaldomelement();
+                    if (localElement !== null) {
+
+                        __selflocallivestream.recorder.stop();
+                        __selflocallivestream.mediaStream.getTracks().forEach(track => track.stop());
+                    }
+
+                    self.__obj.removelivestream(roomId);
+                };
+            },
+            remotelivestream: function (roomId) {
+
+                __selfremotelivestream = this;
+                this.id = roomId;
+
+                this.videoremoteid = self.__obj.videoremoteid + roomId;
+                this.getvideoremotedomelement = function () {
+                    return document.querySelector(this.videoremoteid);
+                };
+
+                this.remotemediasegments = [];
+
+                this.mediaSource = new MediaSource();
                 this.mediaSource.addEventListener('sourceopen', function (event) {
 
                     if (!('MediaSource' in window) || !(MediaSource.isTypeSupported(__obj.videoMimeTypeObject.mimeType))) {
@@ -118,8 +153,12 @@
                         console.error('Unsupported MIME type or codec: ', self.videostreams.videoMimeTypeObject.mimeType);
                     }
 
-                    __selflivestream.sourcebuffer = __selflivestream.mediaSource.addSourceBuffer(__obj.videoMimeTypeObject.mimeType);
-                    __selflivestream.sourcebuffer.addEventListener('updateend', function (e) { });
+                    __selfremotelivestream.sourcebuffer = __selfremotelivestream.mediaSource.addSourceBuffer(__obj.videoMimeTypeObject.mimeType);
+
+                    console.log(__selfremotelivestream.sourcebuffer.mode);
+                    //__selfremotelivestream.sourcebuffer.mode = 'sequence';
+
+                    __selfremotelivestream.sourcebuffer.addEventListener('updateend', function (e) { });
                 });
                 this.mediaSource.addEventListener('error', function () { console.error('on media source error'); });
                 this.mediaSource.addEventListener('sourceclose', function () { console.log("on media source close"); });
@@ -133,37 +172,22 @@
                 this.video.controls = true;
                 this.video.muted = true;
                 this.video.src = URL.createObjectURL(this.mediaSource);
-                //this.video.onloadedmetadata = function () { __selflivestream.video.play(); };
 
-                this.recorder.ondataavailable = (event) => {
-
-                    if (event.data.size >= 0) {
-
-                        __selflivestream.broadcastVideoData(event.data);
-                    }
-                };
-                this.appendBufferLocalChunkDeprecated = function (chunk) {
-
-                    var reader = new FileReader();
-                    reader.onload = function (event) {
-                        __selflivestream.sourcebuffer.appendBuffer(new Uint8Array(event.target.result));
-                    };
-                    reader.readAsArrayBuffer(chunk);
-                };
-                this.appendBuffer = function (base64str) {
+                this.appendBuffer = async function (base64str) {
 
                     try {
 
-                        var blob = __selflivestream.base64ToBlob(base64str);
+                        var blob = __selfremotelivestream.base64ToBlob(base64str);
+
                         var reader = new FileReader();
                         reader.onloadend = function (event) {
 
-                            __selflivestream.remotemediasegments.push(reader.result);
+                            __selfremotelivestream.remotemediasegments.push(reader.result);
 
-                            if (!__selflivestream.sourcebuffer.updating && __selflivestream.mediaSource.readyState === 'open') {
+                            if (!__selfremotelivestream.sourcebuffer.updating && __selfremotelivestream.mediaSource.readyState === 'open') {
 
-                                var item = __selflivestream.remotemediasegments.shift();
-                                __selflivestream.sourcebuffer.appendBuffer(new Uint8Array(item));
+                                var item = __selfremotelivestream.remotemediasegments.shift();
+                                __selfremotelivestream.sourcebuffer.appendBuffer(new Uint8Array(item));
                             }
                         }
                         reader.readAsArrayBuffer(blob);
@@ -185,39 +209,20 @@
                     var blob = new Blob([arrayBuffer], { type: __obj.videoMimeTypeObject.mimeType });
                     return blob;
                 };
-                this.broadcastVideoData = function (chunk) {
 
-                    var reader = new FileReader();
-                    reader.onloadend = async function (event) {
-
-                        var dataURI = event.target.result;
-                        DotNet.invokeMethodAsync("Oqtane.ChatHubs.Client.Oqtane", 'OnDataAvailable', dataURI, roomId).then(obj => {
-                            console.log(obj.msg);
-                        });
-                    }
-                    reader.readAsDataURL(chunk);
-                };
                 this.recyclebin = function () {
 
-                    var localElement = __selflivestream.getvideolocaldomelement();
-                    if (localElement !== null) {
-
-                        __selflivestream.recorder.stop();
-                        __selflivestream.mediaStream.getTracks().forEach(track => track.stop());
-                    }
-
-                    var remoteElement = __selflivestream.getvideoremotedomelement();
+                    var remoteElement = __selfremotelivestream.getvideoremotedomelement();
                     if (remoteElement !== null) {
 
-                        if (__selflivestream.mediaSource.readyState === 'open') {
+                        if (__selfremotelivestream.mediaSource.readyState === 'open') {
 
-                            __selflivestream.mediaSource.endOfStream();
+                            __selfremotelivestream.mediaSource.endOfStream();
                         }
                     }
 
                     self.__obj.removelivestream(roomId);
                 };
-
             },
             livestreams: [],
             getlivestream: function (roomId) {
@@ -235,12 +240,12 @@
 
                 self.__obj.livestreams = self.__obj.livestreams.filter(item => item.id !== roomId);
             },
-            startvideo: function (roomId) {
+            startbroadcasting: function (roomId) {
 
                 navigator.mediaDevices.getUserMedia(this.constrains)
                     .then(function (mediaStream) {
 
-                        var livestream = new self.__obj.livestream(roomId, mediaStream);
+                        var livestream = new self.__obj.locallivestream(roomId, mediaStream);
                         var livestreamdicitem = {
                             id: roomId,
                             item: livestream,
@@ -252,12 +257,28 @@
                         console.log(ex.message);
                     });
             },
+            startstreaming: function (roomId) {
+
+                var livestream = new self.__obj.remotelivestream(roomId);
+                var livestreamdicitem = {
+                    id: roomId,
+                    item: livestream,
+                };
+
+                self.__obj.addlivestream(livestreamdicitem);
+            },
+            initsegment: function (roomId) {
+
+            },
             appendbuffer: function (base64str, roomId) {
 
                 var livestream = self.__obj.getlivestream(roomId);
                 if (livestream !== undefined) {
 
-                    livestream.item.appendBuffer(base64str);
+                    if (livestream.item.mediaStream === undefined) {
+
+                        livestream.item.appendBuffer(base64str);
+                    }
                 }
             },
             closelivestream: function (roomId) {
@@ -292,6 +313,19 @@
                     fileReader.readAsArrayBuffer(blob);
                 })
             },
+            readAsTextAsync: function (blob) {
+
+                return new Promise((resolve, reject) => {
+
+                    let fileReader = new window.FileReader();
+                    fileReader.onload = () => {
+
+                        resolve(fileReader.result);
+                    };
+                    fileReader.readAsText(blob);
+                })
+            },
+
         };
     };
 

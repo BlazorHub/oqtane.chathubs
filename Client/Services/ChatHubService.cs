@@ -160,19 +160,27 @@ namespace Oqtane.ChatHubs.Services
             });
         }
 
-        public async Task StartStreaming(int roomId)
+        public async Task StartVideoChat(ChatHubRoom room)
         {
             try
-            {                
-                await this.VideoService.InitVideoJs();
-                await this.VideoService.StartVideo(roomId);
+            {
+                if (room.CreatorId == this.ConnectedUser.UserId)
+                {
+                    await this.VideoService.InitVideoJs();
+                    await this.VideoService.StartBroadcasting(room.Id);
+                }
+                else
+                {
+                    await this.VideoService.InitVideoJs();
+                    await this.VideoService.StartStreaming(room.Id);
+                }
             }
             catch (Exception ex)
             {
                 this.HandleException(ex);
             }
         }
-        public async void StopStreaming(int roomId)
+        public async void StopVideoChat(int roomId)
         {
             await this.VideoService.CloseLivestream(roomId);
         }
@@ -182,13 +190,16 @@ namespace Oqtane.ChatHubs.Services
             string item = e.item;
             int roomId = e.roomId;
 
-            await this.Connection.InvokeAsync("UploadBytes", item, roomId).ContinueWith((task) =>
+            if(this.Connection?.State == HubConnectionState.Connected)
             {
-                if (task.IsCompleted)
+                await this.Connection.InvokeAsync("UploadBytes", item, roomId).ContinueWith((task) =>
                 {
-                    this.HandleException(task);
-                }
-            });
+                    if (task.IsCompleted)
+                    {
+                        this.HandleException(task);
+                    }
+                });
+            }
         }
 
         private async void OnDownloadBytesExecuteAsync(object sender, dynamic e)
@@ -208,7 +219,7 @@ namespace Oqtane.ChatHubs.Services
 
         public async Task EnterChatRoom(int roomId)
         {
-            await this.Connection.InvokeAsync("EnterChatRoom", roomId).ContinueWith(async (task) =>
+            await this.Connection.InvokeAsync("EnterChatRoom", roomId).ContinueWith((task) =>
             {
                 if (task.IsCompleted)
                 {

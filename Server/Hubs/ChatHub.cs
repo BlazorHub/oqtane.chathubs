@@ -209,6 +209,12 @@ namespace Oqtane.ChatHubs.Hubs
 
             if (room.Public() || room.OneVsOne())
             {
+                if (this.chatHubRepository.GetChatHubUsersByRoom(room).Online().ToList().Count() <= 0)
+                {
+                    room.CreatorId = user.UserId;
+                    this.chatHubRepository.UpdateChatHubRoom(room);
+                }
+
                 ChatHubRoomChatHubUser room_user = new ChatHubRoomChatHubUser()
                 {
                     ChatHubRoomId = room.Id,
@@ -271,12 +277,14 @@ namespace Oqtane.ChatHubs.Hubs
         {
 
             ChatHubUser user = await this.GetChatHubUserAsync();
-
             var connectionsIds = this.chatHubService.GetAllExceptConnectionIds(user);
-            //connectionsIds.Add(Context.ConnectionId);
+            
+            foreach(var connection in user.Connections)
+            {
+                connectionsIds.Add(connection.ConnectionId);
+            }
 
             await Clients.GroupExcept(roomId.ToString(), connectionsIds).SendAsync("DownloadBytes", item, roomId);
-
         }
 
         private async Task<bool> ExecuteCommandManager(ChatHubUser chatHubUser, string message, int roomId)

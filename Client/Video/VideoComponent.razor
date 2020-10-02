@@ -41,7 +41,7 @@
                 <video id="chathubs-video-local-@ChatHubRoom.Id" class="my-1" controls></video>
             </div>
         }
-        @if (true)
+        @if(true)
         {
             <div class="p-2 bd-highlight bg-white border border-light">
                 <pre class="bg-light px-4 py-2 mb-1">Remote Video</pre>
@@ -55,7 +55,7 @@
 
 @code {
 
-    [Parameter]
+    [Inject]
     public IChatHubService ChatHubService { get; set; }
 
     [Parameter]
