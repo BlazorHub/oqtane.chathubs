@@ -256,6 +256,8 @@
                         return false;
                     }
                 }
+
+                return false;
             },
             readAsDataUrlAsync: function (blob) {
 

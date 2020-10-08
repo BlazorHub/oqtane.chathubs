@@ -217,9 +217,14 @@ namespace Oqtane.ChatHubs.Services
 
             if(task)
             {
-                KeyValuePair<int, dynamic> keyValuePair = this.StreamTasks.FirstOrDefault(item => item.Key == roomId);
-                keyValuePair.Value.tokenSource.Cancel();
-                this.StreamTasks.Remove(keyValuePair.Key);
+                List<KeyValuePair<int, dynamic>> list = this.StreamTasks.Where(item => item.Key == roomId).ToList();
+
+                if(list.Any())
+                {
+                    KeyValuePair<int, dynamic> keyValuePair = list.FirstOrDefault();
+                    keyValuePair.Value.tokenSource.Cancel();
+                    this.StreamTasks.Remove(keyValuePair.Key);
+                }
             }
         }
 
