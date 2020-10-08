@@ -353,7 +353,7 @@ namespace Oqtane.ChatHubs
             if (room != null)
             {
                 //this.ChatHubService.StopStreaming(int.Parse(this.ChatHubService.ContextRoomId));
-                await this.VideoService.CloseLivestream(int.Parse(this.ChatHubService.ContextRoomId));
+                this.ChatHubService.StopVideoChat(int.Parse(this.ChatHubService.ContextRoomId));
             }
         }
         public void Hidden(BSTabEvent e)

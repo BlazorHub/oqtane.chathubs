@@ -272,13 +272,15 @@ namespace Oqtane.ChatHubs.Hubs
             }
         }
 
+        public static Dictionary<int, string> VideoFirstChunks = new Dictionary<int, string>();
+
         [AllowAnonymous]
         public async Task UploadBytes(string item, int roomId)
         {
 
             ChatHubUser user = await this.GetChatHubUserAsync();
             var connectionsIds = this.chatHubService.GetAllExceptConnectionIds(user);
-            
+
             foreach(var connection in user.Connections)
             {
                 connectionsIds.Add(connection.ConnectionId);

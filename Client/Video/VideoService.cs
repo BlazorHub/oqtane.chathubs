@@ -59,11 +59,16 @@ namespace Oqtane.ChatHubs
             }
         }
 
-        public async Task CloseLivestream(int roomId)
+        public async Task<bool> CloseLivestream(int roomId)
+        {
+            return await this.JSRuntime.InvokeAsync<bool>("__obj.closelivestream", roomId, _jsRuntimeObjectRef);
+        }
+
+        public async Task DrawImage(int roomId)
         {
             if (this._jsRuntimeObjectRef != null)
             {
-                await this.JSRuntime.InvokeVoidAsync("__obj.closelivestream", roomId, _jsRuntimeObjectRef);
+                await this.JSRuntime.InvokeVoidAsync("__obj.drawimage", roomId, _jsRuntimeObjectRef);
             }
         }
 

@@ -64,6 +64,9 @@
 
             videolocalid: '#chathubs-video-local-',
             videoremoteid: '#chathubs-video-remote-',
+            canvaslocalid: '#chathubs-canvas-local-',
+            canvasremoteid: '#chathubs-canvas-remote-',
+
             videoMimeTypeObject: { mimeType: 'video/webm;codecs=opus,vp9' },
             constrains: {
                 audio: true,
@@ -86,39 +89,34 @@
                     return document.querySelector(this.videolocalid);
                 };
 
+                this.canvaslocalid = self.__obj.canvaslocalid + roomId;
+                this.getcanvaslocaldomelement = function () {
+                    return document.querySelector(this.canvaslocalid);
+                };
+
                 this.vElement = this.getvideolocaldomelement();
                 this.vElement.srcObject = this.mediaStream;
                 this.vElement.onloadedmetadata = function (e) {
+
                     __selflocallivestream.vElement.play();
                 };
                 this.vElement.autoplay = true;
                 this.vElement.controls = true;
                 this.vElement.muted = true;
 
-                this.options = { mimeType: __obj.videoMimeTypeObject.mimeType, videoBitsPerSecond: 100000, audioBitsPerSecond: 100000, ignoreMutedMedia: true };
-                this.recorder = new MediaRecorder(this.mediaStream, this.options);
+                this.ctx = this.getcanvaslocaldomelement().getContext('2d');
+                this.drawimage = function () {
 
-                this.requestDataInterval = 200;
-                this.recorder.start(this.requestDataInterval); console.log('buffering livestream: please wait: ' + this.requestDataInterval + 's');
-
-                this.recorder.ondataavailable = (event) => {
-
-                    if (event.data.size >= 0) {
-
-                        __selflocallivestream.broadcastvideodata(event.data);
-                    }
+                    __selflocallivestream.ctx.drawImage(__selflocallivestream.getvideolocaldomelement(), 0, 0, 120, 90);
+                    var snapshot = __selflocallivestream.getcanvaslocaldomelement().toDataURL(self.__obj.videoMimeTypeObject.mimeType);
+                    __selflocallivestream.broadcastcanvassnapshot(snapshot);
                 };
-                this.broadcastvideodata = function (chunk) {
 
-                    var reader = new FileReader();
-                    reader.onloadend = async function (event) {
+                this.broadcastcanvassnapshot = function (dataURI) {
 
-                        var dataURI = event.target.result;
-                        DotNet.invokeMethodAsync("Oqtane.ChatHubs.Client.Oqtane", 'OnDataAvailable', dataURI, roomId).then(obj => {
-                            console.log(obj.msg);
-                        });
-                    }
-                    reader.readAsDataURL(chunk);
+                    DotNet.invokeMethodAsync("Oqtane.ChatHubs.Client.Oqtane", 'OnDataAvailable', dataURI, roomId).then(obj => {
+                        console.log(obj.msg.substring(0, 100));
+                    });
                 };
 
                 this.recyclebin = function () {
@@ -126,7 +124,6 @@
                     var localElement = __selflocallivestream.getvideolocaldomelement();
                     if (localElement !== null) {
 
-                        __selflocallivestream.recorder.stop();
                         __selflocallivestream.mediaStream.getTracks().forEach(track => track.stop());
                     }
 
@@ -143,59 +140,22 @@
                     return document.querySelector(this.videoremoteid);
                 };
 
-                this.remotemediasegments = [];
-
-                this.mediaSource = new MediaSource();
-                this.mediaSource.addEventListener('sourceopen', function (event) {
-
-                    if (!('MediaSource' in window) || !(MediaSource.isTypeSupported(__obj.videoMimeTypeObject.mimeType))) {
-
-                        console.error('Unsupported MIME type or codec: ', self.videostreams.videoMimeTypeObject.mimeType);
-                    }
-
-                    __selfremotelivestream.sourcebuffer = __selfremotelivestream.mediaSource.addSourceBuffer(__obj.videoMimeTypeObject.mimeType);
-
-                    console.log(__selfremotelivestream.sourcebuffer.mode);
-                    //__selfremotelivestream.sourcebuffer.mode = 'sequence';
-
-                    __selfremotelivestream.sourcebuffer.addEventListener('updateend', function (e) { });
-                });
-                this.mediaSource.addEventListener('error', function () { console.error('on media source error'); });
-                this.mediaSource.addEventListener('sourceclose', function () { console.log("on media source close"); });
-                this.mediaSource.addEventListener('sourceended', function () { console.log("on media source ended"); });
-
-                this.video = this.getvideoremotedomelement();
-                this.video.preload = 'auto';
-                this.video.width = 320;
-                this.video.height = 240;
-                this.video.autoplay = true;
-                this.video.controls = true;
-                this.video.muted = true;
-                this.video.src = URL.createObjectURL(this.mediaSource);
-
-                this.appendBuffer = async function (base64str) {
-
-                    try {
-
-                        var blob = __selfremotelivestream.base64ToBlob(base64str);
-
-                        var reader = new FileReader();
-                        reader.onloadend = function (event) {
-
-                            __selfremotelivestream.remotemediasegments.push(reader.result);
-
-                            if (!__selfremotelivestream.sourcebuffer.updating && __selfremotelivestream.mediaSource.readyState === 'open') {
-
-                                var item = __selfremotelivestream.remotemediasegments.shift();
-                                __selfremotelivestream.sourcebuffer.appendBuffer(new Uint8Array(item));
-                            }
-                        }
-                        reader.readAsArrayBuffer(blob);
-                    }
-                    catch (ex) {
-                        console.error(ex);
-                    }
+                this.canvasremoteid = self.__obj.canvasremoteid + roomId;
+                this.getcanvasremotedomelement = function () {
+                    return document.querySelector(this.canvasremoteid);
                 };
+
+                this.drawImage = function (base64str) {
+
+                    var canvas = __selfremotelivestream.getcanvasremotedomelement();
+                    var ctx = canvas.getContext("2d");
+
+                    var image = new Image();
+                    image.onload = function () {
+                        ctx.drawImage(image, 0, 0);
+                    };
+                    image.src = base64str;
+                },
                 this.base64ToBlob = function (base64str) {
 
                     var byteString = atob(base64str.split('base64,')[1]);
@@ -211,15 +171,6 @@
                 };
 
                 this.recyclebin = function () {
-
-                    var remoteElement = __selfremotelivestream.getvideoremotedomelement();
-                    if (remoteElement !== null) {
-
-                        if (__selfremotelivestream.mediaSource.readyState === 'open') {
-
-                            __selfremotelivestream.mediaSource.endOfStream();
-                        }
-                    }
 
                     self.__obj.removelivestream(roomId);
                 };
@@ -267,8 +218,16 @@
 
                 self.__obj.addlivestream(livestreamdicitem);
             },
-            initsegment: function (roomId) {
+            drawimage: function (roomId) {
 
+                var livestream = self.__obj.getlivestream(roomId);
+                if (livestream !== undefined) {
+
+                    if (livestream.item.mediaStream !== undefined) {
+
+                        livestream.item.drawimage();
+                    }
+                }
             },
             appendbuffer: function (base64str, roomId) {
 
@@ -277,7 +236,7 @@
 
                     if (livestream.item.mediaStream === undefined) {
 
-                        livestream.item.appendBuffer(base64str);
+                        livestream.item.drawImage(base64str);
                     }
                 }
             },
@@ -286,7 +245,16 @@
                 var livestream = self.__obj.getlivestream(roomId);
                 if (livestream !== undefined) {
 
-                    livestream.item.recyclebin();
+                    if (livestream.item.mediaStream !== undefined) {
+
+                        livestream.item.recyclebin();
+                        return true;
+                    }
+                    else {
+
+                        livestream.item.recyclebin();
+                        return false;
+                    }
                 }
             },
             readAsDataUrlAsync: function (blob) {

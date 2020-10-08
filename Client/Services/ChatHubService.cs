@@ -168,6 +168,14 @@ namespace Oqtane.ChatHubs.Services
                 {
                     await this.VideoService.InitVideoJs();
                     await this.VideoService.StartBroadcasting(room.Id);
+
+                    CancellationTokenSource tokenSource = new CancellationTokenSource();
+                    CancellationToken token = tokenSource.Token;
+
+                    Task task = new Task(async () => await this.RunStreamTask(room.Id, token), token);
+
+                    this.AddStreamTask(room.Id, task, tokenSource);
+                    task.Start();
                 }
                 else
                 {
@@ -180,9 +188,39 @@ namespace Oqtane.ChatHubs.Services
                 this.HandleException(ex);
             }
         }
+
+        public void AddStreamTask(int roomId, Task task, CancellationTokenSource tokenSource)
+        {
+            if (!this.StreamTasks.Any(item => item.Key == roomId))
+            {
+                this.StreamTasks.Add(roomId, new { task = task, tokenSource = tokenSource });
+            }
+        }
+
+        public async Task RunStreamTask(int roomId, CancellationToken token)
+        {
+            while (true)
+            {
+                if (token.IsCancellationRequested)
+                {
+                    break;
+                }
+
+                await this.VideoService.DrawImage(roomId);
+                await Task.Delay(200);
+            }
+        }
+
         public async void StopVideoChat(int roomId)
         {
-            await this.VideoService.CloseLivestream(roomId);
+            bool task = await this.VideoService.CloseLivestream(roomId);
+
+            if(task)
+            {
+                KeyValuePair<int, dynamic> keyValuePair = this.StreamTasks.FirstOrDefault(item => item.Key == roomId);
+                keyValuePair.Value.tokenSource.Cancel();
+                this.StreamTasks.Remove(keyValuePair.Key);
+            }
         }
 
         public async Task OnDataAvailableEventHandlerExecute(object sender, dynamic e)
