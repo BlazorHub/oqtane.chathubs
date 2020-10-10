@@ -109,14 +109,48 @@
 
                     __selflocallivestream.ctx.drawImage(__selflocallivestream.getvideolocaldomelement(), 0, 0, 120, 90);
                     var snapshot = __selflocallivestream.getcanvaslocaldomelement().toDataURL(self.__obj.videoMimeTypeObject.mimeType);
-                    __selflocallivestream.broadcastcanvassnapshot(snapshot);
+                    __selflocallivestream.broadcastsnapshot(snapshot, 'image');
                 };
 
-                this.broadcastcanvassnapshot = function (dataURI) {
+                this.broadcastsnapshot = function (dataURI, type) {
 
-                    DotNet.invokeMethodAsync("Oqtane.ChatHubs.Client.Oqtane", 'OnDataAvailable', dataURI, roomId).then(obj => {
+                    DotNet.invokeMethodAsync("Oqtane.ChatHubs.Client.Oqtane", 'OnDataAvailable', dataURI, roomId, type).then(obj => {
                         console.log(obj.msg.substring(0, 100));
                     });
+                };
+
+                this.audiocontext = new AudioContext();
+                this.mediasource = this.audiocontext.createMediaStreamSource(__selflocallivestream.mediaStream);
+                this.scriptprocessor = this.audiocontext.createScriptProcessor(256, 1, 1);
+                this.mediasource.connect(this.scriptprocessor);
+                this.scriptprocessor.connect(this.audiocontext.destination);
+
+                this.counter = 0;
+                this.scriptprocessor.onaudioprocess = function (audioProcessingEvent) {
+
+                    __selflocallivestream.counter++;
+
+                    if (__selflocallivestream.counter % 100 === 0) {
+
+                        var inputBuffer = audioProcessingEvent.inputBuffer;
+                        var outputBuffer = audioProcessingEvent.outputBuffer;
+
+                        var inputData;
+                        var outputData;
+                        for (var channel = 0; channel < outputBuffer.numberOfChannels; channel++) {
+
+                            inputData = inputBuffer.getChannelData(channel);
+                            outputData = outputBuffer.getChannelData(channel);
+                        }
+
+                        var blob = new Blob([inputData], { type: "video/webm" });
+                        var reader = new FileReader();
+                        reader.onload = function (event) {
+                            var base64str = event.target.result;
+                            __selflocallivestream.broadcastsnapshot(base64str, 'audio');
+                        };
+                        reader.readAsDataURL(blob);
+                    }
                 };
 
                 this.recyclebin = function () {
@@ -155,7 +189,13 @@
                         ctx.drawImage(image, 0, 0);
                     };
                     image.src = base64str;
-                },
+                };
+
+                this.playaudio = async function (base64str) {
+
+                    console.log(base64str);
+                };
+
                 this.base64ToBlob = function (base64str) {
 
                     var byteString = atob(base64str.split('base64,')[1]);
@@ -229,14 +269,21 @@
                     }
                 }
             },
-            appendbuffer: function (base64str, roomId) {
+            appendbuffer: function (base64str, roomId, type) {
 
                 var livestream = self.__obj.getlivestream(roomId);
                 if (livestream !== undefined) {
 
                     if (livestream.item.mediaStream === undefined) {
 
-                        livestream.item.drawImage(base64str);
+                        if (type === 'image') {
+
+                            livestream.item.drawImage(base64str);
+                        }
+                        else if (type === 'audio') {
+
+                            livestream.item.playaudio(base64str);
+                        }
                     }
                 }
             },

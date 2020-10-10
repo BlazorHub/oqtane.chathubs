@@ -37,9 +37,9 @@ namespace Oqtane.ChatHubs
         }
 
         [JSInvokable("OnDataAvailable")]
-        public static object OnDataAvailable(string item, int roomId)
+        public static object OnDataAvailable(string item, int roomId, string type)
         {
-            OnDataAvailableEventHandler?.Invoke(typeof(VideoService), new { item = item, roomId = roomId });
+            OnDataAvailableEventHandler?.Invoke(typeof(VideoService), new { item = item, roomId = roomId, type = type });
             return new { msg = "room id: " + roomId + "; data: " + item };
         }
 
@@ -72,11 +72,11 @@ namespace Oqtane.ChatHubs
             }
         }
 
-        public async Task AppendBuffer(string item, int roomId)
+        public async Task AppendBuffer(string item, int roomId, string type)
         {
             if (this._jsRuntimeObjectRef != null)
             {
-                await this.JSRuntime.InvokeVoidAsync("__obj.appendbuffer", item, roomId, _jsRuntimeObjectRef);
+                await this.JSRuntime.InvokeVoidAsync("__obj.appendbuffer", item, roomId, type, _jsRuntimeObjectRef);
             }
         }
 

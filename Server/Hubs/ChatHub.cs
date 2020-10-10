@@ -68,7 +68,7 @@ namespace Oqtane.ChatHubs.Hubs
                 throw new HubException("Displayname already in use. Goodbye.");
             }
 
-            string email = "noreply@chathub.tv";
+            string email = "noreply@anyways.tv";
             string password = "§PasswordPolicy42";
 
             ChatHubUser chatHubUser = new ChatHubUser()
@@ -275,7 +275,7 @@ namespace Oqtane.ChatHubs.Hubs
         public static Dictionary<int, string> VideoFirstChunks = new Dictionary<int, string>();
 
         [AllowAnonymous]
-        public async Task UploadBytes(string item, int roomId)
+        public async Task UploadBytes(string item, int roomId, string type)
         {
 
             ChatHubUser user = await this.GetChatHubUserAsync();
@@ -286,7 +286,7 @@ namespace Oqtane.ChatHubs.Hubs
                 connectionsIds.Add(connection.ConnectionId);
             }
 
-            await Clients.GroupExcept(roomId.ToString(), connectionsIds).SendAsync("DownloadBytes", item, roomId);
+            await Clients.GroupExcept(roomId.ToString(), connectionsIds).SendAsync("DownloadBytes", item, roomId, type);
         }
 
         private async Task<bool> ExecuteCommandManager(ChatHubUser chatHubUser, string message, int roomId)

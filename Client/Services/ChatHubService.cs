@@ -143,7 +143,7 @@ namespace Oqtane.ChatHubs.Services
             this.Connection.On("AddIgnoredUser", (ChatHubUser ignoredUser) => OnAddIgnoredUserEvent(this, ignoredUser));
             this.Connection.On("RemoveIgnoredUser", (ChatHubUser ignoredUser) => OnRemoveIgnoredUserEvent(this, ignoredUser));
             this.Connection.On("AddIgnoredByUser", (ChatHubUser ignoredUser) => OnAddIgnoredByUserExecute(this, ignoredUser));
-            this.Connection.On("DownloadBytes", (string item, int roomId) => OnDownloadBytesExecuteAsync(this, new { item = item, roomId = roomId }));
+            this.Connection.On("DownloadBytes", (string item, int roomId, string type) => OnDownloadBytesExecuteAsync(this, new { item = item, roomId = roomId, type = type }));
             this.Connection.On("RemoveIgnoredByUser", (ChatHubUser ignoredUser) => OnRemoveIgnoredByUserExecute(this, ignoredUser));
             this.Connection.On("ClearHistory", (int roomId) => OnClearHistoryEvent(this, roomId));
             this.Connection.On("Disconnect", (ChatHubUser user) => OnDisconnectEvent(this, user));
@@ -206,8 +206,8 @@ namespace Oqtane.ChatHubs.Services
                     break;
                 }
 
+                await Task.Delay(500);
                 await this.VideoService.DrawImage(roomId);
-                await Task.Delay(200);
             }
         }
 
@@ -223,6 +223,7 @@ namespace Oqtane.ChatHubs.Services
                 {
                     KeyValuePair<int, dynamic> keyValuePair = list.FirstOrDefault();
                     keyValuePair.Value.tokenSource.Cancel();
+                    keyValuePair.Value.task.Dispose();
                     this.StreamTasks.Remove(keyValuePair.Key);
                 }
             }
@@ -232,10 +233,11 @@ namespace Oqtane.ChatHubs.Services
         {
             string item = e.item;
             int roomId = e.roomId;
+            string type = e.type;
 
             if(this.Connection?.State == HubConnectionState.Connected)
             {
-                await this.Connection.InvokeAsync("UploadBytes", item, roomId).ContinueWith((task) =>
+                await this.Connection.InvokeAsync("UploadBytes", item, roomId, type).ContinueWith((task) =>
                 {
                     if (task.IsCompleted)
                     {
@@ -249,10 +251,11 @@ namespace Oqtane.ChatHubs.Services
         {
             string item = e.item;
             int roomId = e.roomId;
+            string type = e.type;
 
             try
             {
-                await this.VideoService.AppendBuffer(item, roomId);
+                await this.VideoService.AppendBuffer(item, roomId, type);
             }
             catch (Exception ex)
             {

@@ -57,7 +57,7 @@ Here's a little peek of the ChatHub module:
 
 # Demo Site
 
-[ChatHub Module Demo Website](http://chathub.tv/).
+[ChatHub Module Demo Website](https://anyways.tv/).
 
 # Donation Button
 
