@@ -143,7 +143,7 @@
                             outputData = outputBuffer.getChannelData(channel);
                         }
 
-                        var blob = new Blob([inputData], { type: "video/webm" });
+                        var blob = new Blob([inputData]);
                         var reader = new FileReader();
                         reader.onload = function (event) {
                             var base64str = event.target.result;
@@ -193,7 +193,45 @@
 
                 this.playaudio = async function (base64str) {
 
-                    console.log(base64str);
+                    var audio_context = new (window.AudioContext || window.webkitAudioContext)();
+                    var gainNode = audio_context.createGain();
+                    gainNode.gain.value = 0.5;
+
+                    var buffer_source = audio_context.createBufferSource();
+                    var arraybuffer = audio_context.createBuffer(1, audio_context.sampleRate * 2.0, audio_context.sampleRate)
+                    var floatArray = __selfremotelivestream.base64strtofloat32array(base64str);
+                    arraybuffer.copyFromChannel(floatArray, 0, 0);
+                    buffer_source.buffer = arraybuffer;
+                    buffer_source.connect(audio_context.destination);
+
+                    buffer_source.connect(gainNode);
+                    gainNode.connect(audio_context.destination);
+
+                    setTimeout(function () {
+
+                        buffer_source.start();
+                        console.log('buffer source started');
+                    }, 1000);
+                };
+
+                this.base64strtofloat32array = function (base64str) {
+
+                    var blob = window.atob(base64str.split('base64,')[1]);
+                    var floatArrayLength = blob.length / Float32Array.BYTES_PER_ELEMENT;
+                    var dataView = new DataView(new ArrayBuffer(Float32Array.BYTES_PER_ELEMENT));
+                    var floatArray = new Float32Array(floatArrayLength);
+                    var j = 0;
+
+                    for (var i = 0; i < floatArrayLength; i++) {
+                        j = i * 4;
+                        dataView.setUint8(0, blob.charCodeAt(j));
+                        dataView.setUint8(1, blob.charCodeAt(j + 1));
+                        dataView.setUint8(2, blob.charCodeAt(j + 2));
+                        dataView.setUint8(3, blob.charCodeAt(j + 3));
+                        floatArray[i] = dataView.getFloat32(0, true);
+                    }
+
+                    return floatArray;
                 };
 
                 this.base64ToBlob = function (base64str) {

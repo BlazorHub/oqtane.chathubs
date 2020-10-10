@@ -5,12 +5,7 @@
 
 <style type="text/css">
 
-    #chathubs-video {
-        -webkit-transform: scaleX(-1);
-        transform: scaleX(-1);
-    }
-
-    #chathubs-canvas {
+    .chathubs-video-local, .chathubs-video-remote {
         -moz-transform: scaleX(-1);
         -o-transform: scaleX(-1);
         -webkit-transform: scaleX(-1);
@@ -19,7 +14,7 @@
         -ms-filter: "FlipH";
     }
 
-    #chathubs-canvas-download {
+    .chathubs-canvas-local, .chathubs-canvas-remote {
         -moz-transform: scaleX(-1);
         -o-transform: scaleX(-1);
         -webkit-transform: scaleX(-1);
@@ -38,16 +33,16 @@
         {
             <div class="p-2 bd-highlight bg-white border border-light">
                 <pre class="bg-light px-4 py-2 mb-1">Local Video</pre>
-                <video id="chathubs-video-local-@ChatHubRoom.Id" class="my-1" controls></video>
-                <canvas id="chathubs-canvas-local-@ChatHubRoom.Id" class="bg-light d-none"></canvas>
+                <video id="chathubs-video-local-@ChatHubRoom.Id" class="chathubs-video-local my-1" controls></video>
+                <canvas id="chathubs-canvas-local-@ChatHubRoom.Id" class="chathubs-canvas-local bg-light d-none"></canvas>
             </div>
         }
         else
         {
             <div class="p-2 bd-highlight bg-white border border-light">
                 <pre class="bg-light px-4 py-2 mb-1">Remote Video</pre>
-                <video id="chathubs-video-remote-@ChatHubRoom.Id" class="my-1 d-none" controls></video>
-                <canvas id="chathubs-canvas-remote-@ChatHubRoom.Id" class="bg-light" width="120" height="90"></canvas>
+                <video id="chathubs-video-remote-@ChatHubRoom.Id" class="chathubs-video-remote my-1 d-none" controls></video>
+                <canvas id="chathubs-canvas-remote-@ChatHubRoom.Id" class="chathubs-canvas-remote bg-light" width="120" height="90"></canvas>
             </div>
         }
 
