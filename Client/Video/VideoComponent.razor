@@ -9,7 +9,7 @@
 
         @if (ChatHubService.StreamTasks.Any(item => item.Key == ChatHubRoom.Id) || ChatHubService.ConnectedUser.UserId == ChatHubRoom.CreatorId)
         {
-            <div class="p-2 bd-highlight bg-white border border-light">
+            <div class="bd-highlight bg-white border border-light">
                 <pre class="bg-primary text-white px-4 py-2 mb-1">Local Video</pre>
                 <video id="chathubs-video-local-@ChatHubRoom.Id" class="chathubs-video-local my-1" controls></video>
                 <canvas id="chathubs-canvas-local-@ChatHubRoom.Id" class="chathubs-canvas-local bg-light d-none"></canvas>
@@ -17,7 +17,7 @@
         }
         else
         {
-            <div class="p-2 bd-highlight bg-white border border-light">
+            <div class="bd-highlight bg-white border border-light">
                 <pre class="bg-primary text-white px-4 py-2 mb-1">Remote Video</pre>
                 <video id="chathubs-video-remote-@ChatHubRoom.Id" class="chathubs-video-remote my-1 d-none" controls></video>
                 <canvas id="chathubs-canvas-remote-@ChatHubRoom.Id" class="chathubs-canvas-remote bg-light"></canvas>
