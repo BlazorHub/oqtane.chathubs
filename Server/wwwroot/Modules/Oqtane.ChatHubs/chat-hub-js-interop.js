@@ -80,9 +80,8 @@
             locallivestream: function (roomId, mediaStream) {
 
                 __selflocallivestream = this;
-                this.id = roomId;
-
                 this.mediaStream = mediaStream;
+                this.id = roomId;
 
                 this.videolocalid = self.__obj.videolocalid + roomId;
                 this.getvideolocaldomelement = function () {
@@ -103,25 +102,33 @@
                 this.vElement.autoplay = true;
                 this.vElement.controls = true;
                 this.vElement.muted = true;
-
-                this.ctx = this.getcanvaslocaldomelement().getContext('2d');
                 this.drawimage = function () {
 
-                    __selflocallivestream.ctx.drawImage(__selflocallivestream.getvideolocaldomelement(), 0, 0, 120, 90);
-                    var snapshot = __selflocallivestream.getcanvaslocaldomelement().toDataURL(self.__obj.videoMimeTypeObject.mimeType);
-                    __selflocallivestream.broadcastsnapshot(snapshot, 'image');
+                    try {
+                        var videoElement = __selflocallivestream.getvideolocaldomelement();
+                        var canvasElement = __selflocallivestream.getcanvaslocaldomelement();
+                        var ctx = this.getcanvaslocaldomelement().getContext('2d');
+
+                        ctx.drawImage(videoElement, 0, 0, 120, 90, 0, 0, 120, 90);
+                        var dataURI = canvasElement.toDataURL(self.__obj.videoMimeTypeObject.mimeType, 0.2);
+                        __selflocallivestream.broadcastsnapshot(dataURI, 'image');
+                    }
+                    catch (ex) {
+                        console.warn(ex);
+                    }
                 };
 
-                this.broadcastsnapshot = function (dataURI, type) {
+                this.broadcastsnapshot = function (dataURI, dataType) {
 
-                    DotNet.invokeMethodAsync("Oqtane.ChatHubs.Client.Oqtane", 'OnDataAvailable', dataURI, roomId, type).then(obj => {
-                        console.log(obj.msg.substring(0, 100));
+                    DotNet.invokeMethodAsync("Oqtane.ChatHubs.Client.Oqtane", 'OnDataAvailable', dataURI, roomId, dataType).then(obj => {
+                        console.log(obj.msg);
                     });
                 };
 
+                /*
                 this.audiocontext = new AudioContext();
-                this.mediasource = this.audiocontext.createMediaStreamSource(__selflocallivestream.mediaStream);
-                this.scriptprocessor = this.audiocontext.createScriptProcessor(256, 1, 1);
+                this.mediasource = this.audiocontext.createMediaStreamSource(this.mediaStream);
+                this.scriptprocessor = this.audiocontext.createScriptProcessor(512, 1, 1);
                 this.mediasource.connect(this.scriptprocessor);
                 this.scriptprocessor.connect(this.audiocontext.destination);
 
@@ -145,13 +152,14 @@
 
                         var blob = new Blob([inputData]);
                         var reader = new FileReader();
-                        reader.onload = function (event) {
-                            var base64str = event.target.result;
+                        reader.onload = function (e) {
+                            var base64str = e.target.result;
                             __selflocallivestream.broadcastsnapshot(base64str, 'audio');
                         };
                         reader.readAsDataURL(blob);
                     }
                 };
+                */
 
                 this.recyclebin = function () {
 
@@ -179,39 +187,42 @@
                     return document.querySelector(this.canvasremoteid);
                 };
 
-                this.drawImage = function (base64str) {
+                this.drawimage = function (base64str) {
 
-                    var canvas = __selfremotelivestream.getcanvasremotedomelement();
-                    var ctx = canvas.getContext("2d");
+                    try {
+                        var canvas = __selfremotelivestream.getcanvasremotedomelement();
+                        var ctx = canvas.getContext("2d");
 
-                    var image = new Image();
-                    image.onload = function () {
-                        ctx.drawImage(image, 0, 0);
-                    };
-                    image.src = base64str;
+                        var image = new Image();
+                        image.onload = function () {
+                            ctx.drawImage(image, 0, 0);
+                        };
+                        image.src = base64str;
+                    }
+                    catch (ex) {
+                        console.warn(ex);
+                    }
                 };
+                
+                this.audio_context = new AudioContext();
+                this.scriptprocessor = this.audio_context.createScriptProcessor(256, 1, 1);
+                this.gainNode = this.audio_context.createGain();
+                this.gainNode.gain.value = 0.5;
 
                 this.playaudio = async function (base64str) {
 
-                    var audio_context = new (window.AudioContext || window.webkitAudioContext)();
-                    var gainNode = audio_context.createGain();
-                    gainNode.gain.value = 0.5;
-
-                    var buffer_source = audio_context.createBufferSource();
-                    var arraybuffer = audio_context.createBuffer(1, audio_context.sampleRate * 2.0, audio_context.sampleRate)
+                    var buffer_source = __selfremotelivestream.audio_context.createBufferSource();
+                    var arraybuffer = __selfremotelivestream.audio_context.createBuffer(1, __selfremotelivestream.audio_context.sampleRate * 2.0, __selfremotelivestream.audio_context.sampleRate)
                     var floatArray = __selfremotelivestream.base64strtofloat32array(base64str);
                     arraybuffer.copyFromChannel(floatArray, 0, 0);
                     buffer_source.buffer = arraybuffer;
-                    buffer_source.connect(audio_context.destination);
+                    buffer_source.connect(__selfremotelivestream.audio_context.destination);
 
-                    buffer_source.connect(gainNode);
-                    gainNode.connect(audio_context.destination);
+                    buffer_source.connect(__selfremotelivestream.scriptprocessor);
+                    __selfremotelivestream.scriptprocessor.connect(__selfremotelivestream.audio_context.destination);
 
-                    setTimeout(function () {
-
-                        buffer_source.start();
-                        console.log('buffer source started');
-                    }, 1000);
+                    buffer_source.start();
+                    console.log('buffer source started');
                 };
 
                 this.base64strtofloat32array = function (base64str) {
@@ -232,7 +243,7 @@
                     }
 
                     return floatArray;
-                };
+                };                
 
                 this.base64ToBlob = function (base64str) {
 
@@ -301,26 +312,26 @@
                 var livestream = self.__obj.getlivestream(roomId);
                 if (livestream !== undefined) {
 
-                    if (livestream.item.mediaStream !== undefined) {
+                    if (livestream.item instanceof self.__obj.locallivestream) {
 
                         livestream.item.drawimage();
                     }
                 }
             },
-            appendbuffer: function (base64str, roomId, type) {
+            appendbuffer: function (dataURI, roomId, dataType) {
 
                 var livestream = self.__obj.getlivestream(roomId);
                 if (livestream !== undefined) {
 
-                    if (livestream.item.mediaStream === undefined) {
+                    if (livestream.item instanceof self.__obj.remotelivestream) {
 
-                        if (type === 'image') {
+                        if (dataType === 'image') {
 
-                            livestream.item.drawImage(base64str);
+                            livestream.item.drawimage(dataURI);
                         }
-                        else if (type === 'audio') {
+                        else if (dataType === 'audio') {
 
-                            livestream.item.playaudio(base64str);
+                            livestream.item.playaudio(dataURI);
                         }
                     }
                 }
@@ -330,19 +341,15 @@
                 var livestream = self.__obj.getlivestream(roomId);
                 if (livestream !== undefined) {
 
-                    if (livestream.item.mediaStream !== undefined) {
+                    if (livestream.item.mediaStream instanceof self.__obj.locallivestream) {
 
                         livestream.item.recyclebin();
-                        return true;
                     }
-                    else {
+                    else if (livestream.item.mediaStream instanceof self.__obj.remotelivestream) {
 
                         livestream.item.recyclebin();
-                        return false;
                     }
                 }
-
-                return false;
             },
             readAsDataUrlAsync: function (blob) {
 

@@ -74,7 +74,7 @@ namespace Oqtane.ChatHubs.Services
             this.JSRuntime = JSRuntime;
             this.VideoService = videoService;
 
-            VideoService.OnDataAvailableEventHandler += async (item, roomId) => await OnDataAvailableEventHandlerExecute(item, roomId);
+            VideoService.OnDataAvailableEventHandler += async (object sender, dynamic e) => await OnDataAvailableEventHandlerExecute(e.dataURI, e.roomId, e.dataType);
 
             this.OnConnectedEvent += OnConnectedExecute;
             this.OnAddChatHubRoomEvent += OnAddChatHubRoomExecute;
@@ -114,17 +114,37 @@ namespace Oqtane.ChatHubs.Services
                 options.Headers["platform"] = "Oqtane";
                 options.Transports = HttpTransportType.WebSockets | HttpTransportType.LongPolling;
             })
-            .AddNewtonsoftJsonProtocol(options => options.PayloadSerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore)    
+            .AddNewtonsoftJsonProtocol(options => {
+                options.PayloadSerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore;
+            })
             .Build();
         }
 
         public void RegisterHubConnectionHandlers()
         {
-            Connection.Closed += (error) =>
+            Connection.Reconnecting += (ex) =>
             {
-                if (error != null && error.GetType() == typeof(HubException))
+                if (ex != null)
                 {
-                    this.HandleException(new Exception(error.Message, error));
+                    this.HandleException(new Exception(ex.Message, ex));
+                }
+
+                return Task.CompletedTask;
+            };
+            Connection.Reconnected += (msg) =>
+            {
+                if (msg != null)
+                {
+                    this.HandleException(new Exception(msg));
+                }
+
+                return Task.CompletedTask;
+            };
+            Connection.Closed += (ex) =>
+            {
+                if (ex != null)
+                {
+                    this.HandleException(new Exception(ex.Message, ex));
                 }
 
                 this.Rooms.Clear();
@@ -143,7 +163,7 @@ namespace Oqtane.ChatHubs.Services
             this.Connection.On("AddIgnoredUser", (ChatHubUser ignoredUser) => OnAddIgnoredUserEvent(this, ignoredUser));
             this.Connection.On("RemoveIgnoredUser", (ChatHubUser ignoredUser) => OnRemoveIgnoredUserEvent(this, ignoredUser));
             this.Connection.On("AddIgnoredByUser", (ChatHubUser ignoredUser) => OnAddIgnoredByUserExecute(this, ignoredUser));
-            this.Connection.On("DownloadBytes", (string item, int roomId, string type) => OnDownloadBytesExecuteAsync(this, new { item = item, roomId = roomId, type = type }));
+            this.Connection.On("DownloadBytes", (string dataURI, int roomId, string dataType) => OnDownloadBytesExecuteAsync(this, new { dataURI = dataURI, roomId = roomId, dataType = dataType }));
             this.Connection.On("RemoveIgnoredByUser", (ChatHubUser ignoredUser) => OnRemoveIgnoredByUserExecute(this, ignoredUser));
             this.Connection.On("ClearHistory", (int roomId) => OnClearHistoryEvent(this, roomId));
             this.Connection.On("Disconnect", (ChatHubUser user) => OnDisconnectEvent(this, user));
@@ -171,9 +191,7 @@ namespace Oqtane.ChatHubs.Services
 
                     CancellationTokenSource tokenSource = new CancellationTokenSource();
                     CancellationToken token = tokenSource.Token;
-
                     Task task = new Task(async () => await this.RunStreamTask(room.Id, token), token);
-
                     this.AddStreamTask(room.Id, task, tokenSource);
                     task.Start();
                 }
@@ -199,45 +217,46 @@ namespace Oqtane.ChatHubs.Services
 
         public async Task RunStreamTask(int roomId, CancellationToken token)
         {
+            
             while (true)
             {
-                if (token.IsCancellationRequested)
+                try
                 {
-                    break;
-                }
+                    if (token.IsCancellationRequested)
+                    {
+                        break;
+                    }
 
-                await Task.Delay(500);
-                await this.VideoService.DrawImage(roomId);
+                    await this.VideoService.DrawImage(roomId);
+                    await Task.Delay(500);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex);
+                }
             }
+            
         }
 
         public async void StopVideoChat(int roomId)
         {
-            bool task = await this.VideoService.CloseLivestream(roomId);
+            await this.VideoService.CloseLivestream(roomId);
 
-            if(task)
+            List<KeyValuePair<int, dynamic>> list = this.StreamTasks.Where(item => item.Key == roomId).ToList();
+
+            if(list.Any())
             {
-                List<KeyValuePair<int, dynamic>> list = this.StreamTasks.Where(item => item.Key == roomId).ToList();
-
-                if(list.Any())
-                {
-                    KeyValuePair<int, dynamic> keyValuePair = list.FirstOrDefault();
-                    keyValuePair.Value.tokenSource.Cancel();
-                    keyValuePair.Value.task.Dispose();
-                    this.StreamTasks.Remove(keyValuePair.Key);
-                }
+                KeyValuePair<int, dynamic> keyValuePair = list.FirstOrDefault();
+                keyValuePair.Value.tokenSource.Cancel();
+                this.StreamTasks.Remove(keyValuePair.Key);
             }
         }
 
-        public async Task OnDataAvailableEventHandlerExecute(object sender, dynamic e)
+        public async Task OnDataAvailableEventHandlerExecute(string dataURI, int roomId, string dataType)
         {
-            string item = e.item;
-            int roomId = e.roomId;
-            string type = e.type;
-
-            if(this.Connection?.State == HubConnectionState.Connected)
+            if (this.Connection?.State == HubConnectionState.Connected)
             {
-                await this.Connection.InvokeAsync("UploadBytes", item, roomId, type).ContinueWith((task) =>
+                await this.Connection.InvokeAsync("UploadBytes", dataURI, roomId, dataType).ContinueWith((task) =>
                 {
                     if (task.IsCompleted)
                     {
@@ -249,13 +268,13 @@ namespace Oqtane.ChatHubs.Services
 
         private async void OnDownloadBytesExecuteAsync(object sender, dynamic e)
         {
-            string item = e.item;
+            string dataURI = e.dataURI;
             int roomId = e.roomId;
-            string type = e.type;
+            string dataType = e.dataType;
 
             try
             {
-                await this.VideoService.AppendBuffer(item, roomId, type);
+                await this.VideoService.AppendBuffer(dataURI, roomId, dataType);
             }
             catch (Exception ex)
             {

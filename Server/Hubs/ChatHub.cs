@@ -275,18 +275,25 @@ namespace Oqtane.ChatHubs.Hubs
         public static Dictionary<int, string> VideoFirstChunks = new Dictionary<int, string>();
 
         [AllowAnonymous]
-        public async Task UploadBytes(string item, int roomId, string type)
+        public async Task UploadBytes(string dataURI, int roomId, string dataType)
         {
-
-            ChatHubUser user = await this.GetChatHubUserAsync();
-            var connectionsIds = this.chatHubService.GetAllExceptConnectionIds(user);
-
-            foreach(var connection in user.Connections)
+            try
             {
-                connectionsIds.Add(connection.ConnectionId);
-            }
+                ChatHubUser user = await this.GetChatHubUserAsync();
+                var connectionsIds = this.chatHubService.GetAllExceptConnectionIds(user);
 
-            await Clients.GroupExcept(roomId.ToString(), connectionsIds).SendAsync("DownloadBytes", item, roomId, type);
+                foreach (var connection in user.Connections)
+                {
+                    connectionsIds.Add(connection.ConnectionId);
+                }
+
+                await Clients.GroupExcept(roomId.ToString(), connectionsIds).SendAsync("DownloadBytes", dataURI, roomId, dataType);
+            }
+            catch (Exception ex)
+            {
+                throw new HubException(ex.Message);
+            }
+            
         }
 
         private async Task<bool> ExecuteCommandManager(ChatHubUser chatHubUser, string message, int roomId)

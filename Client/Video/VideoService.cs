@@ -37,10 +37,10 @@ namespace Oqtane.ChatHubs
         }
 
         [JSInvokable("OnDataAvailable")]
-        public static object OnDataAvailable(string item, int roomId, string type)
+        public static object OnDataAvailable(string dataURI, int roomId, string dataType)
         {
-            OnDataAvailableEventHandler?.Invoke(typeof(VideoService), new { item = item, roomId = roomId, type = type });
-            return new { msg = "room id: " + roomId + "; data: " + item };
+            OnDataAvailableEventHandler?.Invoke(typeof(VideoService), new { dataURI = dataURI, roomId = roomId, dataType = dataType });
+            return new { msg = "room id: " + roomId + "; dataType: " + dataType + "; data: " + dataURI };
         }
 
         public async Task StartBroadcasting(int roomId)
@@ -59,9 +59,12 @@ namespace Oqtane.ChatHubs
             }
         }
 
-        public async Task<bool> CloseLivestream(int roomId)
+        public async Task CloseLivestream(int roomId)
         {
-            return await this.JSRuntime.InvokeAsync<bool>("__obj.closelivestream", roomId, _jsRuntimeObjectRef);
+            if (this._jsRuntimeObjectRef != null)
+            {
+                await this.JSRuntime.InvokeVoidAsync("__obj.closelivestream", roomId, _jsRuntimeObjectRef);
+            }
         }
 
         public async Task DrawImage(int roomId)
@@ -72,11 +75,11 @@ namespace Oqtane.ChatHubs
             }
         }
 
-        public async Task AppendBuffer(string item, int roomId, string type)
+        public async Task AppendBuffer(string dataURI, int roomId, string dataType)
         {
             if (this._jsRuntimeObjectRef != null)
             {
-                await this.JSRuntime.InvokeVoidAsync("__obj.appendbuffer", item, roomId, type, _jsRuntimeObjectRef);
+                await this.JSRuntime.InvokeVoidAsync("__obj.appendbuffer", dataURI, roomId, dataType, _jsRuntimeObjectRef);
             }
         }
 
