@@ -109,8 +109,8 @@
                         var canvasElement = __selflocallivestream.getcanvaslocaldomelement();
                         var ctx = this.getcanvaslocaldomelement().getContext('2d');
 
-                        ctx.drawImage(videoElement, 0, 0, 120, 90, 0, 0, 120, 90);
-                        var dataURI = canvasElement.toDataURL(self.__obj.videoMimeTypeObject.mimeType, 0.01);
+                        ctx.drawImage(videoElement, 0, 0, 320, 240, 0, 0, 320, 240);
+                        var dataURI = canvasElement.toDataURL('image/jpeg', 0.42);
                         __selflocallivestream.broadcastsnapshot(dataURI, 'image');
                     }
                     catch (ex) {
