@@ -341,11 +341,11 @@
                 var livestream = self.__obj.getlivestream(roomId);
                 if (livestream !== undefined) {
 
-                    if (livestream.item.mediaStream instanceof self.__obj.locallivestream) {
+                    if (livestream.item instanceof self.__obj.locallivestream) {
 
                         livestream.item.recyclebin();
                     }
-                    else if (livestream.item.mediaStream instanceof self.__obj.remotelivestream) {
+                    else if (livestream.item instanceof self.__obj.remotelivestream) {
 
                         livestream.item.recyclebin();
                     }
