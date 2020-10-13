@@ -17,6 +17,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Oqtane.Modules;
 using System.Threading;
 using System.Threading.Channels;
+using System.Data;
 
 namespace Oqtane.ChatHubs.Services
 {
@@ -254,15 +255,32 @@ namespace Oqtane.ChatHubs.Services
 
         public async Task OnDataAvailableEventHandlerExecute(string dataURI, int roomId, string dataType)
         {
-            if (this.Connection?.State == HubConnectionState.Connected)
+            try
             {
-                await this.Connection.InvokeAsync("UploadBytes", dataURI, roomId, dataType).ContinueWith((task) =>
+                if(this.Connection?.State == HubConnectionState.Connected)
                 {
-                    if (task.IsCompleted)
+
+                    int maxLength = 60;
+                    async IAsyncEnumerable<string> broadcastData()
                     {
-                        this.HandleException(task);
+                        for (var i = 0; i < dataURI.Length; i += maxLength)
+                        {
+                            yield return dataURI.Substring(i, Math.Min(maxLength, dataURI.Length - i));
+                        }
                     }
-                });
+
+                    await this.Connection.SendAsync("UploadBytes", broadcastData(), roomId, dataType).ContinueWith((task) =>
+                    {
+                        if (task.IsCompleted)
+                        {
+                            this.HandleException(task);
+                        }
+                    });
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
             }
         }
 

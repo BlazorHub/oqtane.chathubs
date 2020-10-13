@@ -110,7 +110,7 @@
                         var ctx = this.getcanvaslocaldomelement().getContext('2d');
 
                         ctx.drawImage(videoElement, 0, 0, 120, 90, 0, 0, 120, 90);
-                        var dataURI = canvasElement.toDataURL(self.__obj.videoMimeTypeObject.mimeType, 0.2);
+                        var dataURI = canvasElement.toDataURL(self.__obj.videoMimeTypeObject.mimeType, 0.01);
                         __selflocallivestream.broadcastsnapshot(dataURI, 'image');
                     }
                     catch (ex) {
