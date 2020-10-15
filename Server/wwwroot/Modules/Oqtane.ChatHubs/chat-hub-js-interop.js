@@ -151,15 +151,10 @@
 
                 this.recorder.ondataavailable = (event) => {
 
-                    console.log('on data available');
                     if (event.data.size > 0) {
 
                         __selflocallivestream.broadcastvideodata(event.data);
                     }
-                };
-
-                this.recorder.onstop = (event) => {
-
                 };
 
                 this.broadcastvideodata = function (chunk) {
@@ -268,7 +263,7 @@
 
                             __selfremotelivestream.remotemediasegments.push(reader.result);
 
-                            if (!__selfremotelivestream.sourcebuffer.updating && __selfremotelivestream.mediaSource.readyState === 'open') {
+                            if (__selfremotelivestream.remotemediasegments.length > 10 && !__selfremotelivestream.sourcebuffer.updating && __selfremotelivestream.mediaSource.readyState === 'open') {
 
                                 var item = __selfremotelivestream.remotemediasegments.shift();
                                 __selfremotelivestream.sourcebuffer.appendBuffer(new Uint8Array(item));
@@ -424,7 +419,6 @@
                     fileReader.readAsText(blob);
                 })
             },
-
             base64ToBlob: function (base64str) {
 
                 var byteString = atob(base64str.split('base64,')[1]);
@@ -438,7 +432,6 @@
                 var blob = new Blob([arrayBuffer], { type: self.__obj.videoMimeTypeObject.mimeType });
                 return blob;
             },
-
         };
     };
 
