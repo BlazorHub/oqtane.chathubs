@@ -263,7 +263,7 @@
 
                             __selfremotelivestream.remotemediasegments.push(reader.result);
 
-                            if (__selfremotelivestream.remotemediasegments.length > 10 && !__selfremotelivestream.sourcebuffer.updating && __selfremotelivestream.mediaSource.readyState === 'open') {
+                            if (__selfremotelivestream.remotemediasegments.length > 20 && !__selfremotelivestream.sourcebuffer.updating && __selfremotelivestream.mediaSource.readyState === 'open') {
 
                                 var item = __selfremotelivestream.remotemediasegments.shift();
                                 __selfremotelivestream.sourcebuffer.appendBuffer(new Uint8Array(item));
