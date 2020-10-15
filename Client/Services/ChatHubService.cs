@@ -11,12 +11,10 @@ using Oqtane.Services;
 using System.Linq;
 using System.Timers;
 using Oqtane.Shared.Models;
-using Microsoft.AspNetCore.SignalR;
 using Microsoft.JSInterop;
 using Microsoft.Extensions.DependencyInjection;
 using Oqtane.Modules;
 using System.Threading;
-using System.Threading.Channels;
 using System.Data;
 
 namespace Oqtane.ChatHubs.Services
@@ -192,7 +190,7 @@ namespace Oqtane.ChatHubs.Services
 
                     CancellationTokenSource tokenSource = new CancellationTokenSource();
                     CancellationToken token = tokenSource.Token;
-                    Task task = new Task(async () => await this.RunStreamTask(room.Id, token), token);
+                    Task task = new Task(async () => await this.StreamTaskImplementation(room.Id, token), token);
                     this.AddStreamTask(room.Id, task, tokenSource);
                     task.Start();
                 }
@@ -210,15 +208,12 @@ namespace Oqtane.ChatHubs.Services
 
         public void AddStreamTask(int roomId, Task task, CancellationTokenSource tokenSource)
         {
-            if (!this.StreamTasks.Any(item => item.Key == roomId))
-            {
-                this.StreamTasks.Add(roomId, new { task = task, tokenSource = tokenSource });
-            }
+            this.RemoveStreamTask(roomId);
+            this.StreamTasks.Add(roomId, new { task = task, tokenSource = tokenSource });
         }
 
-        public async Task RunStreamTask(int roomId, CancellationToken token)
-        {
-            
+        public async Task StreamTaskImplementation(int roomId, CancellationToken token)
+        {            
             while (true)
             {
                 try
@@ -229,26 +224,37 @@ namespace Oqtane.ChatHubs.Services
                     }
 
                     await this.VideoService.RecordSequence(roomId);
-                    await Task.Delay(300);
+                    await Task.Delay(150);
                 }
                 catch (Exception ex)
                 {
                     Console.WriteLine(ex);
                 }
             }
-            
+        }
+
+        public void DisposeStreamTasks()
+        {
+            foreach(var task in StreamTasks)
+            {
+                this.StopVideoChat(task.Key);
+            }
         }
 
         public async void StopVideoChat(int roomId)
         {
-            await this.VideoService.CloseLivestream(roomId);
+            this.RemoveStreamTask(roomId);
+            await this.VideoService.CloseLivestream(roomId);            
+        }
 
+        public void RemoveStreamTask(int roomId)
+        {
             List<KeyValuePair<int, dynamic>> list = this.StreamTasks.Where(item => item.Key == roomId).ToList();
-
-            if(list.Any())
+            if (list.Any())
             {
                 KeyValuePair<int, dynamic> keyValuePair = list.FirstOrDefault();
                 keyValuePair.Value.tokenSource.Cancel();
+                keyValuePair.Value.task.Dispose();
                 this.StreamTasks.Remove(keyValuePair.Key);
             }
         }

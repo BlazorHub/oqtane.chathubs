@@ -327,6 +327,7 @@ namespace Oqtane.ChatHubs
 
         public void Dispose()
         {
+            this.ChatHubService.DisposeStreamTasks();
             BrowserResizeService.OnResize -= BrowserHasResized;
         }
         

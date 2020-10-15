@@ -103,6 +103,10 @@
                 this.vElement.controls = true;
                 this.vElement.muted = true;
 
+                this.options = { mimeType: __obj.videoMimeTypeObject.mimeType, videoBitsPerSecond: 1000, audioBitsPerSecond: 1000, ignoreMutedMedia: true };
+                this.recorder = new MediaRecorder(this.mediaStream, this.options);
+                this.requestDataInterval = 10000;
+
                 this.recordsequence = function () {
 
                     try {
@@ -111,13 +115,30 @@
 
                             __selflocallivestream.recorder.stop();
                         }
-
-                        __selflocallivestream.recorder.start(__selflocallivestream.requestDataInterval);
-                        console.log('buffering livestream: please wait: ' + __selflocallivestream.requestDataInterval + 's');
+                        __selflocallivestream.recorder.start();
                     }
                     catch (ex) {
                         console.warn(ex);
                     }
+                };
+                this.recorder.ondataavailable = (event) => {
+
+                    if (event.data.size > 0) {
+
+                        __selflocallivestream.broadcastvideodata(event.data);
+                    }
+                };
+                this.broadcastvideodata = function (chunk) {
+
+                    var reader = new FileReader();
+                    reader.onloadend = async function (event) {
+
+                        var dataURI = event.target.result;
+                        DotNet.invokeMethodAsync("Oqtane.ChatHubs.Client.Oqtane", 'OnDataAvailable', dataURI, roomId, 'video').then(obj => {
+                            console.log(obj.msg);
+                        });
+                    };
+                    reader.readAsDataURL(chunk);
                 };
 
                 this.drawimage = function () {
@@ -136,40 +157,12 @@
                         console.warn(ex);
                     }
                 };
-
                 this.broadcastsnapshot = function (dataURI, dataType) {
 
                     DotNet.invokeMethodAsync("Oqtane.ChatHubs.Client.Oqtane", 'OnDataAvailable', dataURI, roomId, dataType).then(obj => {
                         console.log(obj.msg);
                     });
                 };
-
-                this.options = { mimeType: __obj.videoMimeTypeObject.mimeType, videoBitsPerSecond: 100000, audioBitsPerSecond: 100000, ignoreMutedMedia: true };
-                this.recorder = new MediaRecorder(this.mediaStream, this.options);
-
-                this.requestDataInterval = 10000;
-
-                this.recorder.ondataavailable = (event) => {
-
-                    if (event.data.size > 0) {
-
-                        __selflocallivestream.broadcastvideodata(event.data);
-                    }
-                };
-
-                this.broadcastvideodata = function (chunk) {
-
-                    var reader = new FileReader();
-                    reader.onloadend = async function (event) {
-
-                        var dataURI = event.target.result;
-                        DotNet.invokeMethodAsync("Oqtane.ChatHubs.Client.Oqtane", 'OnDataAvailable', dataURI, roomId, 'video').then(obj => {
-                            console.log(obj.msg);
-                        });
-                    };
-                    reader.readAsDataURL(chunk);
-                };
-
                 this.recyclebin = function () {
 
                     var localElement = __selflocallivestream.getvideolocaldomelement();
@@ -219,21 +212,10 @@
                 this.video.preload = 'auto';
                 this.video.width = 320;
                 this.video.height = 240;
-                this.video.autoplay = true;
+                this.video.autoplay = false;
                 this.video.controls = true;
                 this.video.muted = true;
                 this.video.src = URL.createObjectURL(this.mediaSource);
-
-                this.rendervideo = function (base64str) {
-
-                    try {
-                        console.warn(base64str);
-                        __selfremotelivestream.appendBuffer(base64str);
-                    }
-                    catch (ex) {
-                        console.error(ex);
-                    }
-                };
 
                 this.drawimage = function (base64str) {
 
@@ -252,6 +234,7 @@
                     }
                 };
 
+                this.appendsequencecounter = 0;
                 this.appendBuffer = async function (base64str) {
 
                     try {
@@ -263,10 +246,15 @@
 
                             __selfremotelivestream.remotemediasegments.push(reader.result);
 
-                            if (__selfremotelivestream.remotemediasegments.length > 20 && !__selfremotelivestream.sourcebuffer.updating && __selfremotelivestream.mediaSource.readyState === 'open') {
+                            if (!__selfremotelivestream.sourcebuffer.updating && __selfremotelivestream.mediaSource.readyState === 'open') {
 
                                 var item = __selfremotelivestream.remotemediasegments.shift();
                                 __selfremotelivestream.sourcebuffer.appendBuffer(new Uint8Array(item));
+                                __selfremotelivestream.appendsequencecounter++;
+                            }
+                            if (__selfremotelivestream.appendsequencecounter === 30) {
+
+                                __selfremotelivestream.video.play();
                             }
                         }
                         reader.readAsArrayBuffer(blob);
@@ -289,7 +277,8 @@
             addlivestream: function (obj) {
 
                 var item = self.__obj.getlivestream(obj.id);
-                if (item !== null) {
+                if (item === undefined) {
+
                     self.__obj.livestreams.push(obj);
                 }
             },
@@ -355,7 +344,7 @@
 
                         if (dataType === 'video') {
 
-                            livestream.item.rendervideo(dataURI);
+                            livestream.item.appendBuffer(dataURI);
                         }
                         else if (dataType === 'image') {
 

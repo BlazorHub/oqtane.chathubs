@@ -277,30 +277,23 @@ namespace Oqtane.ChatHubs.Hubs
         [AllowAnonymous]
         public async Task UploadBytes(IAsyncEnumerable<string> dataURI, int roomId, string dataType)
         {
-            try
+            ChatHubUser user = await this.GetChatHubUserAsync();
+            var connectionsIds = this.chatHubService.GetAllExceptConnectionIds(user);
+
+            foreach (var connection in user.Connections)
             {
-                ChatHubUser user = await this.GetChatHubUserAsync();
-                var connectionsIds = this.chatHubService.GetAllExceptConnectionIds(user);
-
-                foreach (var connection in user.Connections)
-                {
-                    connectionsIds.Add(connection.ConnectionId);
-                }
-
-                string dataURIresult = string.Empty;
-                IAsyncEnumerator<string> enumerators = dataURI.GetAsyncEnumerator();
-
-                while (await enumerators.MoveNextAsync())
-                {
-                    dataURIresult += enumerators.Current;
-                }
-
-                await Clients.GroupExcept(roomId.ToString(), connectionsIds).SendAsync("DownloadBytes", dataURIresult, roomId, dataType);
+                connectionsIds.Add(connection.ConnectionId);
             }
-            catch (Exception ex)
+
+            string dataURIresult = string.Empty;
+            IAsyncEnumerator<string> enumerators = dataURI.GetAsyncEnumerator();
+
+            while (await enumerators.MoveNextAsync())
             {
-                throw new HubException(ex.Message);
+                dataURIresult += enumerators.Current;
             }
+
+            await Clients.GroupExcept(roomId.ToString(), connectionsIds).SendAsync("DownloadBytes", dataURIresult, roomId, dataType);
         }
 
         private async Task<bool> ExecuteCommandManager(ChatHubUser chatHubUser, string message, int roomId)
