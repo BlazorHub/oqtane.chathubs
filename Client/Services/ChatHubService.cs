@@ -228,8 +228,8 @@ namespace Oqtane.ChatHubs.Services
                         break;
                     }
 
-                    await this.VideoService.DrawImage(roomId);
-                    await Task.Delay(500);
+                    await this.VideoService.RecordSequence(roomId);
+                    await Task.Delay(300);
                 }
                 catch (Exception ex)
                 {

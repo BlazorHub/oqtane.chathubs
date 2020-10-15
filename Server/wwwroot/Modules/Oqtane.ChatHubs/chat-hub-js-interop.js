@@ -102,9 +102,28 @@
                 this.vElement.autoplay = true;
                 this.vElement.controls = true;
                 this.vElement.muted = true;
+
+                this.recordsequence = function () {
+
+                    try {
+
+                        if (__selflocallivestream.recorder.state === 'recording' || __selflocallivestream.recorder.state === 'paused') {
+
+                            __selflocallivestream.recorder.stop();
+                        }
+
+                        __selflocallivestream.recorder.start(__selflocallivestream.requestDataInterval);
+                        console.log('buffering livestream: please wait: ' + __selflocallivestream.requestDataInterval + 's');
+                    }
+                    catch (ex) {
+                        console.warn(ex);
+                    }
+                };
+
                 this.drawimage = function () {
 
                     try {
+
                         var videoElement = __selflocallivestream.getvideolocaldomelement();
                         var canvasElement = __selflocallivestream.getcanvaslocaldomelement();
                         var ctx = this.getcanvaslocaldomelement().getContext('2d');
@@ -125,41 +144,36 @@
                     });
                 };
 
-                /*
-                this.audiocontext = new AudioContext();
-                this.mediasource = this.audiocontext.createMediaStreamSource(this.mediaStream);
-                this.scriptprocessor = this.audiocontext.createScriptProcessor(512, 1, 1);
-                this.mediasource.connect(this.scriptprocessor);
-                this.scriptprocessor.connect(this.audiocontext.destination);
+                this.options = { mimeType: __obj.videoMimeTypeObject.mimeType, videoBitsPerSecond: 100000, audioBitsPerSecond: 100000, ignoreMutedMedia: true };
+                this.recorder = new MediaRecorder(this.mediaStream, this.options);
 
-                this.counter = 0;
-                this.scriptprocessor.onaudioprocess = function (audioProcessingEvent) {
+                this.requestDataInterval = 10000;
 
-                    __selflocallivestream.counter++;
+                this.recorder.ondataavailable = (event) => {
 
-                    if (__selflocallivestream.counter % 100 === 0) {
+                    console.log('on data available');
+                    if (event.data.size > 0) {
 
-                        var inputBuffer = audioProcessingEvent.inputBuffer;
-                        var outputBuffer = audioProcessingEvent.outputBuffer;
-
-                        var inputData;
-                        var outputData;
-                        for (var channel = 0; channel < outputBuffer.numberOfChannels; channel++) {
-
-                            inputData = inputBuffer.getChannelData(channel);
-                            outputData = outputBuffer.getChannelData(channel);
-                        }
-
-                        var blob = new Blob([inputData]);
-                        var reader = new FileReader();
-                        reader.onload = function (e) {
-                            var base64str = e.target.result;
-                            __selflocallivestream.broadcastsnapshot(base64str, 'audio');
-                        };
-                        reader.readAsDataURL(blob);
+                        __selflocallivestream.broadcastvideodata(event.data);
                     }
                 };
-                */
+
+                this.recorder.onstop = (event) => {
+
+                };
+
+                this.broadcastvideodata = function (chunk) {
+
+                    var reader = new FileReader();
+                    reader.onloadend = async function (event) {
+
+                        var dataURI = event.target.result;
+                        DotNet.invokeMethodAsync("Oqtane.ChatHubs.Client.Oqtane", 'OnDataAvailable', dataURI, roomId, 'video').then(obj => {
+                            console.log(obj.msg);
+                        });
+                    };
+                    reader.readAsDataURL(chunk);
+                };
 
                 this.recyclebin = function () {
 
@@ -187,6 +201,45 @@
                     return document.querySelector(this.canvasremoteid);
                 };
 
+                this.remotemediasegments = [];
+
+                this.mediaSource = new MediaSource();
+                this.mediaSource.addEventListener('sourceopen', function (event) {
+
+                    if (!('MediaSource' in window) || !(MediaSource.isTypeSupported(__obj.videoMimeTypeObject.mimeType))) {
+
+                        console.error('Unsupported MIME type or codec: ', self.__obj.videoMimeTypeObject.mimeType);
+                    }
+
+                    __selfremotelivestream.sourcebuffer = __selfremotelivestream.mediaSource.addSourceBuffer(__obj.videoMimeTypeObject.mimeType);
+                    __selfremotelivestream.sourcebuffer.mode = 'sequence';
+
+                    __selfremotelivestream.sourcebuffer.addEventListener('updatestart', function (e) {});
+                    __selfremotelivestream.sourcebuffer.addEventListener('updateend', function (e) {});
+                });
+                this.mediaSource.addEventListener('sourceended', function (event) { console.log("on media source ended"); });
+                this.mediaSource.addEventListener('sourceclose', function (event) { console.log("on media source close"); });
+
+                this.video = this.getvideoremotedomelement();
+                this.video.preload = 'auto';
+                this.video.width = 320;
+                this.video.height = 240;
+                this.video.autoplay = true;
+                this.video.controls = true;
+                this.video.muted = true;
+                this.video.src = URL.createObjectURL(this.mediaSource);
+
+                this.rendervideo = function (base64str) {
+
+                    try {
+                        console.warn(base64str);
+                        __selfremotelivestream.appendBuffer(base64str);
+                    }
+                    catch (ex) {
+                        console.error(ex);
+                    }
+                };
+
                 this.drawimage = function (base64str) {
 
                     try {
@@ -203,60 +256,29 @@
                         console.warn(ex);
                     }
                 };
-                
-                this.audio_context = new AudioContext();
-                this.scriptprocessor = this.audio_context.createScriptProcessor(256, 1, 1);
-                this.gainNode = this.audio_context.createGain();
-                this.gainNode.gain.value = 0.5;
 
-                this.playaudio = async function (base64str) {
+                this.appendBuffer = async function (base64str) {
 
-                    var buffer_source = __selfremotelivestream.audio_context.createBufferSource();
-                    var arraybuffer = __selfremotelivestream.audio_context.createBuffer(1, __selfremotelivestream.audio_context.sampleRate * 2.0, __selfremotelivestream.audio_context.sampleRate)
-                    var floatArray = __selfremotelivestream.base64strtofloat32array(base64str);
-                    arraybuffer.copyFromChannel(floatArray, 0, 0);
-                    buffer_source.buffer = arraybuffer;
-                    buffer_source.connect(__selfremotelivestream.audio_context.destination);
+                    try {
 
-                    buffer_source.connect(__selfremotelivestream.scriptprocessor);
-                    __selfremotelivestream.scriptprocessor.connect(__selfremotelivestream.audio_context.destination);
+                        var blob = self.__obj.base64ToBlob(base64str);
 
-                    buffer_source.start();
-                    console.log('buffer source started');
-                };
+                        var reader = new FileReader();
+                        reader.onloadend = function (event) {
 
-                this.base64strtofloat32array = function (base64str) {
+                            __selfremotelivestream.remotemediasegments.push(reader.result);
 
-                    var blob = window.atob(base64str.split('base64,')[1]);
-                    var floatArrayLength = blob.length / Float32Array.BYTES_PER_ELEMENT;
-                    var dataView = new DataView(new ArrayBuffer(Float32Array.BYTES_PER_ELEMENT));
-                    var floatArray = new Float32Array(floatArrayLength);
-                    var j = 0;
+                            if (!__selfremotelivestream.sourcebuffer.updating && __selfremotelivestream.mediaSource.readyState === 'open') {
 
-                    for (var i = 0; i < floatArrayLength; i++) {
-                        j = i * 4;
-                        dataView.setUint8(0, blob.charCodeAt(j));
-                        dataView.setUint8(1, blob.charCodeAt(j + 1));
-                        dataView.setUint8(2, blob.charCodeAt(j + 2));
-                        dataView.setUint8(3, blob.charCodeAt(j + 3));
-                        floatArray[i] = dataView.getFloat32(0, true);
+                                var item = __selfremotelivestream.remotemediasegments.shift();
+                                __selfremotelivestream.sourcebuffer.appendBuffer(new Uint8Array(item));
+                            }
+                        }
+                        reader.readAsArrayBuffer(blob);
                     }
-
-                    return floatArray;
-                };                
-
-                this.base64ToBlob = function (base64str) {
-
-                    var byteString = atob(base64str.split('base64,')[1]);
-                    var arrayBuffer = new ArrayBuffer(byteString.length);
-
-                    var bytes = new Uint8Array(arrayBuffer);
-                    for (var i = 0; i < byteString.length; i++) {
-                        bytes[i] = byteString.charCodeAt(i);
+                    catch (ex) {
+                        console.error(ex);
                     }
-
-                    var blob = new Blob([arrayBuffer], { type: __obj.videoMimeTypeObject.mimeType });
-                    return blob;
                 };
 
                 this.recyclebin = function () {
@@ -307,6 +329,17 @@
 
                 self.__obj.addlivestream(livestreamdicitem);
             },
+            recordsequence: function (roomId) {
+
+                var livestream = self.__obj.getlivestream(roomId);
+                if (livestream !== undefined) {
+
+                    if (livestream.item instanceof self.__obj.locallivestream) {
+
+                        livestream.item.recordsequence();
+                    }
+                }
+            },
             drawimage: function (roomId) {
 
                 var livestream = self.__obj.getlivestream(roomId);
@@ -325,7 +358,11 @@
 
                     if (livestream.item instanceof self.__obj.remotelivestream) {
 
-                        if (dataType === 'image') {
+                        if (dataType === 'video') {
+
+                            livestream.item.rendervideo(dataURI);
+                        }
+                        else if (dataType === 'image') {
 
                             livestream.item.drawimage(dataURI);
                         }
@@ -386,6 +423,20 @@
                     };
                     fileReader.readAsText(blob);
                 })
+            },
+
+            base64ToBlob: function (base64str) {
+
+                var byteString = atob(base64str.split('base64,')[1]);
+                var arrayBuffer = new ArrayBuffer(byteString.length);
+
+                var bytes = new Uint8Array(arrayBuffer);
+                for (var i = 0; i < byteString.length; i++) {
+                    bytes[i] = byteString.charCodeAt(i);
+                }
+
+                var blob = new Blob([arrayBuffer], { type: self.__obj.videoMimeTypeObject.mimeType });
+                return blob;
             },
 
         };

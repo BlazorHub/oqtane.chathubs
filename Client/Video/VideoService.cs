@@ -67,6 +67,14 @@ namespace Oqtane.ChatHubs
             }
         }
 
+        public async Task RecordSequence(int roomId)
+        {
+            if (this._jsRuntimeObjectRef != null)
+            {
+                await this.JSRuntime.InvokeVoidAsync("__obj.recordsequence", roomId, _jsRuntimeObjectRef);
+            }
+        }
+
         public async Task DrawImage(int roomId)
         {
             if (this._jsRuntimeObjectRef != null)
