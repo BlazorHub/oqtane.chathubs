@@ -211,29 +211,14 @@
                     __selfremotelivestream.sourcebuffer = __selfremotelivestream.mediaSource.addSourceBuffer(__obj.videoMimeTypeObject.mimeType);
                     __selfremotelivestream.sourcebuffer.mode = 'sequence';
 
-                    __selfremotelivestream.sourcebuffer.addEventListener('updatestart', function (e) {
-
-                        if (e.currentTarget.buffered.length === 1) {
-
-                            var timestampOffset = __selfremotelivestream.sourcebuffer.timestampOffset;
-                            console.log(timestampOffset);
-
-                            var end = e.currentTarget.buffered.end(0);
-                            console.log(end);
-                        }
-                    });
-                    __selfremotelivestream.sourcebuffer.addEventListener('update', function (e) {
-
-                    });
+                    __selfremotelivestream.sourcebuffer.addEventListener('updatestart', function (e) {});
+                    __selfremotelivestream.sourcebuffer.addEventListener('update', function (e) {});
                     __selfremotelivestream.sourcebuffer.addEventListener('updateend', function (e) {
 
                         if (e.currentTarget.buffered.length === 1) {
 
                             var timestampOffset = __selfremotelivestream.sourcebuffer.timestampOffset;
-                            console.warn(timestampOffset);
-
                             var end = e.currentTarget.buffered.end(0);
-                            console.warn(end);
                         }
                     });
                 });
