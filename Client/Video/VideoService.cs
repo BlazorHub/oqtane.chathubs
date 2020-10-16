@@ -1,5 +1,6 @@
 ﻿using Microsoft.JSInterop;
 using Oqtane.ChatHubs.Client.Video;
+using Oqtane.ChatHubs.Services;
 using Oqtane.Modules;
 using Oqtane.Services;
 using System;
@@ -23,7 +24,7 @@ namespace Oqtane.ChatHubs
         private readonly HttpClient HttpClient;
         private readonly IJSRuntime JSRuntime;
 
-        public static event EventHandler<dynamic> OnDataAvailableEventHandler;
+        public event EventHandler<dynamic> OnDataAvailableEventHandler;
 
         public VideoService(HttpClient httpClient, IJSRuntime JSRuntime) : base(httpClient)
         {
@@ -33,11 +34,12 @@ namespace Oqtane.ChatHubs
 
         public async Task InitVideoJs()
         {
-            this._jsRuntimeObjectRef = await this.JSRuntime.InvokeAsync<JsRuntimeObjectRef>("__initjsstreams");
+            DotNetObjectReference<VideoService> dotNetObjectReference = DotNetObjectReference.Create(this);
+            this._jsRuntimeObjectRef = await this.JSRuntime.InvokeAsync<JsRuntimeObjectRef>("__initjsstreams", dotNetObjectReference);
         }
 
         [JSInvokable("OnDataAvailable")]
-        public static object OnDataAvailable(string dataURI, int roomId, string dataType)
+        public object OnDataAvailable(string dataURI, int roomId, string dataType)
         {
             OnDataAvailableEventHandler?.Invoke(typeof(VideoService), new { dataURI = dataURI, roomId = roomId, dataType = dataType });
             return new { msg = "room id: " + roomId + "; dataType: " + dataType + "; data: " + dataURI };

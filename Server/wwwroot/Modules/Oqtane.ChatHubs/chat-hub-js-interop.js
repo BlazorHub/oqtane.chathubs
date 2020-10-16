@@ -6,10 +6,10 @@
 
             var $messageWindow = $(elementId);
             var $lastChild = $messageWindow.children().last();
-            var $lastChildHeight = Math.ceil($lastChild.height());
+            var lastChildHeight = Math.ceil($lastChild.height());
             var tolerance = 30;
 
-            if (Math.ceil($messageWindow.scrollTop() + $messageWindow.innerHeight()) + $lastChildHeight + tolerance >= $messageWindow.prop("scrollHeight")) {
+            if (Math.ceil($messageWindow.scrollTop() + $messageWindow.innerHeight()) + lastChildHeight + tolerance >= $messageWindow.prop("scrollHeight")) {
 
                 $messageWindow.animate({ scrollTop: $messageWindow[0].scrollHeight }, { queue: false, duration: animationTime });
             }
@@ -58,9 +58,11 @@
         $chathubscontainer.fadeIn(200);
     };
 
-    window.__jsstreams = function () {
+    window.__jsstreams = function (dotNetObjectReference) {
 
         __obj = {
+
+            dotNetObjectReference: dotNetObjectReference,
 
             videolocalid: '#chathubs-video-local-',
             videoremoteid: '#chathubs-video-remote-',
@@ -105,7 +107,9 @@
 
                 this.options = { mimeType: __obj.videoMimeTypeObject.mimeType, videoBitsPerSecond: 1000, audioBitsPerSecond: 1000, ignoreMutedMedia: true };
                 this.recorder = new MediaRecorder(this.mediaStream, this.options);
+
                 this.requestDataInterval = 10000;
+                this.recorder.start();
 
                 this.recordsequence = function () {
 
@@ -114,8 +118,8 @@
                         if (__selflocallivestream.recorder.state === 'recording' || __selflocallivestream.recorder.state === 'paused') {
 
                             __selflocallivestream.recorder.stop();
+                            __selflocallivestream.recorder.start();
                         }
-                        __selflocallivestream.recorder.start();
                     }
                     catch (ex) {
                         console.warn(ex);
@@ -125,20 +129,21 @@
 
                     if (event.data.size > 0) {
 
+                        console.log(event.data);
                         __selflocallivestream.broadcastvideodata(event.data);
                     }
                 };
-                this.broadcastvideodata = function (chunk) {
+                this.broadcastvideodata = function (sequence) {
 
                     var reader = new FileReader();
                     reader.onloadend = async function (event) {
 
                         var dataURI = event.target.result;
-                        DotNet.invokeMethodAsync("Oqtane.ChatHubs.Client.Oqtane", 'OnDataAvailable', dataURI, roomId, 'video').then(obj => {
+                        self.__obj.dotNetObjectReference.invokeMethodAsync('OnDataAvailable', dataURI, roomId, 'video').then(obj => {
                             console.log(obj.msg);
                         });
                     };
-                    reader.readAsDataURL(chunk);
+                    reader.readAsDataURL(sequence);
                 };
 
                 this.drawimage = function () {
@@ -159,7 +164,7 @@
                 };
                 this.broadcastsnapshot = function (dataURI, dataType) {
 
-                    DotNet.invokeMethodAsync("Oqtane.ChatHubs.Client.Oqtane", 'OnDataAvailable', dataURI, roomId, dataType).then(obj => {
+                    self.__obj.dotNetObjectReference.invokeMethodAsync('OnDataAvailable', dataURI, roomId, dataType).then(obj => {
                         console.log(obj.msg);
                     });
                 };
@@ -168,6 +173,10 @@
                     var localElement = __selflocallivestream.getvideolocaldomelement();
                     if (localElement !== null) {
 
+                        if (__selflocallivestream.recorder.state === 'recording' || __selflocallivestream.recorder.state === 'paused') {
+
+                            __selflocallivestream.recorder.stop();
+                        }
                         __selflocallivestream.mediaStream.getTracks().forEach(track => track.stop());
                     }
 
@@ -189,7 +198,7 @@
                     return document.querySelector(this.canvasremoteid);
                 };
 
-                this.remotemediasegments = [];
+                this.remotemediasequences = [];
 
                 this.mediaSource = new MediaSource();
                 this.mediaSource.addEventListener('sourceopen', function (event) {
@@ -202,18 +211,41 @@
                     __selfremotelivestream.sourcebuffer = __selfremotelivestream.mediaSource.addSourceBuffer(__obj.videoMimeTypeObject.mimeType);
                     __selfremotelivestream.sourcebuffer.mode = 'sequence';
 
-                    __selfremotelivestream.sourcebuffer.addEventListener('updatestart', function (e) {});
-                    __selfremotelivestream.sourcebuffer.addEventListener('updateend', function (e) {});
+                    __selfremotelivestream.sourcebuffer.addEventListener('updatestart', function (e) {
+
+                        if (e.currentTarget.buffered.length === 1) {
+
+                            var timestampOffset = __selfremotelivestream.sourcebuffer.timestampOffset;
+                            console.log(timestampOffset);
+
+                            var end = e.currentTarget.buffered.end(0);
+                            console.log(end);
+                        }
+                    });
+                    __selfremotelivestream.sourcebuffer.addEventListener('update', function (e) {
+
+                    });
+                    __selfremotelivestream.sourcebuffer.addEventListener('updateend', function (e) {
+
+                        if (e.currentTarget.buffered.length === 1) {
+
+                            var timestampOffset = __selfremotelivestream.sourcebuffer.timestampOffset;
+                            console.warn(timestampOffset);
+
+                            var end = e.currentTarget.buffered.end(0);
+                            console.warn(end);
+                        }
+                    });
                 });
                 this.mediaSource.addEventListener('sourceended', function (event) { console.log("on media source ended"); });
                 this.mediaSource.addEventListener('sourceclose', function (event) { console.log("on media source close"); });
 
                 this.video = this.getvideoremotedomelement();
-                this.video.preload = 'auto';
                 this.video.width = 320;
                 this.video.height = 240;
-                this.video.autoplay = false;
                 this.video.controls = true;
+                this.video.autoplay = false;
+                this.video.preload = 'auto';
                 this.video.muted = true;
                 this.video.src = URL.createObjectURL(this.mediaSource);
 
@@ -239,20 +271,21 @@
 
                     try {
 
+                        console.log(base64str);
                         var blob = self.__obj.base64ToBlob(base64str);
 
                         var reader = new FileReader();
                         reader.onloadend = function (event) {
 
-                            __selfremotelivestream.remotemediasegments.push(reader.result);
+                            __selfremotelivestream.remotemediasequences.push(reader.result);
 
                             if (!__selfremotelivestream.sourcebuffer.updating && __selfremotelivestream.mediaSource.readyState === 'open') {
 
-                                var item = __selfremotelivestream.remotemediasegments.shift();
+                                var item = __selfremotelivestream.remotemediasequences.shift();
                                 __selfremotelivestream.sourcebuffer.appendBuffer(new Uint8Array(item));
                                 __selfremotelivestream.appendsequencecounter++;
                             }
-                            if (__selfremotelivestream.appendsequencecounter === 30) {
+                            if (__selfremotelivestream.appendsequencecounter === 10) {
 
                                 __selfremotelivestream.video.play();
                             }
@@ -350,10 +383,6 @@
 
                             livestream.item.drawimage(dataURI);
                         }
-                        else if (dataType === 'audio') {
-
-                            livestream.item.playaudio(dataURI);
-                        }
                     }
                 }
             },
@@ -424,9 +453,9 @@
         };
     };
 
-    window.__initjsstreams = function () {
+    window.__initjsstreams = function (dotNetObjectReference) {
 
-        return storeObjectRef(new window.__jsstreams());
+        return storeObjectRef(new window.__jsstreams(dotNetObjectReference));
     };
 
     var jsObjectRefs = {};
