@@ -73,7 +73,7 @@ namespace Oqtane.ChatHubs.Services
             this.JSRuntime = JSRuntime;
             this.VideoService = videoService;
 
-            VideoService.OnDataAvailableEventHandler += async (object sender, dynamic e) => await OnDataAvailableEventHandlerExecute(e.dataURI, e.roomId, e.dataType);
+            this.VideoService.OnDataAvailableEventHandler += async (object sender, dynamic e) => await OnDataAvailableEventHandlerExecute(e.dataURI, e.roomId, e.dataType);
 
             this.OnConnectedEvent += OnConnectedExecute;
             this.OnAddChatHubRoomEvent += OnAddChatHubRoomExecute;
@@ -213,18 +213,13 @@ namespace Oqtane.ChatHubs.Services
         }
 
         public async Task StreamTaskImplementation(int roomId, CancellationToken token)
-        {            
-            while (true)
+        {
+            while (!token.IsCancellationRequested)
             {
                 try
                 {
-                    if (token.IsCancellationRequested)
-                    {
-                        break;
-                    }
-
-                    await this.VideoService.RecordSequence(roomId);
                     await Task.Delay(150);
+                    await this.VideoService.RecordSequence(roomId);                    
                 }
                 catch (Exception ex)
                 {
