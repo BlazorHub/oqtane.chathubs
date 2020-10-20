@@ -1,6 +1,5 @@
 ﻿using Microsoft.JSInterop;
 using Oqtane.ChatHubs.Client.Video;
-using Oqtane.ChatHubs.Services;
 using Oqtane.Modules;
 using Oqtane.Services;
 using System;
@@ -13,7 +12,7 @@ namespace Oqtane.ChatHubs
     public class VideoService : ServiceBase, IService, IVideoService
     {
 
-        private JsRuntimeObjectRef _jsRuntimeObjectRef { get; set; }
+        private JsRuntimeObjectRef __jsRuntimeObjectRef { get; set; }
 
         public class JsRuntimeObjectRef
         {
@@ -34,62 +33,61 @@ namespace Oqtane.ChatHubs
 
         public async Task InitVideoJs()
         {
-            DotNetObjectReference<VideoService> dotNetObjectReference = DotNetObjectReference.Create(this);
-            this._jsRuntimeObjectRef = await this.JSRuntime.InvokeAsync<JsRuntimeObjectRef>("__initjsstreams", dotNetObjectReference);
+            this.__jsRuntimeObjectRef = await this.JSRuntime.InvokeAsync<JsRuntimeObjectRef>("__initjsstreams", DotNetObjectReference.Create(this));
         }
 
         [JSInvokable("OnDataAvailable")]
         public object OnDataAvailable(string dataURI, int roomId, string dataType)
         {
             OnDataAvailableEventHandler?.Invoke(typeof(VideoService), new { dataURI = dataURI, roomId = roomId, dataType = dataType });
-            return new { msg = "room id: " + roomId + "; dataType: " + dataType + "; data: " + dataURI };
+            return new { msg = string.Format("room id: {1}; dataType: {2}; dataUri: {0}", dataURI, roomId, dataType) };
         }
 
         public async Task StartBroadcasting(int roomId)
         {
-            if (this._jsRuntimeObjectRef != null)
+            if (this.__jsRuntimeObjectRef != null)
             {
-                await this.JSRuntime.InvokeVoidAsync("__obj.startbroadcasting", roomId, _jsRuntimeObjectRef);
+                await this.JSRuntime.InvokeVoidAsync("__obj.startbroadcasting", roomId, __jsRuntimeObjectRef);
             }
         }
 
         public async Task StartStreaming(int roomId)
         {
-            if (this._jsRuntimeObjectRef != null)
+            if (this.__jsRuntimeObjectRef != null)
             {
-                await this.JSRuntime.InvokeVoidAsync("__obj.startstreaming", roomId, _jsRuntimeObjectRef);
+                await this.JSRuntime.InvokeVoidAsync("__obj.startstreaming", roomId, __jsRuntimeObjectRef);
             }
         }
 
         public async Task CloseLivestream(int roomId)
         {
-            if (this._jsRuntimeObjectRef != null)
+            if (this.__jsRuntimeObjectRef != null)
             {
-                await this.JSRuntime.InvokeVoidAsync("__obj.closelivestream", roomId, _jsRuntimeObjectRef);
+                await this.JSRuntime.InvokeVoidAsync("__obj.closelivestream", roomId, __jsRuntimeObjectRef);
             }
         }
 
         public async Task RecordSequence(int roomId)
         {
-            if (this._jsRuntimeObjectRef != null)
+            if (this.__jsRuntimeObjectRef != null)
             {
-                await this.JSRuntime.InvokeVoidAsync("__obj.recordsequence", roomId, _jsRuntimeObjectRef);
+                await this.JSRuntime.InvokeVoidAsync("__obj.recordsequence", roomId, __jsRuntimeObjectRef);
             }
         }
 
         public async Task DrawImage(int roomId)
         {
-            if (this._jsRuntimeObjectRef != null)
+            if (this.__jsRuntimeObjectRef != null)
             {
-                await this.JSRuntime.InvokeVoidAsync("__obj.drawimage", roomId, _jsRuntimeObjectRef);
+                await this.JSRuntime.InvokeVoidAsync("__obj.drawimage", roomId, __jsRuntimeObjectRef);
             }
         }
 
         public async Task AppendBuffer(string dataURI, int roomId, string dataType)
         {
-            if (this._jsRuntimeObjectRef != null)
+            if (this.__jsRuntimeObjectRef != null)
             {
-                await this.JSRuntime.InvokeVoidAsync("__obj.appendbuffer", dataURI, roomId, dataType, _jsRuntimeObjectRef);
+                await this.JSRuntime.InvokeVoidAsync("__obj.appendbuffer", dataURI, roomId, dataType, __jsRuntimeObjectRef);
             }
         }
 

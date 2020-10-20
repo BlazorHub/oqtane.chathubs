@@ -219,7 +219,7 @@ namespace Oqtane.ChatHubs.Services
                 try
                 {
                     await Task.Delay(150);
-                    await this.VideoService.RecordSequence(roomId);                    
+                    await this.VideoService.RecordSequence(roomId);
                 }
                 catch (Exception ex)
                 {

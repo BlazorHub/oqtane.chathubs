@@ -63,12 +63,10 @@
         __obj = {
 
             dotNetObjectReference: dotNetObjectReference,
-
             videolocalid: '#chathubs-video-local-',
             videoremoteid: '#chathubs-video-remote-',
             canvaslocalid: '#chathubs-canvas-local-',
             canvasremoteid: '#chathubs-canvas-remote-',
-
             videoMimeTypeObject: { mimeType: 'video/webm;codecs=opus,vp9' },
             constrains: {
                 audio: true,
@@ -232,7 +230,13 @@
                 this.video.autoplay = false;
                 this.video.preload = 'auto';
                 this.video.muted = true;
-                this.video.src = URL.createObjectURL(this.mediaSource);
+
+                try {
+                    this.video.srcObject = this.mediaSource;
+                } catch (ex) {
+                    console.warn(ex);
+                    this.video.src = URL.createObjectURL(this.mediaSource);
+                }
 
                 this.drawimage = function (base64str) {
 
