@@ -285,15 +285,7 @@ namespace Oqtane.ChatHubs.Hubs
                 connectionsIds.Add(connection.ConnectionId);
             }
 
-            string dataURIresult = string.Empty;
-            IAsyncEnumerator<string> enumerators = dataURI.GetAsyncEnumerator();
-
-            while (await enumerators.MoveNextAsync())
-            {
-                dataURIresult += enumerators.Current;
-            }
-
-            await Clients.GroupExcept(roomId.ToString(), connectionsIds).SendAsync("DownloadBytes", dataURIresult, roomId, dataType);
+            await Clients.GroupExcept(roomId.ToString(), connectionsIds).SendAsync("DownloadBytes", dataURI, roomId, dataType);
         }
 
         private async Task<bool> ExecuteCommandManager(ChatHubUser chatHubUser, string message, int roomId)

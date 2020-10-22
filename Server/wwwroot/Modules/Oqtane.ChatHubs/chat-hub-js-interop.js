@@ -77,6 +77,7 @@
                     facingMode: "user"
                 }
             },
+            livestreams: [],
             locallivestream: function (roomId, mediaStream) {
 
                 __selflocallivestream = this;
@@ -137,6 +138,15 @@
                     reader.onloadend = async function (event) {
 
                         var dataURI = event.target.result;
+                        var totalBytes = Math.ceil(event.total * 8 / 6);
+                        var totalKiloBytes = Math.ceil(totalBytes / 1024);
+
+                        if (totalKiloBytes >= 32) {
+
+                            console.warn('data uri too large to broadcast >= 32kb');
+                            return;
+                        }
+
                         self.__obj.dotNetObjectReference.invokeMethodAsync('OnDataAvailable', dataURI, roomId, 'video').then(obj => {
                             console.log(obj.msg);
                         });
@@ -291,7 +301,6 @@
                     self.__obj.removelivestream(roomId);
                 };
             },
-            livestreams: [],
             getlivestream: function (roomId) {
 
                 return self.__obj.livestreams.find(item => item.id === roomId);
@@ -390,17 +399,18 @@
                     }
                 }
             },
-            readAsDataUrlAsync: function (blob) {
+            base64ToBlob: function (base64str) {
 
-                return new Promise((resolve, reject) => {
+                var byteString = atob(base64str.split('base64,')[1]);
+                var arrayBuffer = new ArrayBuffer(byteString.length);
 
-                    let fileReader = new window.FileReader();
-                    fileReader.onload = () => {
+                var bytes = new Uint8Array(arrayBuffer);
+                for (var i = 0; i < byteString.length; i++) {
+                    bytes[i] = byteString.charCodeAt(i);
+                }
 
-                        resolve(fileReader.result);
-                    };
-                    fileReader.readAsDataURL(blob);
-                })
+                var blob = new Blob([arrayBuffer], { type: self.__obj.videoMimeTypeObject.mimeType });
+                return blob;
             },
             readAsArrayBufferAsync: function (blob) {
 
@@ -414,6 +424,18 @@
                     fileReader.readAsArrayBuffer(blob);
                 })
             },
+            readAsDataUrlAsync: function (blob) {
+
+                return new Promise((resolve, reject) => {
+
+                    let fileReader = new window.FileReader();
+                    fileReader.onload = () => {
+
+                        resolve(fileReader.result);
+                    };
+                    fileReader.readAsDataURL(blob);
+                })
+            },
             readAsTextAsync: function (blob) {
 
                 return new Promise((resolve, reject) => {
@@ -425,19 +447,6 @@
                     };
                     fileReader.readAsText(blob);
                 })
-            },
-            base64ToBlob: function (base64str) {
-
-                var byteString = atob(base64str.split('base64,')[1]);
-                var arrayBuffer = new ArrayBuffer(byteString.length);
-
-                var bytes = new Uint8Array(arrayBuffer);
-                for (var i = 0; i < byteString.length; i++) {
-                    bytes[i] = byteString.charCodeAt(i);
-                }
-
-                var blob = new Blob([arrayBuffer], { type: self.__obj.videoMimeTypeObject.mimeType });
-                return blob;
             },
         };
     };
