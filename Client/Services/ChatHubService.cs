@@ -162,7 +162,7 @@ namespace Oqtane.ChatHubs.Services
             this.Connection.On("AddIgnoredUser", (ChatHubUser ignoredUser) => OnAddIgnoredUserEvent(this, ignoredUser));
             this.Connection.On("RemoveIgnoredUser", (ChatHubUser ignoredUser) => OnRemoveIgnoredUserEvent(this, ignoredUser));
             this.Connection.On("AddIgnoredByUser", (ChatHubUser ignoredUser) => OnAddIgnoredByUserExecute(this, ignoredUser));
-            this.Connection.On("DownloadBytes", (IAsyncEnumerable<string> dataURI, int roomId, string dataType) => OnDownloadBytesExecuteAsync(this, new { dataURI = dataURI, roomId = roomId, dataType = dataType }));
+            this.Connection.On("DownloadBytes", (string dataURI, int roomId, string dataType) => OnDownloadBytesExecuteAsync(this, new { dataURI = dataURI, roomId = roomId, dataType = dataType }));
             this.Connection.On("RemoveIgnoredByUser", (ChatHubUser ignoredUser) => OnRemoveIgnoredByUserExecute(this, ignoredUser));
             this.Connection.On("ClearHistory", (int roomId) => OnClearHistoryEvent(this, roomId));
             this.Connection.On("Disconnect", (ChatHubUser user) => OnDisconnectEvent(this, user));
@@ -286,21 +286,13 @@ namespace Oqtane.ChatHubs.Services
 
         public async void OnDownloadBytesExecuteAsync(object sender, dynamic e)
         {
-            IAsyncEnumerable<string> dataURI = e.dataURI;
+            string dataURI = e.dataURI;
             int roomId = e.roomId;
             string dataType = e.dataType;
 
-            string dataURIresult = string.Empty;
-            IAsyncEnumerator<string> enumerators = dataURI.GetAsyncEnumerator();
-
-            while (await enumerators.MoveNextAsync())
-            {
-                dataURIresult += enumerators.Current;
-            }
-
             try
             {
-                await this.VideoService.AppendBuffer(dataURIresult, roomId, dataType);
+                await this.VideoService.AppendBuffer(dataURI, roomId, dataType);
             }
             catch (Exception ex)
             {
