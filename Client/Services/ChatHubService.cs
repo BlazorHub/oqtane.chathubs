@@ -20,7 +20,7 @@ using System.Data;
 namespace Oqtane.ChatHubs.Services
 {
 
-    public class ChatHubService : ServiceBase, IChatHubService, IService
+    public class ChatHubService : ServiceBase, IChatHubService, IService, IDisposable
     {
 
         public HttpClient HttpClient { get; set; }
@@ -219,7 +219,7 @@ namespace Oqtane.ChatHubs.Services
                 try
                 {
                     await this.VideoService.RecordSequence(roomId);
-                    await Task.Delay(120);
+                    await Task.Delay(500);
                 }
                 catch (Exception ex)
                 {
@@ -629,6 +629,11 @@ namespace Oqtane.ChatHubs.Services
             await HttpClient.DeleteAsync(apiurl + "/deleteroomimage/" + ChatHubRoomId + "?moduleid=" + ModuleId + "&entityid=" + ModuleId);
         }
 
+        public void Dispose()
+        {
+            this.Connection.StopAsync();
+        }
+
         private void HandleException(Task task)
         {
             if (task.Exception != null)
@@ -645,6 +650,6 @@ namespace Oqtane.ChatHubs.Services
         {
             await HttpClient.DeleteAsync(apiurl + "/fixcorruptconnections" + "?moduleid=" + ModuleId + "&entityid=" + ModuleId);
         }
-
+        
     }
 }
