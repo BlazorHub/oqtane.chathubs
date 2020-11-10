@@ -9,6 +9,34 @@ The Oqtane Framework allows developers to create external modules. Post issues a
 - [x] Clone the Oqtane ChatHub Module in VS Team Explorer and build in debug and release mode.
 - [ ] get it work somehow good luck anyway
 
+Edit _Host.cshtml end of head tag:
+```HTML
+<meta name="robots" content="noindex, nofollow" />
+<link href="https://fonts.googleapis.com/css?family=Lato|Montserrat&display=swap" rel="stylesheet" />
+
+<!-- Mat Blazor -->
+<script src="_content/MatBlazor/dist/matBlazor.js"></script>
+<link href="_content/MatBlazor/dist/matBlazor.css" rel="stylesheet" />
+```
+
+Edit _Host.cshtml end of body tag:
+```HTML
+<!-- Add jQuery and maybe remove jQuery Slim -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+
+<!-- BlazorStyled is used by BlazorStrap documentation site -->
+<script async defer src="https://buttons.github.io/buttons.js"></script>
+
+<!-- The below two files are needed by BlazorStrap -->
+<script src="_content/BlazorStrap/blazorStrap.js"></script>
+
+<!-- BlazorTable -->
+<script src="_content/BlazorTable/BlazorTable.min.js"></script>
+
+<!-- Chat Hub JS Interop -->
+<script src="modules/oqtane.chathubs/chat-hub-js-interop.js"></script>
+```
+
 Edit startup.cs:
 ```C#
 services.AddScoped<BlazorAlertsService, BlazorAlertsService>();

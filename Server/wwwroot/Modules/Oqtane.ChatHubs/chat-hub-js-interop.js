@@ -138,9 +138,9 @@
                     reader.onloadend = async function (event) {
 
                         var dataURI = event.target.result;
+                        
                         var totalBytes = Math.ceil(event.total * 8 / 6);
                         var totalKiloBytes = Math.ceil(totalBytes / 1024);
-
                         if (totalKiloBytes >= 32) {
 
                             console.warn('data uri too large to broadcast >= 32kb');
@@ -277,10 +277,10 @@
                         reader.onloadend = function (event) {
 
                             __selfremotelivestream.remotemediasequences.push(reader.result);
+                            var item = __selfremotelivestream.remotemediasequences.shift();
 
                             if (!__selfremotelivestream.sourcebuffer.updating && __selfremotelivestream.mediaSource.readyState === 'open') {
 
-                                var item = __selfremotelivestream.remotemediasequences.shift();
                                 __selfremotelivestream.sourcebuffer.appendBuffer(new Uint8Array(item));
                                 __selfremotelivestream.appendsequencecounter++;
                             }

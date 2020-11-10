@@ -113,6 +113,7 @@ namespace Oqtane.ChatHubs.Services
                 options.Headers["platform"] = "Oqtane";
                 options.Transports = HttpTransportType.WebSockets | HttpTransportType.LongPolling;
             })
+            .AddMessagePackProtocol()
             .AddNewtonsoftJsonProtocol(options => {
                 options.PayloadSerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore;
             })

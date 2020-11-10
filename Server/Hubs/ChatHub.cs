@@ -25,6 +25,7 @@ namespace Oqtane.ChatHubs.Hubs
     [AllowAnonymous]
     public class ChatHub : Hub
     {
+
         private IHttpContextAccessor httpContextAccessor;
         private readonly IChatHubRepository chatHubRepository;
         private readonly IChatHubService chatHubService;
