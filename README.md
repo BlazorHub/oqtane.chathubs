@@ -44,22 +44,30 @@ services.AddScoped<BlazorAlertsService, BlazorAlertsService>();
 services.AddFileReaderService();
 
 services.AddMvc()
-                .AddNewtonsoftJson(options => options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore);
+    .AddNewtonsoftJson(options => options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore);
 
 services.AddSignalR()
-                .AddHubOptions<ChatHub>(options =>
-                {
-                    options.EnableDetailedErrors = true;
-                    options.KeepAliveInterval = TimeSpan.FromSeconds(15);
-                    options.ClientTimeoutInterval = TimeSpan.FromMinutes(60);
-                })
-                .AddNewtonsoftJsonProtocol(
-                    options => options.PayloadSerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore
-                );
+    .AddHubOptions<ChatHub>(options =>
+    {
+        options.EnableDetailedErrors = true;
+        options.KeepAliveInterval = TimeSpan.FromSeconds(15);
+        options.ClientTimeoutInterval = TimeSpan.FromMinutes(60);
+        options.MaximumReceiveMessageSize = Int64.MaxValue;
+        options.StreamBufferCapacity = Int32.MaxValue;
+    })
+    .AddMessagePackProtocol()
+    .AddNewtonsoftJsonProtocol(options =>
+    {
+        options.PayloadSerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
+    });
 
 endpoints.MapHub<ChatHub>("/chathub", options =>
 {
 	options.Transports = HttpTransportType.WebSockets | HttpTransportType.LongPolling;
+    options.ApplicationMaxBufferSize = Int64.MaxValue;
+    options.TransportMaxBufferSize = Int64.MaxValue;
+    options.WebSockets.CloseTimeout = TimeSpan.FromSeconds(10);
+    options.LongPolling.PollTimeout = TimeSpan.FromSeconds(10);
 });
 ```
 			
