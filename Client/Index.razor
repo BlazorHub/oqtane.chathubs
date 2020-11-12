@@ -44,7 +44,6 @@
         padding-left: 0px !important;
         padding-right: 0px !important;
     }
-
 </style>
 
 <div id="chathub-module-@ModuleState.ModuleId" class="p-sm-3 chathubs-container">
@@ -421,41 +420,41 @@
                                                             <div class="accordion">
                                                                 @foreach (ChatHubUser user in room.Users)
                                                                 {
-                                                                @if (user.UserId == ChatHubService.ConnectedUser.UserId)
+                                                                    @if (user.UserId == ChatHubService.ConnectedUser.UserId)
                                                                     {
-                                                                <BSCard CardType="CardType.Card" @key="user">
-                                                                    <BSCard CardType="CardType.Header">
-                                                                        <BSButton ButtonType="ButtonType.Button" OnClick="(e) => UserlistItem_Clicked(e, room, user)" Color="Color.None" Class="btn-link">
-                                                                            <strong class="align-middle" style="height: 16px;">@user.DisplayName</strong>
-                                                                        </BSButton>
-                                                                    </BSCard>
-                                                                    @if (user.UserlistItemCollapsed)
+                                                                        <BSCard CardType="CardType.Card" @key="user">
+                                                                            <BSCard CardType="CardType.Header">
+                                                                                <BSButton ButtonType="ButtonType.Button" OnClick="(e) => UserlistItem_Clicked(e, room, user)" Color="Color.None" Class="btn-link">
+                                                                                    <strong class="align-middle" style="height: 16px;">@user.DisplayName</strong>
+                                                                                </BSButton>
+                                                                            </BSCard>
+                                                                            @if (user.UserlistItemCollapsed)
                                                                             {
-                                                                    <BSCard CardType="CardType.Body">
-                                                                        <BSCard CardType="CardType.Text">
-                                                                            <button type="button" class="btn btn-sm btn-link" @onclick="() => OpenProfile_Clicked(user.UserId, room.Id)">Profil/Einstellungen</button>
-                                                                        </BSCard>
-                                                                    </BSCard>
+                                                                                <BSCard CardType="CardType.Body">
+                                                                                    <BSCard CardType="CardType.Text">
+                                                                                        <button type="button" class="btn btn-sm btn-link" @onclick="() => OpenProfile_Clicked(user.UserId, room.Id)">Profil/Einstellungen</button>
+                                                                                    </BSCard>
+                                                                                </BSCard>
                                                                             }
-                                                                </BSCard>
+                                                                        </BSCard>
                                                                     }
                                                                     else
                                                                     {
-                                                                <BSCard CardType="CardType.Card" @key="user">
-                                                                    <BSCard CardType="CardType.Header">
-                                                                        <BSButton ButtonType="ButtonType.Button" OnClick="(e) => UserlistItem_Clicked(e, room, user)" Color="Color.None" Class="btn-link">
-                                                                            <span class="align-middle" style="height: 16px;">@user.DisplayName</span>
-                                                                        </BSButton>
-                                                                    </BSCard>
-                                                                    @if (user.UserlistItemCollapsed)
+                                                                        <BSCard CardType="CardType.Card" @key="user">
+                                                                            <BSCard CardType="CardType.Header">
+                                                                                <BSButton ButtonType="ButtonType.Button" OnClick="(e) => UserlistItem_Clicked(e, room, user)" Color="Color.None" Class="btn-link">
+                                                                                    <span class="align-middle" style="height: 16px;">@user.DisplayName</span>
+                                                                                </BSButton>
+                                                                            </BSCard>
+                                                                            @if (user.UserlistItemCollapsed)
                                                                             {
-                                                                    <BSCard CardType="CardType.Body">
-                                                                        <BSCard CardType="CardType.Text">
-                                                                            <button type="button" class="btn btn-sm btn-link" @onclick="() => ChatHubService.IgnoreUser_Clicked(user.UserId, room.Id, user.Username)">Benutzer Ignorieren</button>
-                                                                        </BSCard>
-                                                                    </BSCard>
+                                                                                <BSCard CardType="CardType.Body">
+                                                                                    <BSCard CardType="CardType.Text">
+                                                                                        <button type="button" class="btn btn-sm btn-link" @onclick="() => ChatHubService.IgnoreUser_Clicked(user.UserId, room.Id, user.Username)">Benutzer Ignorieren</button>
+                                                                                    </BSCard>
+                                                                                </BSCard>
                                                                             }
-                                                                </BSCard>
+                                                                        </BSCard>
                                                                     }
                                                                 }
                                                             </div>
@@ -514,24 +513,24 @@
                                                             <div class="container">
                                                                 @foreach (var item in ChatHubService.Invitations)
                                                                 {
-                                                                <div class="row">
-                                                                    <div class="col-sm-9">
-                                                                        <button type="button" @onclick="@(async () => await FollowInvitation_Clicked(item.Guid, item.RoomId))" class="btn btn-sm btn-link">@item.Hostname</button>
+                                                                    <div class="row">
+                                                                        <div class="col-sm-9">
+                                                                            <button type="button" @onclick="@(async () => await FollowInvitation_Clicked(item.Guid, item.RoomId))" class="btn btn-sm btn-link">@item.Hostname</button>
+                                                                        </div>
+                                                                        <div class="col-sm-3">
+                                                                            <button type="button" @onclick="@(() => RemoveInvitation_Clicked(item.Guid))" class="btn btn-sm btn-danger">
+                                                                                <span aria-hidden="true">&times;</span>
+                                                                            </button>
+                                                                        </div>
                                                                     </div>
-                                                                    <div class="col-sm-3">
-                                                                        <button type="button" @onclick="@(() => RemoveInvitation_Clicked(item.Guid))" class="btn btn-sm btn-danger">
-                                                                            <span aria-hidden="true">&times;</span>
-                                                                        </button>
-                                                                    </div>
-                                                                </div>
                                                                 }
                                                             </div>
 
                                                             @if (!ChatHubService.Invitations.Any())
                                                             {
-                                                            <div class="alert alert-warning" role="alert">
-                                                                No invitations found yet.
-                                                            </div>
+                                                                <div class="alert alert-warning" role="alert">
+                                                                    No invitations found yet.
+                                                                </div>
                                                             }
 
                                                         </div>

@@ -55,14 +55,14 @@
     window.showchathubscontainer = function () {
 
         var $chathubscontainer = $(".chathubs-container");
-        $chathubscontainer.fadeIn(200);
+        $chathubscontainer.fadeIn(240);
     };
 
-    window.__jsstreams = function (dotNetObjectReference) {
+    window.__jsstreams = function (videoserviceObjectReference) {
 
         __obj = {
 
-            dotNetObjectReference: dotNetObjectReference,
+            videoservice: videoserviceObjectReference,
             videolocalid: '#chathubs-video-local-',
             videoremoteid: '#chathubs-video-remote-',
             canvaslocalid: '#chathubs-canvas-local-',
@@ -147,7 +147,7 @@
                             return;
                         }
 
-                        self.__obj.dotNetObjectReference.invokeMethodAsync('OnDataAvailable', dataURI, roomId, 'video').then(obj => {
+                        self.__obj.videoservice.invokeMethodAsync('OnDataAvailable', dataURI, roomId, 'video').then(obj => {
                             console.log(obj.msg);
                         });
                     };
@@ -172,7 +172,7 @@
                 };
                 this.broadcastsnapshot = function (dataURI, dataType) {
 
-                    self.__obj.dotNetObjectReference.invokeMethodAsync('OnDataAvailable', dataURI, roomId, dataType).then(obj => {
+                    self.__obj.videoservice.invokeMethodAsync('OnDataAvailable', dataURI, roomId, dataType).then(obj => {
                         console.log(obj.msg);
                     });
                 };
@@ -412,18 +412,6 @@
                 var blob = new Blob([arrayBuffer], { type: self.__obj.videoMimeTypeObject.mimeType });
                 return blob;
             },
-            readAsArrayBufferAsync: function (blob) {
-
-                return new Promise((resolve, reject) => {
-
-                    let fileReader = new window.FileReader();
-                    fileReader.onload = () => {
-
-                        resolve(fileReader.result);
-                    };
-                    fileReader.readAsArrayBuffer(blob);
-                })
-            },
             readAsDataUrlAsync: function (blob) {
 
                 return new Promise((resolve, reject) => {
@@ -436,24 +424,12 @@
                     fileReader.readAsDataURL(blob);
                 })
             },
-            readAsTextAsync: function (blob) {
-
-                return new Promise((resolve, reject) => {
-
-                    let fileReader = new window.FileReader();
-                    fileReader.onload = () => {
-
-                        resolve(fileReader.result);
-                    };
-                    fileReader.readAsText(blob);
-                })
-            },
         };
     };
 
-    window.__initjsstreams = function (dotNetObjectReference) {
+    window.__initjsstreams = function (videoserviceObjectReference) {
 
-        return storeObjectRef(new window.__jsstreams(dotNetObjectReference));
+        return storeObjectRef(new window.__jsstreams(videoserviceObjectReference));
     };
 
     var jsObjectRefs = {};
