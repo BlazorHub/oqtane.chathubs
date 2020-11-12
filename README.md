@@ -73,6 +73,20 @@ else if (segments[0] == "chathub")
 }
 ```
 
+Module Dependencies so far
+```C#
+<dependency id="System.Drawing.Common" version="4.7.0" />
+<dependency id="MatBlazor" version="2.3.0" />
+<dependency id="BlazorTable" version="1.11.1" />
+<dependency id="Microsoft.CSharp" version="4.7.0" />
+<dependency id="BlazorStrap" version="1.3.3" />
+<dependency id="Tewr.Blazor.FileReader" version="1.4.0.20072" />
+<dependency id="Microsoft.AspNetCore.SignalR.Client" version="3.1.4" />
+<dependency id="Microsoft.AspNetCore.SignalR.Protocols.MessagePack" version="3.1.4" />
+<dependency id="Microsoft.AspNetCore.SignalR.Protocols.NewtonsoftJson" version="3.1.4" />
+<dependency id="Microsoft.Composition" version="1.0.31" />
+```
+
 # Example Screenshots
 
 ![Module](https://github.com/boredanyway/oqtane.chathubs/blob/master/screenshot1.png?raw=true "Module")
