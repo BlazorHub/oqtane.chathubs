@@ -4,7 +4,7 @@ using System.Net.Http;
 
 namespace BlazorAlerts
 {
-    public class BlazorAlertsBase : ComponentBase
+    public class BlazorAlertsBase : ComponentBase, IDisposable
     {
 
         [Inject]
@@ -43,5 +43,9 @@ namespace BlazorAlerts
             this.BlazorAlertsService.RemoveAlert(guid);
         }
 
+        public void Dispose()
+        {
+            this.BlazorAlertsService.OnAlert -= OnAlertExecute;
+        }
     }
 }

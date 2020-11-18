@@ -17,19 +17,12 @@ namespace Oqtane.ChatHubs
     public class EditBase : ModuleBase
     {
 
-        [Inject]
-        public IJSRuntime JsRuntime { get; set; }
-        [Inject]
-        public NavigationManager NavigationManager { get; set; }
-        [Inject]
-        public HttpClient HttpClient { get; set; }
-        [Inject]
-        public SiteState SiteState { get; set; }
-        [Inject]
-        public IFileReaderService fileReaderService { get; set; }
-
-        [Inject]
-        public IChatHubService ChatHubService { get; set; }
+        [Inject] public IJSRuntime JsRuntime { get; set; }
+        [Inject] public NavigationManager NavigationManager { get; set; }
+        [Inject] public HttpClient HttpClient { get; set; }
+        [Inject] public SiteState SiteState { get; set; }
+        [Inject] public IFileReaderService fileReaderService { get; set; }
+        [Inject] public IChatHubService ChatHubService { get; set; }
 
         public override SecurityAccessLevel SecurityAccessLevel { get { return SecurityAccessLevel.Anonymous; } }
         public override string Actions { get { return "Add,Edit"; } }
@@ -56,7 +49,7 @@ namespace Oqtane.ChatHubs
             try
             {
                 //this.ChatHubService = new ChatHubService(HttpClient, SiteState, NavigationManager, JsRuntime, ModuleState.ModuleId);
-                this.ChatHubService.UpdateUI += UpdateUIStateHasChanged;
+                this.ChatHubService.OnUpdateUI += (object sender, EventArgs e) => UpdateUIStateHasChanged();
 
                 await this.InitContextRoomAsync();
             }
@@ -72,7 +65,7 @@ namespace Oqtane.ChatHubs
             try
             {
                 //this.ChatHubService = new ChatHubService(HttpClient, SiteState, NavigationManager, JsRuntime, ModuleState.ModuleId);
-                this.ChatHubService.UpdateUI += UpdateUIStateHasChanged;
+                this.ChatHubService.OnUpdateUI += (object sender, EventArgs e) => UpdateUIStateHasChanged();
 
                 if (PageState.QueryString.ContainsKey("roomid"))
                 {

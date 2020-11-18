@@ -16,6 +16,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Oqtane.Modules;
 using System.Threading;
 using System.Data;
+using Microsoft.AspNetCore.SignalR;
+using BlazorAlerts;
 
 namespace Oqtane.ChatHubs.Services
 {
@@ -28,6 +30,8 @@ namespace Oqtane.ChatHubs.Services
         public SiteState SiteState { get; set; }
         public IJSRuntime JSRuntime { get; set; }
         public VideoService VideoService { get; set; }
+        public ScrollService ScrollService { get; set; }
+        public BlazorAlertsService BlazorAlertsService { get; set; }
 
         public HubConnection Connection { get; set; }
         public ChatHubUser ConnectedUser { get; set; }
@@ -47,7 +51,7 @@ namespace Oqtane.ChatHubs.Services
         public System.Timers.Timer GetLobbyRoomsTimer { get; set; } = new System.Timers.Timer();
         public System.Timers.Timer VideoStreamTimer { get; set; } = new System.Timers.Timer();
 
-        public event Action UpdateUI;
+        public event EventHandler OnUpdateUI;
         public event EventHandler<ChatHubUser> OnConnectedEvent;
         public event EventHandler<ChatHubRoom> OnAddChatHubRoomEvent;
         public event EventHandler<ChatHubRoom> OnRemoveChatHubRoomEvent;
@@ -65,13 +69,15 @@ namespace Oqtane.ChatHubs.Services
         public event EventHandler<ChatHubUser> OnDisconnectEvent;
         public event EventHandler<dynamic> OnExceptionEvent;
 
-        public ChatHubService(HttpClient httpClient, SiteState siteState, NavigationManager navigationManager, IJSRuntime JSRuntime, VideoService videoService = null) : base (httpClient)
+        public ChatHubService(HttpClient httpClient, SiteState siteState, NavigationManager navigationManager, IJSRuntime JSRuntime, VideoService videoService, ScrollService scrollService, BlazorAlertsService blazorAlertsService) : base (httpClient)
         {
             this.HttpClient = httpClient;
             this.SiteState = siteState;
             this.NavigationManager = navigationManager;
             this.JSRuntime = JSRuntime;
             this.VideoService = videoService;
+            this.ScrollService = scrollService;
+            this.BlazorAlertsService = blazorAlertsService;
 
             this.VideoService.OnDataAvailableEventHandler += async (object sender, dynamic e) => await OnDataAvailableEventHandlerExecute(e.dataURI, e.roomId, e.dataType);
 
@@ -92,10 +98,15 @@ namespace Oqtane.ChatHubs.Services
             this.OnDisconnectEvent += OnDisconnectExecute;
         }
 
+        public void RunUpdateUI()
+        {
+            this.OnUpdateUI.Invoke(this, EventArgs.Empty);
+        }
+
         public void OnConnectedExecute(object sender, ChatHubUser user)
         {
             this.ConnectedUser = user;
-            this.UpdateUI();
+            this.RunUpdateUI();
         }
 
         public void BuildGuestConnection(string username, int moduleId)
@@ -148,7 +159,7 @@ namespace Oqtane.ChatHubs.Services
                 }
 
                 this.Rooms.Clear();
-                this.UpdateUI();
+                this.RunUpdateUI();
                 return Task.CompletedTask;
             };
 
@@ -329,7 +340,7 @@ namespace Oqtane.ChatHubs.Services
             {
                 this.Lobbies = await this.GetChatHubRoomsByModuleIdAsync(moduleId);
                 this.SortLobbyRooms();
-                this.UpdateUI();
+                this.RunUpdateUI();
             }
             catch (Exception ex)
             {
@@ -423,7 +434,7 @@ namespace Oqtane.ChatHubs.Services
         {
             var room = this.Rooms.FirstOrDefault(x => x.Id == roomId);
             room.Messages.Clear();
-            this.UpdateUI();
+            this.RunUpdateUI();
         }
 
         public void ToggleUserlist(ChatHubRoom room)
@@ -442,30 +453,39 @@ namespace Oqtane.ChatHubs.Services
         private void OnAddChatHubRoomExecute(object sender, ChatHubRoom room)
         {
             this.AddRoom(room);
-            this.UpdateUI();
+            this.RunUpdateUI();
         }
         private void OnRemoveChatHubRoomExecute(object sender, ChatHubRoom room)
         {
             this.RemoveRoom(room);
-            this.UpdateUI();
+            this.RunUpdateUI();
         }
         private void OnAddChatHubUserExecute(object sender, dynamic obj)
         {
             this.AddUser(obj.userModel, obj.roomId);
-            this.UpdateUI();
+            this.RunUpdateUI();
         }
         private void OnRemoveChatHubUserExecute(object sender, dynamic obj)
         {
             this.RemoveUser(obj.userModel, obj.roomId);
-            this.UpdateUI();
+            this.RunUpdateUI();
         }
 
         public async void OnAddChatHubMessageExecute(object sender, ChatHubMessage message)
         {
             ChatHubRoom room = this.Rooms.FirstOrDefault(item => item.Id == message.ChatHubRoomId);
-
             this.AddMessage(message, room);
-            this.UpdateUI();            
+
+            if (message.ChatHubRoomId.ToString() != this.ContextRoomId)
+            {
+                this.Rooms.FirstOrDefault(room => room.Id == message.ChatHubRoomId).UnreadMessages++;
+            }
+
+            string elementId = string.Concat("#message-window-", this.ModuleId.ToString(), "-", message.ChatHubRoomId.ToString());
+            int animationTime = 1000;
+            await this.ScrollService.ScrollToBottom(elementId, animationTime);
+
+            this.RunUpdateUI();
         }
 
         private void OnAddChatHubInvitationExecute(object sender, ChatHubInvitation item)
@@ -480,22 +500,22 @@ namespace Oqtane.ChatHubs.Services
         private void OnAddIngoredUserExexute(object sender, ChatHubUser user)
         {
             this.AddIgnoredUser(user);
-            this.UpdateUI();
+            this.RunUpdateUI();
         }
         private void OnRemoveIgnoredUserExecute(object sender, ChatHubUser user)
         {
             this.RemoveIgnoredUser(user);
-            this.UpdateUI();
+            this.RunUpdateUI();
         }
         private void OnAddIgnoredByUserExecute(object sender, ChatHubUser user)
         {
             this.AddIgnoredByUser(user);
-            this.UpdateUI();
+            this.RunUpdateUI();
         }
         private void OnRemoveIgnoredByUserExecute(object sender, ChatHubUser user)
         {
             this.RemoveIgnoredByUser(user);
-            this.UpdateUI();
+            this.RunUpdateUI();
         }
         private void OnClearHistoryExecute(object sender, int roomId)
         {
@@ -599,11 +619,6 @@ namespace Oqtane.ChatHubs.Services
             await this.GetLobbyRooms(this.ModuleId);
         }
 
-        public string apiurl
-        {
-            get { return CreateApiUrl(SiteState.Alias, "ChatHub"); }
-        }
-
         public async Task<List<ChatHubRoom>> GetChatHubRoomsByModuleIdAsync(int ModuleId)
         {
             return await HttpClient.GetJsonAsync<List<ChatHubRoom>>(apiurl + "/getchathubroomsbymoduleid?moduleid=" + ModuleId + "&entityid=" + ModuleId);
@@ -624,14 +639,37 @@ namespace Oqtane.ChatHubs.Services
         {
             await HttpClient.DeleteAsync(apiurl + "/deletechathubroom/" + ChatHubRoomId + "?moduleid=" + ModuleId + "&entityid=" + ModuleId);
         }
-
         public async Task DeleteRoomImageAsync(int ChatHubRoomId, int ModuleId)
         {
             await HttpClient.DeleteAsync(apiurl + "/deleteroomimage/" + ChatHubRoomId + "?moduleid=" + ModuleId + "&entityid=" + ModuleId);
         }
 
+        public string apiurl
+        {
+            //get { return NavigationManager.BaseUri + "api/ChatHub"; }
+            get { return CreateApiUrl(SiteState.Alias, "ChatHub"); }
+        }
+
         public void Dispose()
         {
+            this.VideoService.OnDataAvailableEventHandler -= async (object sender, dynamic e) => await OnDataAvailableEventHandlerExecute(e.dataURI, e.roomId, e.dataType);
+
+            this.OnConnectedEvent -= OnConnectedExecute;
+            this.OnAddChatHubRoomEvent -= OnAddChatHubRoomExecute;
+            this.OnRemoveChatHubRoomEvent -= OnRemoveChatHubRoomExecute;
+            this.OnAddChatHubUserEvent -= OnAddChatHubUserExecute;
+            this.OnRemoveChatHubUserEvent -= OnRemoveChatHubUserExecute;
+            this.OnAddChatHubMessageEvent -= OnAddChatHubMessageExecute;
+            this.OnAddChatHubInvitationEvent -= OnAddChatHubInvitationExecute;
+            this.OnRemoveChatHubInvitationEvent -= OnRemoveChatHubInvitationExecute;
+            this.OnAddIgnoredUserEvent -= OnAddIngoredUserExexute;
+            this.OnRemoveIgnoredUserEvent -= OnRemoveIgnoredUserExecute;
+            this.OnAddIgnoredByUserEvent -= OnAddIgnoredByUserExecute;
+            this.OnDownloadBytes -= OnDownloadBytesExecuteAsync;
+            this.OnRemoveIgnoredByUserEvent -= OnRemoveIgnoredByUserExecute;
+            this.OnClearHistoryEvent -= OnClearHistoryExecute;
+            this.OnDisconnectEvent -= OnDisconnectExecute;
+
             this.Connection.StopAsync();
         }
 
@@ -644,7 +682,19 @@ namespace Oqtane.ChatHubs.Services
         }
         private void HandleException(Exception exception)
         {
-            this.OnExceptionEvent.Invoke(this, new { Exception = exception, ConnectedUser = this.ConnectedUser });
+            string message = string.Empty;
+            if (exception.InnerException != null && exception.InnerException is HubException)
+            {
+                message = exception.ToString();
+                //message = exception.InnerException.Message.Substring(exception.InnerException.Message.IndexOf("HubException"));
+            }
+            else
+            {
+                message = exception.ToString();
+            }
+
+            BlazorAlertsService.NewBlazorAlert(message);
+            this.RunUpdateUI();
         }
 
         public async Task FixCorruptConnections(int ModuleId)

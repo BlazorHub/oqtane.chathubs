@@ -14,34 +14,23 @@ using System.Threading.Tasks;
 using BlazorStrap;
 using System.Text.RegularExpressions;
 using Oqtane.Shared.Models;
-using Microsoft.AspNetCore.SignalR;
 using BlazorAlerts;
 
 namespace Oqtane.ChatHubs
 {
-    public partial class IndexBase : ModuleBase, IDisposable
+    public class IndexBase : ModuleBase, IDisposable
     {
 
-        [Inject]
-        protected IJSRuntime JSRuntime { get; set; }
-        [Inject]
-        protected NavigationManager NavigationManager { get; set; }
-        [Inject]
-        protected HttpClient HttpClient { get; set; }
-        [Inject]
-        protected SiteState SiteState { get; set; }
-        [Inject]
-        protected ISettingService SettingService { get; set; }
-        [Inject]
-        protected BlazorAlertsService BlazorAlertsService { get; set; }
-        [Inject]
-        protected IChatHubService ChatHubService { get; set; }
-        [Inject]
-        protected VideoService VideoService { get; set; }
-        [Inject]
-        protected BrowserResizeService BrowserResizeService { get; set; }
-        [Inject]
-        protected ScrollService ScrollService { get; set; }
+        [Inject] protected IJSRuntime JSRuntime { get; set; }
+        [Inject] protected NavigationManager NavigationManager { get; set; }
+        [Inject] protected HttpClient HttpClient { get; set; }
+        [Inject] protected SiteState SiteState { get; set; }
+        [Inject] protected ISettingService SettingService { get; set; }
+        [Inject] protected BlazorAlertsService BlazorAlertsService { get; set; }
+        [Inject] protected IChatHubService ChatHubService { get; set; }
+        [Inject] protected VideoService VideoService { get; set; }
+        [Inject] protected BrowserResizeService BrowserResizeService { get; set; }
+        [Inject] protected ScrollService ScrollService { get; set; }
 
         public int MessageWindowHeight { get; set; }
         public int UserlistWindowHeight { get; set; }
@@ -69,9 +58,10 @@ namespace Oqtane.ChatHubs
 
         protected override void OnInitialized()
         {
-            this.ChatHubService.UpdateUI += UpdateUIStateHasChanged;
-            this.ChatHubService.OnAddChatHubMessageEvent += OnAddChatHubMessageExecute;
-            this.ChatHubService.OnExceptionEvent += OnExceptionExecute;
+            BrowserResizeService.OnResize += BrowserHasResized;
+            this.ChatHubService.OnUpdateUI += (object sender, EventArgs e) => UpdateUIStateHasChanged();
+
+            base.OnInitialized();
         }
 
         protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -79,7 +69,6 @@ namespace Oqtane.ChatHubs
 
             if (firstRender)
             {
-                BrowserResizeService.OnResize += BrowserHasResized;
                 await JSRuntime.InvokeAsync<object>("browserResize.registerResizeCallback");
                 await BrowserHasResized();
 
@@ -114,14 +103,6 @@ namespace Oqtane.ChatHubs
             }
 
             await base.OnParametersSetAsync();
-        }
-
-        private void UpdateUIStateHasChanged()
-        {
-            InvokeAsync(() =>
-            {
-                StateHasChanged();
-            });
         }
 
         public async Task DeleteRoom(int id)
@@ -206,11 +187,15 @@ namespace Oqtane.ChatHubs
         {
             try
             {
-                InnerHeight = await this.BrowserResizeService.GetInnerHeight();
-                InnerWidth = await this.BrowserResizeService.GetInnerWidth();
+                await InvokeAsync(async () =>
+                {
+                    InnerHeight = await this.BrowserResizeService.GetInnerHeight();
+                    InnerWidth = await this.BrowserResizeService.GetInnerWidth();
 
-                SetChatTabElementsHeight();
-                this.UpdateUIStateHasChanged();
+                    SetChatTabElementsHeight();
+
+                    StateHasChanged();
+                });
             }
             catch(Exception ex)
             {
@@ -225,35 +210,30 @@ namespace Oqtane.ChatHubs
             UserlistWindowHeight = 570;
         }
 
-        private async void OnAddChatHubMessageExecute(object sender, ChatHubMessage message)
-        {
-            if(message.ChatHubRoomId.ToString() != ChatHubService.ContextRoomId)
-            {
-                ChatHubService.Rooms.FirstOrDefault(room => room.Id == message.ChatHubRoomId).UnreadMessages++;
-                this.UpdateUIStateHasChanged();
-            }
-
-            string elementId = string.Concat("#message-window-", ModuleState.ModuleId.ToString(), "-", message.ChatHubRoomId.ToString());
-            int animationTime = 1000;
-            await this.ScrollService.ScrollToBottom(elementId, animationTime);
-        }
-
         public void UserlistItem_Clicked(MouseEventArgs e, ChatHubRoom room, ChatHubUser user)
         {
-            if (user.UserlistItemCollapsed)
+            InvokeAsync(() =>
             {
-                user.UserlistItemCollapsed = false;
-            }
-            else
-            {
-                foreach (var chatUser in room.Users.Where(x => x.UserlistItemCollapsed == true))
+                if (user.UserlistItemCollapsed)
                 {
-                    chatUser.UserlistItemCollapsed = false;
+                    user.UserlistItemCollapsed = false;
                 }
-                user.UserlistItemCollapsed = true;
-            }
+                else
+                {
+                    foreach (var chatUser in room.Users.Where(x => x.UserlistItemCollapsed == true))
+                    {
+                        chatUser.UserlistItemCollapsed = false;
+                    }
+                    user.UserlistItemCollapsed = true;
+                }
 
-            this.UpdateUIStateHasChanged();
+                StateHasChanged();
+            });
+        }
+
+        public void OpenProfile_Clicked(int userId, int roomId)
+        {
+            this.SettingsModalRef.OpenDialog();
         }
 
         public async Task FixCorruptConnections_ClickedAsync()
@@ -306,34 +286,19 @@ namespace Oqtane.ChatHubs
             return message;
         }
 
-        public async void OnExceptionExecute(object sender, dynamic dynamicObject)
+        private void UpdateUIStateHasChanged()
         {
-            Exception exception = dynamicObject.Exception;
-            ChatHubUser contextUser = dynamicObject.ConnectedUser;
-
-            string message = string.Empty;
-            if (exception.InnerException != null && exception.InnerException is HubException)
+            InvokeAsync(() =>
             {
-                message = exception.ToString();
-                //message = exception.InnerException.Message.Substring(exception.InnerException.Message.IndexOf("HubException"));
-            }
-            else
-            {
-                message = exception.ToString();
-            }
-
-            BlazorAlertsService.NewBlazorAlert(message);
+                StateHasChanged();
+            });
         }
 
         public void Dispose()
         {
-            this.ChatHubService.DisposeStreamTasks();
             BrowserResizeService.OnResize -= BrowserHasResized;
-        }
-        
-        public void OpenProfile_Clicked(int userId, int roomId)
-        {
-            this.SettingsModalRef.OpenDialog();
+            this.ChatHubService.OnUpdateUI -= (object sender, EventArgs e) => UpdateUIStateHasChanged();
+            this.ChatHubService.DisposeStreamTasks();
         }
 
         public void Show(BSTabEvent e)
