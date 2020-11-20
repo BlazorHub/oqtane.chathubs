@@ -135,6 +135,9 @@
   <data name="invite" xml:space="preserve">
     <value>invite;</value>
   </data>
+  <data name="kick" xml:space="preserve">
+    <value>kick;throw;fly;</value>
+  </data>
   <data name="me" xml:space="preserve">
     <value>me;myself;i;</value>
   </data>

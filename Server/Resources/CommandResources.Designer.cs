@@ -115,6 +115,15 @@ namespace Oqtane.ChatHubs.Server.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to kick;throw;fly;.
+        /// </summary>
+        public static string kick {
+            get {
+                return ResourceManager.GetString("kick", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to me;myself;i;.
         /// </summary>
         public static string me {

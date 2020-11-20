@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Security.Claims;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using Oqtane.Shared.Models;
 
@@ -9,7 +10,7 @@ namespace Oqtane.ChatHubs.Commands
         public override async Task Execute(CommandServicesContext commandServicesContext, CommandCallerContext commandCallerContext, string[] args, ChatHubUser caller)
         {
             IdentityUser identityUser = await commandServicesContext.UserManager.FindByNameAsync(caller.Username);
-            if (!commandServicesContext.UserManager.IsInRoleAsync(identityUser, Shared.Constants.AdminRole).Result)
+            if(!commandServicesContext.ChatHub.Context.User.HasClaim(ClaimTypes.Role, Shared.Constants.AdminRole))
             {
                 return;
             }
