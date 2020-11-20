@@ -1,6 +1,7 @@
 ﻿using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.SignalR;
 using Oqtane.Shared.Models;
 
 namespace Oqtane.ChatHubs.Commands
@@ -12,7 +13,7 @@ namespace Oqtane.ChatHubs.Commands
             IdentityUser identityUser = await commandServicesContext.UserManager.FindByNameAsync(caller.Username);
             if(!commandServicesContext.ChatHub.Context.User.HasClaim(ClaimTypes.Role, Shared.Constants.AdminRole))
             {
-                return;
+                throw new HubException("You do not have any permissions to run this command");
             }
 
             await ExecuteAdminOperation(commandServicesContext, commandCallerContext, args, caller);
