@@ -73,10 +73,8 @@ namespace Oqtane.ChatHubs
             {
 
                 Uri uri = new Uri(NavigationManager.BaseUri);
-                string webHostName = uri.Host;
-                string devHostName = "localhost";
-
-                this.ChatHubService.IdentityCookie = new Cookie(".AspNetCore.Identity.Application", await this.CookieService.GetCookieAsync(".AspNetCore.Identity.Application"), "/", NavigationManager.BaseUri.Contains("localhost") ? devHostName : webHostName);
+                string hostname = uri.Host;
+                this.ChatHubService.IdentityCookie = new Cookie(".AspNetCore.Identity.Application", await this.CookieService.GetCookieAsync(".AspNetCore.Identity.Application"), "/", hostname);
 
                 await JSRuntime.InvokeAsync<object>("browserResize.registerResizeCallback");
                 await BrowserHasResized();
