@@ -84,7 +84,7 @@
 
     window.__jsstreams = function (videoserviceObjectReference) {
 
-        this.__obj = {
+        __obj = {
 
             videoservice: videoserviceObjectReference,
             videolocalid: '#chathubs-video-local-',
