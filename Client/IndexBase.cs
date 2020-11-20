@@ -151,9 +151,9 @@ namespace Oqtane.ChatHubs
 
         public async Task EnterRoom_Clicked(int roomId, int moduleid)
         {
-            if(ChatHubService.Connection?.State == HubConnectionState.Connected)
+            if(!this.ChatHubService.Rooms.Any(item => item.Id == roomId) && ChatHubService.Connection?.State == HubConnectionState.Connected)
             {
-                await this.ChatHubService.EnterChatRoom(roomId);                
+                await this.ChatHubService.EnterChatRoom(roomId);
             }
         }
 
