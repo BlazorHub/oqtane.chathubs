@@ -164,7 +164,7 @@ namespace Oqtane.ChatHubs.Commands
             return iCommands;
         }
 
-        public static IEnumerable<ChatHubCommandMetaData> GetCommandsMetaDataByUserRole(string role)
+        public static IEnumerable<ChatHubCommandMetaData> GetCommandsMetaDataByUserRole(string[] roles)
         {
             var resourceManager = new ResourceManager(typeof(CommandResources));
             IEnumerable<ChatHubCommandMetaData> commands = from c in _commands.Value
@@ -172,7 +172,7 @@ namespace Oqtane.ChatHubs.Commands
                                                                              .GetCustomAttributes(true)
                                                                              .OfType<CommandAttribute>()
                                                                              .FirstOrDefault()
-                                                     where commandAttribute != null && commandAttribute.Roles.Contains(role)
+                                                     where commandAttribute != null && commandAttribute.Roles.Any(item => roles.Contains(item))
                                                      select new ChatHubCommandMetaData
                                                      {
                                                          ResourceName = commandAttribute.ResourceName,

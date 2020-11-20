@@ -446,7 +446,6 @@ namespace Oqtane.ChatHubs.Repository
         {
             try
             {
-
                 // TODO: remove oqtane framework weird workarrounds with discriminators
                 await db.Database.ExecuteSqlRawAsync($"UPDATE [dbo].[User] SET UserType='ChatHubUser' WHERE UserId={user.UserId}");
             }

@@ -18,6 +18,7 @@ using Microsoft.AspNetCore.Http;
 using Oqtane.ChatHubs.Commands;
 using Microsoft.AspNetCore.Components.Authorization;
 using Oqtane.Modules;
+using System.Security.Claims;
 
 namespace Oqtane.ChatHubs.Hubs
 {
@@ -320,9 +321,14 @@ namespace Oqtane.ChatHubs.Hubs
         public async Task SendCommandMetaDatas(int roomId)
         {
             ChatHubUser user = await this.GetChatHubUserAsync();
+            List<string> callerUserRoles = new List<string>() { Constants.AllUsersRole };
 
-            var callerUserRole = Constants.AllUsersRole;
-            List<ChatHubCommandMetaData> commandMetaDatas = CommandManager.GetCommandsMetaDataByUserRole(callerUserRole).ToList();
+            if (Context.User.HasClaim(ClaimTypes.Role, Shared.Constants.AdminRole))
+            {
+                callerUserRoles.Add(Constants.AdminRole);
+            }
+            
+            List<ChatHubCommandMetaData> commandMetaDatas = CommandManager.GetCommandsMetaDataByUserRole(callerUserRoles.ToArray()).ToList();
 
             ChatHubMessage chatHubMessage = new ChatHubMessage()
             {
