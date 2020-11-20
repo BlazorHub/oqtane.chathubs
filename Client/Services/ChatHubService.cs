@@ -18,6 +18,7 @@ using System.Threading;
 using System.Data;
 using Microsoft.AspNetCore.SignalR;
 using BlazorAlerts;
+using System.Net;
 
 namespace Oqtane.ChatHubs.Services
 {
@@ -35,6 +36,8 @@ namespace Oqtane.ChatHubs.Services
 
         public HubConnection Connection { get; set; }
         public ChatHubUser ConnectedUser { get; set; }
+
+        public Cookie IdentityCookie { get; set; }
         public string ContextRoomId { get; set; }
         public int ModuleId { get; set; }
 
@@ -120,6 +123,7 @@ namespace Oqtane.ChatHubs.Services
             var url = urlBuilder.ToString();
             Connection = new HubConnectionBuilder().WithUrl(url, options =>
             {
+                options.Cookies.Add(this.IdentityCookie);
                 options.Headers["moduleid"] = moduleId.ToString();
                 options.Headers["platform"] = "Oqtane";
                 options.Transports = HttpTransportType.WebSockets | HttpTransportType.LongPolling;
@@ -182,11 +186,19 @@ namespace Oqtane.ChatHubs.Services
 
         public async Task ConnectAsync()
         {
-            await this.Connection.StartAsync().ContinueWith(task =>
+            await this.Connection.StartAsync().ContinueWith(async task =>
             {
                 if (task.IsCompleted)
                 {
                     this.HandleException(task);
+
+                    await this.Connection.SendAsync("Init").ContinueWith((task) =>
+                    {
+                        if (task.IsCompleted)
+                        {
+                            this.HandleException(task);
+                        }
+                    });
                 }
             });
         }

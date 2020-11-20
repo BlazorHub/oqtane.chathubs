@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
+using Oqtane.Models;
 using Oqtane.Shared.Models;
 
 namespace Oqtane.ChatHubs.Repository
@@ -60,6 +61,7 @@ namespace Oqtane.ChatHubs.Repository
 
         #region UPDATE
 
+        Task UpdateUserAsync(User User);
         ChatHubRoom UpdateChatHubRoom(ChatHubRoom ChatHubRoom);
         ChatHubMessage UpdateChatHubMessage(ChatHubMessage ChatHubMessage);
         ChatHubConnection UpdateChatHubConnection(ChatHubConnection ChatHubConnection);

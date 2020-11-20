@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Components;
@@ -19,11 +20,12 @@ namespace Oqtane.ChatHubs.Services
         IJSRuntime JSRuntime { get; set; }
         VideoService VideoService { get; set; }
 
-        int ModuleId { get; set; }
-
         HubConnection Connection { get; set; }
         ChatHubUser ConnectedUser { get; set; }
+
+        Cookie IdentityCookie { get; set; }
         string ContextRoomId { get; set; }
+        int ModuleId { get; set; }
 
         List<ChatHubRoom> Lobbies { get; set; }
         List<ChatHubRoom> Rooms { get; set; }

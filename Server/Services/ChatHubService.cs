@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.SignalR;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Oqtane.ChatHubs.Repository;
 using Oqtane.Modules;
 using Oqtane.Shared.Enums;
@@ -57,19 +56,19 @@ namespace Oqtane.ChatHubs.Services
 
         public ChatHubUser CreateChatHubUserClientModel(ChatHubUser user)
         {
-            IEnumerable<ChatHubConnection> activeConnections = this.chatHubRepository.GetConnectionsByUserId(user.UserId);
-            var connections = activeConnections != null && !activeConnections.Any() ? new List<ChatHubConnection>() : activeConnections.Select(item => CreateChatHubConnectionClientModel(item)).ToList();
+            List<ChatHubConnection> activeConnections = this.chatHubRepository.GetConnectionsByUserId(user.UserId).Active().ToList();
+            List<ChatHubConnection> activeConnectionsClientModels = activeConnections != null && !activeConnections.Any() ? new List<ChatHubConnection>() : activeConnections.Select(item => CreateChatHubConnectionClientModel(item)).ToList();
 
             ChatHubSetting chatHubSettings = this.chatHubRepository.GetChatHubSetting(user.UserId);
-            ChatHubSetting chatHubSettingClientModel = this.CreateChatHubSettingClientModel(chatHubSettings);
+            ChatHubSetting chatHubSettingsClientModel = chatHubSettings != null ? this.CreateChatHubSettingClientModel(chatHubSettings) : null;
 
             return new ChatHubUser()
             {
                 UserId = user.UserId,
                 Username = user.Username,
                 DisplayName = user.DisplayName,
-                Connections = connections,
-                Settings = chatHubSettingClientModel,
+                Connections = activeConnectionsClientModels,
+                Settings = chatHubSettingsClientModel,
                 UserlistItemCollapsed = user.UserlistItemCollapsed,
                 CreatedOn = user.CreatedOn,
                 CreatedBy = user.CreatedBy,
@@ -167,27 +166,6 @@ namespace Oqtane.ChatHubs.Services
 
                 this.chatHubRepository.AddChatHubIgnore(chatHubIgnore);
             }
-        }
-
-        public async Task<ChatHubUser> IdentifyGuest(string connectionId)
-        {
-            ChatHubConnection connection = await Task.Run(() => chatHubRepository.GetConnectionByConnectionId(connectionId));
-            if (connection != null)
-            {
-                return await this.chatHubRepository.GetUserByIdAsync(connection.User.UserId);
-            }
-
-            return null;
-        }
-        public async Task<ChatHubUser> IdentifyUser(HubCallerContext Context)
-        {
-            if (Context.User.Identity.IsAuthenticated)
-            {
-                ChatHubUser user = await this.chatHubRepository.GetUserByUserNameAsync(Context.User.Identity.Name);
-                return user;
-            }
-
-            return null;
         }
 
         public List<string> GetAllExceptConnectionIds(ChatHubUser user)

@@ -17,7 +17,7 @@ using Oqtane.ChatHubs.Repository;
 using Oqtane.Infrastructure;
 using System.Drawing;
 using Oqtane.ChatHubs.Services;
-using Oqtane.Controllers;
+using Oqtane.ChatHubs.Hubs;
 
 namespace Oqtane.ChatHubs.Controllers
 {
@@ -27,16 +27,18 @@ namespace Oqtane.ChatHubs.Controllers
     {
 
         IWebHostEnvironment webHostEnvironment;
-        private readonly IHubContext<Hubs.ChatHub> chatHub;
+        private readonly IHubContext<Hubs.ChatHub> chatHubContext;
+        private readonly ChatHub chatHub;
         private readonly UserManager<IdentityUser> userManager;
         private readonly IChatHubRepository chatHubRepository;
         private readonly IChatHubService chatHubService;
         private readonly ILogManager logger;
         private int EntityId = -1; // passed as a querystring parameter for authorization and used for validation
 
-        public ChatHubController(IWebHostEnvironment webHostEnvironment, IHubContext<Hubs.ChatHub> chatHub, UserManager<IdentityUser> identityUserManager, IChatHubRepository chatHubRepository, IChatHubService chatHubService, IHttpContextAccessor httpContextAccessor, ILogManager logger)
+        public ChatHubController(IWebHostEnvironment webHostEnvironment, IHubContext<ChatHub> chatHubContext, ChatHub chatHub, UserManager<IdentityUser> identityUserManager, IChatHubRepository chatHubRepository, IChatHubService chatHubService, IHttpContextAccessor httpContextAccessor, ILogManager logger)
         {
             this.webHostEnvironment = webHostEnvironment;
+            this.chatHubContext = chatHubContext;
             this.chatHub = chatHub;
             this.userManager = identityUserManager;
             this.chatHubRepository = chatHubRepository;
@@ -59,7 +61,7 @@ namespace Oqtane.ChatHubs.Controllers
 
                 var rooms = chatHubRepository.GetChatHubRooms().Public().ToList();
                 if (rooms != null && rooms.Any())
-                {                        
+                {
                     foreach(var room in rooms)
                     {
                         var item = await this.chatHubService.CreateChatHubRoomClientModelAsync(room);
@@ -235,7 +237,7 @@ namespace Oqtane.ChatHubs.Controllers
                 }
             }
 
-            ChatHubUser user = await this.chatHubService.IdentifyGuest(connectionId);
+            ChatHubUser user = await this.chatHub.IdentifyGuest(connectionId);
             if (user == null)
             {
                 return new BadRequestObjectResult(new { Message = "No user found." });
@@ -374,7 +376,7 @@ namespace Oqtane.ChatHubs.Controllers
                 }
 
                 chatHubMessage = this.chatHubService.CreateChatHubMessageClientModel(chatHubMessage);
-                await this.chatHub.Clients.Group(chatHubMessage.ChatHubRoomId.ToString()).SendAsync("AddMessage", chatHubMessage);
+                await this.chatHubContext.Clients.Group(chatHubMessage.ChatHubRoomId.ToString()).SendAsync("AddMessage", chatHubMessage);
                 return new OkObjectResult(new { Message = "Successfully Uploaded Files." });
             }
             catch (Exception ex)

@@ -15,6 +15,7 @@ using BlazorStrap;
 using System.Text.RegularExpressions;
 using Oqtane.Shared.Models;
 using BlazorAlerts;
+using System.Net;
 
 namespace Oqtane.ChatHubs
 {
@@ -31,6 +32,7 @@ namespace Oqtane.ChatHubs
         [Inject] protected VideoService VideoService { get; set; }
         [Inject] protected BrowserResizeService BrowserResizeService { get; set; }
         [Inject] protected ScrollService ScrollService { get; set; }
+        [Inject] protected CookieService CookieService { get; set; }
 
         public int MessageWindowHeight { get; set; }
         public int UserlistWindowHeight { get; set; }
@@ -69,6 +71,13 @@ namespace Oqtane.ChatHubs
 
             if (firstRender)
             {
+
+                Uri uri = new Uri(NavigationManager.BaseUri);
+                string webHostName = uri.Host;
+                string devHostName = "localhost";
+
+                this.ChatHubService.IdentityCookie = new Cookie(".AspNetCore.Identity.Application", await this.CookieService.GetCookieAsync(".AspNetCore.Identity.Application"), "/", NavigationManager.BaseUri.Contains("localhost") ? devHostName : webHostName);
+
                 await JSRuntime.InvokeAsync<object>("browserResize.registerResizeCallback");
                 await BrowserHasResized();
 

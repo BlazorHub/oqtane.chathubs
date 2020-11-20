@@ -20,10 +20,6 @@ namespace Oqtane.ChatHubs.Services
 
         void IgnoreUser(ChatHubUser guest, ChatHubUser targetUser);
 
-        Task<ChatHubUser> IdentifyGuest(string connectionId);
-
-        Task<ChatHubUser> IdentifyUser(HubCallerContext Context);
-
         List<string> GetAllExceptConnectionIds(ChatHubUser user);
 
         ChatHubRoom GetOneVsOneRoom(ChatHubUser caller, ChatHubUser targetUser, int moduleId);

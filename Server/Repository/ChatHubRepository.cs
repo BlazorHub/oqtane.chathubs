@@ -6,6 +6,7 @@ using System;
 using System.Threading.Tasks;
 using Oqtane.Shared.Enums;
 using Oqtane.Shared.Models;
+using Oqtane.Models;
 
 namespace Oqtane.ChatHubs.Repository
 {
@@ -14,9 +15,9 @@ namespace Oqtane.ChatHubs.Repository
 
         private readonly ChatHubContext db;
 
-        public ChatHubRepository(ChatHubContext context)
+        public ChatHubRepository(ChatHubContext dbContext)
         {
-            db = context;
+            this.db = dbContext;
         }
 
         #region GET
@@ -441,6 +442,19 @@ namespace Oqtane.ChatHubs.Repository
 
         #region UPDATE
 
+        public async Task UpdateUserAsync(User user)
+        {
+            try
+            {
+
+                // TODO: remove oqtane framework weird workarrounds with discriminators
+                await db.Database.ExecuteSqlRawAsync($"UPDATE [dbo].[User] SET UserType='ChatHubUser' WHERE UserId={user.UserId}");
+            }
+            catch
+            {
+                throw;
+            }
+        }
         public ChatHubRoom UpdateChatHubRoom(ChatHubRoom ChatHubRoom)
         {
             try

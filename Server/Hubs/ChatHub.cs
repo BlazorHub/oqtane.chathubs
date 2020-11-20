@@ -16,17 +16,19 @@ using Oqtane.ChatHubs.Services;
 using Oqtane.ChatHubs.Repository;
 using Microsoft.AspNetCore.Http;
 using Oqtane.ChatHubs.Commands;
-using System.Threading;
-using System.Runtime.CompilerServices;
+using Microsoft.AspNetCore.Components.Authorization;
+using Oqtane.Modules;
 
 namespace Oqtane.ChatHubs.Hubs
 {
 
     [AllowAnonymous]
-    public class ChatHub : Hub
+    public class ChatHub : Hub, IService
     {
 
         private IHttpContextAccessor httpContextAccessor;
+        private readonly AuthenticationStateProvider authenticationStateProvider;
+        private readonly IUserRepository userRepository;
         private readonly IChatHubRepository chatHubRepository;
         private readonly IChatHubService chatHubService;
         private readonly UserManager<IdentityUser> userManager;
@@ -35,6 +37,8 @@ namespace Oqtane.ChatHubs.Hubs
 
         public ChatHub(
             IHttpContextAccessor httpContextAccessor,
+            AuthenticationStateProvider authenticationStateProvider,
+            IUserRepository userRepository,
             IChatHubRepository chatHubRepository,
             IChatHubService chatHubService,
             UserManager<IdentityUser> identityUserManager,
@@ -43,6 +47,8 @@ namespace Oqtane.ChatHubs.Hubs
             )
         {
             this.httpContextAccessor = httpContextAccessor;
+            this.authenticationStateProvider = authenticationStateProvider;
+            this.userRepository = userRepository;
             this.chatHubRepository = chatHubRepository;
             this.chatHubService = chatHubService;
             this.userManager = identityUserManager;
@@ -145,12 +151,11 @@ namespace Oqtane.ChatHubs.Hubs
         [AllowAnonymous]
         public override async Task OnConnectedAsync()
         {
+            string platform = Context.GetHttpContext().Request.Headers["platform"];
             string moduleId = Context.GetHttpContext().Request.Headers["moduleid"];
             List<ChatHubRoom> list = this.chatHubRepository.GetChatHubRoomsByModuleId(int.Parse(moduleId)).ToList();
 
-            string platform = Context.GetHttpContext().Request.Headers["platform"];
-
-            ChatHubUser user = await this.chatHubService.IdentifyUser(Context);
+            ChatHubUser user = await this.IdentifyUser();
             if (user != null)
             {
                 user = await this.OnConnectedUser(user);
@@ -164,6 +169,19 @@ namespace Oqtane.ChatHubs.Hubs
             await Clients.Client(Context.ConnectionId).SendAsync("OnConnected", chatHubUserClientModel);
             await base.OnConnectedAsync();
         }
+
+        [AllowAnonymous]
+        public async Task Init()
+        {
+            ChatHubUser user = await this.GetChatHubUserAsync();
+            var rooms = this.chatHubRepository.GetChatHubRoomsByUser(user).ToList();
+
+            foreach(var room in rooms)
+            {
+                await this.EnterChatRoom(room.Id);
+            }
+        }
+
         [AllowAnonymous]
         public override async Task OnDisconnectedAsync(Exception exception)
         {
@@ -193,12 +211,7 @@ namespace Oqtane.ChatHubs.Hubs
         public async Task EnterChatRoom(int roomId)
         {
             ChatHubUser user = await this.GetChatHubUserAsync();
-
             ChatHubRoom room = chatHubRepository.GetChatHubRoom(roomId);
-            if (this.chatHubRepository.GetChatHubUsersByRoom(room).Any(item => item.UserId == user.UserId))
-            {
-                throw new HubException("User already entered room.");
-            }
 
             if (room.OneVsOne())
             {
@@ -528,10 +541,10 @@ namespace Oqtane.ChatHubs.Hubs
 
         private async Task<ChatHubUser> GetChatHubUserAsync()
         {
-            ChatHubUser user = await this.chatHubService.IdentifyUser(Context);
+            ChatHubUser user = await this.IdentifyUser();
             if (user == null)
             {
-                user = await this.chatHubService.IdentifyGuest(Context.ConnectionId);
+                user = await this.IdentifyGuest(Context.ConnectionId);
             }
 
             if (user == null)
@@ -540,6 +553,40 @@ namespace Oqtane.ChatHubs.Hubs
             }
 
             return user;
+        }
+
+        public async Task<ChatHubUser> IdentifyGuest(string connectionId)
+        {
+            ChatHubConnection connection = await Task.Run(() => chatHubRepository.GetConnectionByConnectionId(connectionId));
+            if (connection != null)
+            {
+                return await this.chatHubRepository.GetUserByIdAsync(connection.User.UserId);
+            }
+
+            return null;
+        }
+
+        public async Task<ChatHubUser> IdentifyUser()
+        {
+            var name = Context.User.Identity.Name;
+            
+            if (Context.User.Identity.IsAuthenticated)
+            {
+                ChatHubUser chatHubUser = await this.chatHubRepository.GetUserByUserNameAsync(name);
+                if(chatHubUser == null)
+                {
+                    User user = this.userRepository.GetUser(name);
+                    if(user != null)
+                    {
+                        await this.chatHubRepository.UpdateUserAsync(user);
+                        chatHubUser = await this.chatHubRepository.GetUserByUserNameAsync(name);
+                    }
+                }
+
+                return chatHubUser;
+            }
+
+            return null;
         }
 
     }
