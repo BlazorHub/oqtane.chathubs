@@ -27,8 +27,6 @@ namespace Oqtane.ChatHubs.Hubs
     public class ChatHub : Hub, IService
     {
 
-        private IHttpContextAccessor httpContextAccessor;
-        private readonly AuthenticationStateProvider authenticationStateProvider;
         private readonly IUserRepository userRepository;
         private readonly IChatHubRepository chatHubRepository;
         private readonly IChatHubService chatHubService;
@@ -36,9 +34,9 @@ namespace Oqtane.ChatHubs.Hubs
         private readonly IRoleRepository roles;
         private readonly IUserRoleRepository userRoles;
 
+        public static Dictionary<int, string> VideoFirstChunks = new Dictionary<int, string>();
+
         public ChatHub(
-            IHttpContextAccessor httpContextAccessor,
-            AuthenticationStateProvider authenticationStateProvider,
             IUserRepository userRepository,
             IChatHubRepository chatHubRepository,
             IChatHubService chatHubService,
@@ -47,14 +45,60 @@ namespace Oqtane.ChatHubs.Hubs
             IUserRoleRepository userRoles
             )
         {
-            this.httpContextAccessor = httpContextAccessor;
-            this.authenticationStateProvider = authenticationStateProvider;
             this.userRepository = userRepository;
             this.chatHubRepository = chatHubRepository;
             this.chatHubService = chatHubService;
             this.userManager = identityUserManager;
             this.roles = roles;
             this.userRoles = userRoles;
+        }
+
+        private async Task<ChatHubUser> GetChatHubUserAsync()
+        {
+            ChatHubUser user = await this.IdentifyUser();
+            if (user == null)
+            {
+                user = await this.IdentifyGuest(Context.ConnectionId);
+            }
+
+            if (user == null)
+            {
+                throw new HubException("No valid user found.");
+            }
+
+            return user;
+        }
+        public async Task<ChatHubUser> IdentifyGuest(string connectionId)
+        {
+            ChatHubConnection connection = await Task.Run(() => chatHubRepository.GetConnectionByConnectionId(connectionId));
+            if (connection != null)
+            {
+                return await this.chatHubRepository.GetUserByIdAsync(connection.User.UserId);
+            }
+
+            return null;
+        }
+        public async Task<ChatHubUser> IdentifyUser()
+        {
+            var username = Context.User.Identity.Name;
+
+            if (Context.User.Identity.IsAuthenticated)
+            {
+                ChatHubUser chatHubUser = await this.chatHubRepository.GetUserByUserNameAsync(username);
+                if (chatHubUser == null)
+                {
+                    User user = this.userRepository.GetUser(username);
+                    if (user != null)
+                    {
+                        await this.chatHubRepository.UpdateUserAsync(user);
+                        chatHubUser = await this.chatHubRepository.GetUserByUserNameAsync(username);
+                    }
+                }
+
+                return chatHubUser;
+            }
+
+            return null;
         }
 
         private async Task<ChatHubUser> OnConnectedGuest()
@@ -172,18 +216,6 @@ namespace Oqtane.ChatHubs.Hubs
         }
 
         [AllowAnonymous]
-        public async Task Init()
-        {
-            ChatHubUser user = await this.GetChatHubUserAsync();
-            var rooms = this.chatHubRepository.GetChatHubRoomsByUser(user).ToList();
-
-            foreach(var room in rooms)
-            {
-                await this.EnterChatRoom(room.Id);
-            }
-        }
-
-        [AllowAnonymous]
         public override async Task OnDisconnectedAsync(Exception exception)
         {
             ChatHubUser user = await this.GetChatHubUserAsync();
@@ -206,6 +238,18 @@ namespace Oqtane.ChatHubs.Hubs
             chatHubRepository.UpdateChatHubConnection(connection);
 
             await base.OnDisconnectedAsync(exception);
+        }
+
+        [AllowAnonymous]
+        public async Task Init()
+        {
+            ChatHubUser user = await this.GetChatHubUserAsync();
+            var rooms = this.chatHubRepository.GetChatHubRoomsByUser(user).ToList();
+
+            foreach (var room in rooms)
+            {
+                await this.EnterChatRoom(room.Id);
+            }
         }
 
         [AllowAnonymous]
@@ -287,64 +331,6 @@ namespace Oqtane.ChatHubs.Hubs
             }
         }
 
-        public static Dictionary<int, string> VideoFirstChunks = new Dictionary<int, string>();
-
-        [AllowAnonymous]
-        public async Task UploadBytes(IAsyncEnumerable<string> dataURI, int roomId, string dataType)
-        {
-            ChatHubUser user = await this.GetChatHubUserAsync();
-            var connectionsIds = this.chatHubService.GetAllExceptConnectionIds(user);
-
-            foreach (var connection in user.Connections)
-            {
-                connectionsIds.Add(connection.ConnectionId);
-            }
-
-            string dataURIresult = string.Empty;
-            IAsyncEnumerator<string> enumerators = dataURI.GetAsyncEnumerator();
-
-            while (await enumerators.MoveNextAsync())
-            {
-                dataURIresult += enumerators.Current;
-            }
-
-            await Clients.GroupExcept(roomId.ToString(), connectionsIds).SendAsync("DownloadBytes", dataURIresult, roomId, dataType);
-        }
-
-        private async Task<bool> ExecuteCommandManager(ChatHubUser chatHubUser, string message, int roomId)
-        {
-            var commandManager = new CommandManager(Context.ConnectionId, roomId, chatHubUser, this, chatHubService, chatHubRepository, userManager);
-            return await commandManager.TryHandleCommand(message);
-        }
-
-        [AllowAnonymous]
-        public async Task SendCommandMetaDatas(int roomId)
-        {
-            ChatHubUser user = await this.GetChatHubUserAsync();
-            List<string> callerUserRoles = new List<string>() { Constants.AllUsersRole };
-
-            if (Context.User.HasClaim(ClaimTypes.Role, Shared.Constants.AdminRole))
-            {
-                callerUserRoles.Add(Constants.AdminRole);
-            }
-            
-            List<ChatHubCommandMetaData> commandMetaDatas = CommandManager.GetCommandsMetaDataByUserRole(callerUserRoles.ToArray()).ToList();
-
-            ChatHubMessage chatHubMessage = new ChatHubMessage()
-            {
-                ChatHubRoomId = roomId,
-                ChatHubUserId = user.UserId,
-                User = user,
-                Content = string.Empty,
-                Type = Enum.GetName(typeof(ChatHubMessageType), ChatHubMessageType.Commands),
-                CommandMetaDatas = commandMetaDatas
-            };
-            this.chatHubRepository.AddChatHubMessage(chatHubMessage);
-
-            ChatHubMessage chatHubMessageClientModel = this.chatHubService.CreateChatHubMessageClientModel(chatHubMessage);
-            await Clients.Clients(user.Connections.Active().Select(c => c.ConnectionId).ToArray<string>()).SendAsync("AddMessage", chatHubMessageClientModel);
-        }
-
         [AllowAnonymous]
         public async Task SendMessage(string message, int roomId, int moduleId)
         {
@@ -368,6 +354,38 @@ namespace Oqtane.ChatHubs.Hubs
             ChatHubMessage chatHubMessageClientModel = this.chatHubService.CreateChatHubMessageClientModel(chatHubMessage);
             var connectionsIds = this.chatHubService.GetAllExceptConnectionIds(user);
             await Clients.GroupExcept(roomId.ToString(), connectionsIds).SendAsync("AddMessage", chatHubMessageClientModel);
+        }
+        private async Task<bool> ExecuteCommandManager(ChatHubUser chatHubUser, string message, int roomId)
+        {
+            var commandManager = new CommandManager(Context.ConnectionId, roomId, chatHubUser, this, chatHubService, chatHubRepository, userManager);
+            return await commandManager.TryHandleCommand(message);
+        }
+        [AllowAnonymous]
+        public async Task SendCommandMetaDatas(int roomId)
+        {
+            ChatHubUser user = await this.GetChatHubUserAsync();
+            List<string> callerUserRoles = new List<string>() { Constants.AllUsersRole };
+
+            if (Context.User.HasClaim(ClaimTypes.Role, Shared.Constants.AdminRole))
+            {
+                callerUserRoles.Add(Constants.AdminRole);
+            }
+
+            List<ChatHubCommandMetaData> commandMetaDatas = CommandManager.GetCommandsMetaDataByUserRole(callerUserRoles.ToArray()).ToList();
+
+            ChatHubMessage chatHubMessage = new ChatHubMessage()
+            {
+                ChatHubRoomId = roomId,
+                ChatHubUserId = user.UserId,
+                User = user,
+                Content = string.Empty,
+                Type = Enum.GetName(typeof(ChatHubMessageType), ChatHubMessageType.Commands),
+                CommandMetaDatas = commandMetaDatas
+            };
+            this.chatHubRepository.AddChatHubMessage(chatHubMessage);
+
+            ChatHubMessage chatHubMessageClientModel = this.chatHubService.CreateChatHubMessageClientModel(chatHubMessage);
+            await Clients.Clients(user.Connections.Active().Select(c => c.ConnectionId).ToArray<string>()).SendAsync("AddMessage", chatHubMessageClientModel);
         }
 
         public async Task SendClientNotification(string message, int roomId, string connectionId, ChatHubUser targetUser, ChatHubMessageType chatHubMessageType)
@@ -400,6 +418,28 @@ namespace Oqtane.ChatHubs.Hubs
             ChatHubMessage chatHubMessageClientModel = this.chatHubService.CreateChatHubMessageClientModel(chatHubMessage);
             var connectionsIds = this.chatHubService.GetAllExceptConnectionIds(contextUser);
             await Clients.GroupExcept(roomId.ToString(), connectionsIds).SendAsync("AddMessage", chatHubMessageClientModel);
+        }
+
+        [AllowAnonymous]
+        public async Task UploadBytes(IAsyncEnumerable<string> dataURI, int roomId, string dataType)
+        {
+            ChatHubUser user = await this.GetChatHubUserAsync();
+            var connectionsIds = this.chatHubService.GetAllExceptConnectionIds(user);
+
+            foreach (var connection in user.Connections)
+            {
+                connectionsIds.Add(connection.ConnectionId);
+            }
+
+            string dataURIresult = string.Empty;
+            IAsyncEnumerator<string> enumerators = dataURI.GetAsyncEnumerator();
+
+            while (await enumerators.MoveNextAsync())
+            {
+                dataURIresult += enumerators.Current;
+            }
+
+            await Clients.GroupExcept(roomId.ToString(), connectionsIds).SendAsync("DownloadBytes", dataURIresult, roomId, dataType);
         }
 
         [AllowAnonymous]
@@ -520,7 +560,13 @@ namespace Oqtane.ChatHubs.Hubs
             var displayname = string.Concat(name, "-", numbers);
             return displayname;
         }
-
+        private bool IsValidGuestUsername(string guestName)
+        {
+            string guestNamePattern = "^([a-zA-Z0-9_]{3,32})$";
+            Regex regex = new Regex(guestNamePattern);
+            Match match = regex.Match(guestName);
+            return match.Success;
+        }
         private string MakeStringAnonymous(string value, int tolerance, char symbol = '*')
         {
             if(tolerance >= value.Length)
@@ -535,64 +581,6 @@ namespace Oqtane.ChatHubs.Hubs
             }
 
             return newValue;
-        }
-
-        private bool IsValidGuestUsername(string guestName)
-        {
-            string guestNamePattern = "^([a-zA-Z0-9_]{3,32})$";
-            Regex regex = new Regex(guestNamePattern);
-            Match match = regex.Match(guestName);
-            return match.Success;
-        }
-
-        private async Task<ChatHubUser> GetChatHubUserAsync()
-        {
-            ChatHubUser user = await this.IdentifyUser();
-            if (user == null)
-            {
-                user = await this.IdentifyGuest(Context.ConnectionId);
-            }
-
-            if (user == null)
-            {
-                throw new HubException("No valid user found.");
-            }
-
-            return user;
-        }
-
-        public async Task<ChatHubUser> IdentifyGuest(string connectionId)
-        {
-            ChatHubConnection connection = await Task.Run(() => chatHubRepository.GetConnectionByConnectionId(connectionId));
-            if (connection != null)
-            {
-                return await this.chatHubRepository.GetUserByIdAsync(connection.User.UserId);
-            }
-
-            return null;
-        }
-
-        public async Task<ChatHubUser> IdentifyUser()
-        {
-            var name = Context.User.Identity.Name;
-            
-            if (Context.User.Identity.IsAuthenticated)
-            {
-                ChatHubUser chatHubUser = await this.chatHubRepository.GetUserByUserNameAsync(name);
-                if(chatHubUser == null)
-                {
-                    User user = this.userRepository.GetUser(name);
-                    if(user != null)
-                    {
-                        await this.chatHubRepository.UpdateUserAsync(user);
-                        chatHubUser = await this.chatHubRepository.GetUserByUserNameAsync(name);
-                    }
-                }
-
-                return chatHubUser;
-            }
-
-            return null;
         }
 
     }

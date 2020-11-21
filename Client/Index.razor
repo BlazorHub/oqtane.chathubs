@@ -60,16 +60,22 @@
         <div class="form-group">
             <input type="text" id="guestUsernameInput-@ModuleState.ModuleId.ToString()" class="form-control" @bind-value="@GuestUsername" placeholder="Choose an username" />
         </div>
-
         <div class="form-group">
             <button type="button" class="btn btn-sm btn-link bg-white border border-light" @onclick="@(async () => await ConnectAsGuest())">Connect to chat</button>
         </div>
     }
     else if (ChatHubService.Connection?.State == HubConnectionState.Connected)
     {
-        <pre class="bg-white">
-            Connected as @ChatHubService.ConnectedUser?.DisplayName        
-        </pre>
+        <div class="d-flex justify-content-between bd-highlight mb-2">
+            <div class="flex-fill bd-highlight">
+                <div class="bg-white px-2 py-1 px-md-5 py-md-3" style="font-family: Consolas, monospace;">
+                    Connected as @ChatHubService.ConnectedUser?.DisplayName
+                </div>
+            </div>
+            <div class="flex-fill bd-highlight bg-light p-1 p-md-3">
+                <ActionLink Action="Add" Security="SecurityAccessLevel.Anonymous" Text="Add new post" class="btn btn-sm btn-link w-100 bg-transparent" />
+            </div>
+        </div>
     }
 
     @if (ChatHubService.Lobbies != null)
@@ -170,25 +176,6 @@
 
                         </BSTabContent>
                     </BSTab>
-
-                    @if (ChatHubService.Connection?.State == HubConnectionState.Connected)
-                    {
-                        <BSTab>
-                            <BSTabLabel>
-                                <button class="btn btn-link">Settings</button>
-                            </BSTabLabel>
-                            <BSTabContent>
-                                <div class="jumbotron jumbotron-fluid bg-white py-1 mb-2">
-                                    <div class="container">
-                                        <h1 class="display-4">Fluid jumbotron</h1>
-                                        <p class="lead">This is a simple hero unit, a simple jumbotron-style component for calling extra attention to featured content or information.</p>
-
-                                        <ActionLink Action="Add" Security="SecurityAccessLevel.Anonymous" Text="Add Room" />
-                                    </div>
-                                </div>
-                            </BSTabContent>
-                        </BSTab>
-                    }
 
                     @foreach (ChatHubRoom room in ChatHubService.Rooms)
                     {
