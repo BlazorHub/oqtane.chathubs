@@ -1,0 +1,18 @@
+﻿@namespace BlazorWindows
+@inherits WindowItemBase
+
+@using Microsoft.AspNetCore.Components.Web
+
+<CascadingValue Value=this>
+
+    <li>
+        <a @onclick="async () => await ActivateWindow()" class="nav-link @TitleCssClass" role="button">
+            @WindowTitle
+        </a>
+    </li>
+
+</CascadingValue>
+
+@code {
+
+}

@@ -10,6 +10,7 @@
 @using BlazorTable
 @using System.Web
 @using BlazorAlerts
+@using BlazorWindows
 
 <style type="text/css">
 
@@ -557,3 +558,34 @@
 
 <ImageModal @ref="ImageModalRef"></ImageModal>
 <SettingsModal @ref="SettingsModalRef"></SettingsModal>
+
+<div class="bg-light my-3">
+
+    <WindowContainer ShowEvent="@ShowWindow" HideEvent="@HideWindow" ShownEvent="@ShownWindow" HiddenEvent="@HiddenWindow">
+        <WindowItem>
+            <WindowTitle>
+                Blazor Window 1
+            </WindowTitle>
+            <WindowContent>
+                Hello World 1
+            </WindowContent>
+        </WindowItem>
+        <WindowItem>
+            <WindowTitle>
+                Blazor Window 2
+            </WindowTitle>
+            <WindowContent>
+                Hello World 2
+            </WindowContent>
+        </WindowItem>
+        <WindowItem>
+            <WindowTitle>
+                Blazor Window 3
+            </WindowTitle>
+            <WindowContent>
+                Hello World 3
+            </WindowContent>
+        </WindowItem>
+    </WindowContainer>
+
+</div>

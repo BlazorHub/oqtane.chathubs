@@ -15,13 +15,14 @@ using BlazorStrap;
 using System.Text.RegularExpressions;
 using Oqtane.Shared.Models;
 using BlazorAlerts;
+using BlazorWindows;
 using System.Net;
 
 namespace Oqtane.ChatHubs
 {
     public class IndexBase : ModuleBase, IDisposable
     {
-
+        
         [Inject] protected IJSRuntime JSRuntime { get; set; }
         [Inject] protected NavigationManager NavigationManager { get; set; }
         [Inject] protected HttpClient HttpClient { get; set; }
@@ -329,6 +330,23 @@ namespace Oqtane.ChatHubs
         }
         public void Hidden(BSTabEvent e)
         {
+        }
+
+        public void ShowWindow(WindowEventArgs e)
+        {
+            this.BlazorAlertsService.NewBlazorAlert("on show");
+        }
+        public void HideWindow(WindowEventArgs e)
+        {
+            this.BlazorAlertsService.NewBlazorAlert("on hide");
+        }
+        public void ShownWindow(WindowEventArgs e)
+        {
+            this.BlazorAlertsService.NewBlazorAlert("on shown");
+        }
+        public void HiddenWindow(WindowEventArgs e)
+        {
+            this.BlazorAlertsService.NewBlazorAlert("on hidden");
         }
 
     }
