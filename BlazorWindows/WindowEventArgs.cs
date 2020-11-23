@@ -9,9 +9,9 @@ namespace BlazorWindows
     public class WindowEventArgs
     {
 
-        public IWindowItem PreviousItem { get; set; }
+        public IWindowItem HiddenItem { get; set; }
 
-        public IWindowItem NextItem { get; set; }
+        public IWindowItem ShownItem { get; set; }
 
     }
 }

@@ -14,17 +14,39 @@ namespace BlazorWindows
 
         [Parameter] public RenderFragment WindowContent { get; set; }
 
+        [Parameter] public bool InitialSelection { get; set; }
+
         protected override async Task OnInitializedAsync()
         {
-            await this.WindowContainer.AddWindow(this);
+            if (this.InitialSelection)
+            {
+                await this.WindowContainer.SetActiveWindow(this);
+            }
+
+            await base.OnInitializedAsync();
+        }
+
+        public override async Task SetParametersAsync(ParameterView parameters)
+        {
+            await base.SetParametersAsync(parameters);
+        }
+
+        protected override async Task OnAfterRenderAsync(bool firstRender)
+        {
+            if (firstRender)
+            {
+
+            }
+
+            await base.OnAfterRenderAsync(firstRender);
         }
 
         public string TitleCssClass => this.WindowContainer.ActiveWindow == this ? "active" : null;
 
         public async Task ActivateWindow()
         {
-            WindowEventArgs objShown = new WindowEventArgs { PreviousItem = this.WindowContainer.ActiveWindow, NextItem = this };
-            WindowEventArgs objHidden = new WindowEventArgs { PreviousItem = this.WindowContainer.ActiveWindow, NextItem = this };
+            WindowEventArgs objShown = new WindowEventArgs { HiddenItem = this.WindowContainer.ActiveWindow, ShownItem = this };
+            WindowEventArgs objHidden = new WindowEventArgs { HiddenItem = this.WindowContainer.ActiveWindow, ShownItem = this };
 
             await this.WindowContainer.SetActiveWindow(this);
             this.WindowContainer.ShownEvent.Invoke(objShown);

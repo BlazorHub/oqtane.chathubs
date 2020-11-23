@@ -69,9 +69,9 @@
     {
         <div class="d-flex justify-content-between bd-highlight mb-2">
             <div class="flex-fill bd-highlight">
-                <div class="bg-white px-2 py-1 px-md-5 py-md-3" style="font-family: Consolas, monospace;">
+                <small class="bg-white px-2 py-1 px-md-5 py-md-3" style="font-family: Consolas, monospace;">
                     Connected as @ChatHubService.ConnectedUser?.DisplayName
-                </div>
+                </small>
             </div>
             <div class="flex-fill bd-highlight bg-light p-1 p-md-3">
                 <ActionLink Action="Add" Security="SecurityAccessLevel.Anonymous" Text="Add new post" class="btn btn-sm btn-link w-100 bg-transparent" />
@@ -562,7 +562,7 @@
 <div class="bg-light my-3">
 
     <WindowContainer ShowEvent="@ShowWindow" HideEvent="@HideWindow" ShownEvent="@ShownWindow" HiddenEvent="@HiddenWindow">
-        <WindowItem>
+        <WindowItem InitialSelection="@true">
             <WindowTitle>
                 Blazor Window 1
             </WindowTitle>

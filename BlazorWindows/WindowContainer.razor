@@ -1,49 +1,19 @@
 ﻿@namespace BlazorWindows
 
+@inherits WindowContainerBase
+
 @using Microsoft.AspNetCore.Components.Web
 
 <CascadingValue Value=this>
-    <ul class="nav nav-tabs bg-primary">
+    <ul class="nav nav-tabs bg-secondary">
         @ChildContent
     </ul>
 </CascadingValue>
 
-<div class="nav-tabs-body p-5 bg-warning">
+<div class="nav-tabs-body p-5 bg-light">
     @ActiveWindow?.WindowContent
 </div>
 
 @code {
-
-    [Parameter] public Action<WindowEventArgs> ShowEvent { get; set; }
-    [Parameter] public Action<WindowEventArgs> HideEvent { get; set; }
-    [Parameter] public Action<WindowEventArgs> ShownEvent { get; set; }
-    [Parameter] public Action<WindowEventArgs> HiddenEvent { get; set; }
-
-    [Parameter] public RenderFragment ChildContent { get; set; }
-
-    public IWindowItem ActiveWindow { get; private set; }
-
-    public async Task AddWindow(IWindowItem windowItem)
-    {
-        if (this.ActiveWindow == null)
-        {
-            await SetActiveWindow(windowItem);
-        }
-    }
-
-    public async Task SetActiveWindow(IWindowItem windowItem)
-    {
-        if (this.ActiveWindow != windowItem)
-        {
-            await InvokeAsync(async () =>
-            {
-                await Task.Run(() =>
-                {
-                    this.ActiveWindow = windowItem;                    
-                });
-
-                StateHasChanged();
-            });
-        }
-    }
+    
 }
