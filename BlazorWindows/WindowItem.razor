@@ -6,7 +6,7 @@
 <CascadingValue Value=this>
 
     <li>
-        <a @onclick="async () => await ActivateWindow()" class="nav-link @TitleCssClass" role="button">
+        <a @onclick="() => ActivateWindow()" class="nav-link @TitleCssClass" role="button">
             @WindowTitle
         </a>
     </li>

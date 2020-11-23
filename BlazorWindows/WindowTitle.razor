@@ -12,4 +12,24 @@
     [Parameter]
     public RenderFragment ChildContent { get; set; }
 
+    protected override async Task OnInitializedAsync()
+    {
+        this.WindowItem.WindowContainer.OnChange += OnStateHasChanged;
+
+        await base.OnInitializedAsync();
+    }
+
+    public async void OnStateHasChanged() {
+        
+        await InvokeAsync(() =>
+        {
+            StateHasChanged();
+        });
+    }
+
+    public void Dispose()
+    {
+        this.WindowItem.WindowContainer.OnChange -= OnStateHasChanged;
+    }
+
 }

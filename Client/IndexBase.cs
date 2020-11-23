@@ -326,11 +326,10 @@ namespace Oqtane.ChatHubs
         }
         public void HiddenWindow(WindowEventArgs e)
         {
-            var room = this.ChatHubService.Rooms.FirstOrDefault(item => item.Id.ToString() == this.ChatHubService.ContextRoomId);
+            var room = this.ChatHubService.Rooms.FirstOrDefault(item => item.Id == e.DeactivatedItem.Id);
             if (room != null)
             {
-                //this.ChatHubService.StopStreaming(int.Parse(this.ChatHubService.ContextRoomId));
-                this.ChatHubService.StopVideoChat(int.Parse(this.ChatHubService.ContextRoomId));
+                this.ChatHubService.StopVideoChat(e.DeactivatedItem.Id);
             }
         }
 

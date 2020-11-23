@@ -24,7 +24,7 @@ namespace BlazorWindows
             {
                 if(this.ActiveWindow == null)
                 {
-                    await this.SetActiveWindow(this.WindowItems.FirstOrDefault());
+                    this.SetActiveWindow(this.WindowItems.FirstOrDefault());
                 }
             }
 
@@ -48,17 +48,16 @@ namespace BlazorWindows
             }
         }
 
-        public async Task SetActiveWindow(IWindowItem windowItem)
+        public event Action OnChange;
+        private void NotifyStateChanged() => OnChange?.Invoke();
+
+        public void SetActiveWindow(IWindowItem windowItem)
         {
             if (this.ActiveWindow != windowItem)
             {
-                await InvokeAsync(async () =>
+                InvokeAsync(() =>
                 {
-                    await Task.Run(() =>
-                    {
-                        this.ActiveWindow = windowItem;
-                    });
-
+                    this.ActiveWindow = windowItem;
                     StateHasChanged();
                 });
             }

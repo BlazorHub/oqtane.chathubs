@@ -18,13 +18,23 @@ namespace BlazorWindows
 
         [Parameter] public bool InitialSelection { get; set; }
 
+        public async void OnStateHasChanged()
+        {
+            await InvokeAsync(() =>
+            {
+                StateHasChanged();
+            });
+        }
+
         protected override async Task OnInitializedAsync()
         {
+            this.WindowContainer.OnChange += OnStateHasChanged;
+
             this.WindowContainer.AddWindowItem(this);
 
             if (this.InitialSelection)
             {
-                await this.WindowContainer.SetActiveWindow(this);
+                this.WindowContainer.SetActiveWindow(this);
             }
 
             await base.OnInitializedAsync();
@@ -47,18 +57,20 @@ namespace BlazorWindows
 
         public string TitleCssClass => this.WindowContainer.ActiveWindow == this ? "active" : null;
 
-        public async Task ActivateWindow()
+        public void ActivateWindow()
         {
-            WindowEventArgs objShown = new WindowEventArgs { DeactivatedItem = this.WindowContainer.ActiveWindow, ActivatedItem = this };
-            WindowEventArgs objHidden = new WindowEventArgs { DeactivatedItem = this.WindowContainer.ActiveWindow, ActivatedItem = this };
+            WindowEventArgs eventArgs = new WindowEventArgs { DeactivatedItem = this.WindowContainer.ActiveWindow, ActivatedItem = this };
 
-            await this.WindowContainer.SetActiveWindow(this);
-            this.WindowContainer.ShownEvent.Invoke(objShown);
-            this.WindowContainer.HiddenEvent(objHidden);
+            this.WindowContainer.SetActiveWindow(this);
+
+            this.WindowContainer.HiddenEvent.Invoke(eventArgs);
+            this.WindowContainer.ShownEvent.Invoke(eventArgs);
         }
 
         public void Dispose()
         {
+            this.WindowContainer.OnChange -= OnStateHasChanged;
+
             this.WindowContainer.RemoveWindowItem(this.Id);
         }
 
