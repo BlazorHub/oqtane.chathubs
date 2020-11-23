@@ -189,7 +189,7 @@
                         </WindowTitle>
                         <WindowContent>
 
-                            <div class="d-flex">
+                            <div class="d-flex position-relative">
                                 <div class="flex-fill flex-grow-1 @(room.ShowUserlist ? "d-none" : "d-flex")">
                                     <div class="w-100 bg-white p-sm-3">
 
@@ -389,117 +389,118 @@
                                     <div class="w-100 my-3" style="height: @(string.Format("{0}px", UserlistWindowHeight)); overflow: auto;">
 
                                         <button type="button" class="btn btn-light input-group-button @(room.ShowUserlist ? "d-block" : "d-none")" @onclick="() => ChatHubService.ToggleUserlist(room)" style="position: relative; float: right;"><span class="oi oi-x"></span></button>
+                                        <button type="button" class="btn btn-light input-group-button @(room.ShowSettings ? "d-none" : "d-block")" @onclick="() => ChatHubService.ToggleSettings(room)" style="position: relative; float: right;"><span class="oi oi-list"></span></button>
 
-                                        <VideoComponent ChatHubRoom="@room"></VideoComponent>
+                                        <div class="px-sm-0">
 
-                                        <MatTabGroup>
+                                            <div>Userlist <span class="oi oi-people"></span> (@room.Users.Count())</div>
 
-                                            <MatTab>
-
-                                                <LabelContent>
-                                                    <div><span class="oi oi-people"></span> (@room.Users.Count())</div>
-                                                </LabelContent>
-
-                                                <ChildContent>
-
-                                                    <div class="px-sm-0">
-
-                                                        <div class="accordion">
-                                                            @foreach (ChatHubUser user in room.Users)
+                                            <div>
+                                                @foreach (ChatHubUser user in room.Users)
+                                                {
+                                                    @if (user.UserId == ChatHubService.ConnectedUser.UserId)
+                                                    {
+                                                        <BSCard CardType="CardType.Card" @key="user">
+                                                            <BSCard CardType="CardType.Header">
+                                                                <BSButton ButtonType="ButtonType.Button" OnClick="(e) => UserlistItem_Clicked(e, room, user)" Color="Color.None" Class="btn-link">
+                                                                    <strong class="align-middle" style="height: 16px;">@user.DisplayName</strong>
+                                                                </BSButton>
+                                                            </BSCard>
+                                                            @if (user.UserlistItemCollapsed)
                                                             {
-                                                                @if (user.UserId == ChatHubService.ConnectedUser.UserId)
-                                                                {
-                                                                    <BSCard CardType="CardType.Card" @key="user">
-                                                                        <BSCard CardType="CardType.Header">
-                                                                            <BSButton ButtonType="ButtonType.Button" OnClick="(e) => UserlistItem_Clicked(e, room, user)" Color="Color.None" Class="btn-link">
-                                                                                <strong class="align-middle" style="height: 16px;">@user.DisplayName</strong>
-                                                                            </BSButton>
-                                                                        </BSCard>
-                                                                        @if (user.UserlistItemCollapsed)
-                                                                        {
-                                                                            <BSCard CardType="CardType.Body">
-                                                                                <BSCard CardType="CardType.Text">
-                                                                                    <button type="button" class="btn btn-sm btn-link" @onclick="() => OpenProfile_Clicked(user.UserId, room.Id)">Profil/Einstellungen</button>
-                                                                                </BSCard>
-                                                                            </BSCard>
-                                                                        }
+                                                                <BSCard CardType="CardType.Body">
+                                                                    <BSCard CardType="CardType.Text">
+                                                                        <button type="button" class="btn btn-sm btn-link" @onclick="() => OpenProfile_Clicked(user.UserId, room.Id)">Profil/Einstellungen</button>
                                                                     </BSCard>
-                                                                }
-                                                                else
-                                                                {
-                                                                    <BSCard CardType="CardType.Card" @key="user">
-                                                                        <BSCard CardType="CardType.Header">
-                                                                            <BSButton ButtonType="ButtonType.Button" OnClick="(e) => UserlistItem_Clicked(e, room, user)" Color="Color.None" Class="btn-link">
-                                                                                <span class="align-middle" style="height: 16px;">@user.DisplayName</span>
-                                                                            </BSButton>
-                                                                        </BSCard>
-                                                                        @if (user.UserlistItemCollapsed)
-                                                                        {
-                                                                            <BSCard CardType="CardType.Body">
-                                                                                <BSCard CardType="CardType.Text">
-                                                                                    <button type="button" class="btn btn-sm btn-link" @onclick="() => ChatHubService.IgnoreUser_Clicked(user.UserId, room.Id, user.Username)">Benutzer Ignorieren</button>
-                                                                                </BSCard>
-                                                                            </BSCard>
-                                                                        }
-                                                                    </BSCard>
-                                                                }
+                                                                </BSCard>
                                                             }
+                                                        </BSCard>
+                                                    }
+                                                    else
+                                                    {
+                                                        <BSCard CardType="CardType.Card" @key="user">
+                                                            <BSCard CardType="CardType.Header">
+                                                                <BSButton ButtonType="ButtonType.Button" OnClick="(e) => UserlistItem_Clicked(e, room, user)" Color="Color.None" Class="btn-link">
+                                                                    <span class="align-middle" style="height: 16px;">@user.DisplayName</span>
+                                                                </BSButton>
+                                                            </BSCard>
+                                                            @if (user.UserlistItemCollapsed)
+                                                            {
+                                                                <BSCard CardType="CardType.Body">
+                                                                    <BSCard CardType="CardType.Text">
+                                                                        <button type="button" class="btn btn-sm btn-link" @onclick="() => ChatHubService.IgnoreUser_Clicked(user.UserId, room.Id, user.Username)">Benutzer Ignorieren</button>
+                                                                    </BSCard>
+                                                                </BSCard>
+                                                            }
+                                                        </BSCard>
+                                                    }
+                                                }
+                                            </div>
+
+                                        </div>
+
+                                    </div>
+                                </div>
+
+                                <div class="bg-light p-0 p-sm-2 w-100 @(room.ShowSettings ? "position-absolute" : "d-none")" style="z-index: 1042; top: 0px; right: 0px; min-width: 340px; max-width: 340px;">
+                                    <div class="w-100 my-3" style="height: 100%; overflow: auto;">
+
+                                        <button type="button" class="btn btn-light input-group-button @(room.ShowSettings ? "d-block" : "d-none")" @onclick="() => ChatHubService.ToggleSettings(room)" style="position: relative; float: right;"><span class="oi oi-x"></span></button>
+
+                                        <BSTabGroup>
+                                            <BSTabList>
+
+                                                <BSTab>
+
+                                                    <BSTabLabel><div><span class="oi oi-image"></span></div></BSTabLabel>
+
+                                                    <BSTabContent>
+
+                                                        <div class="px-sm-1 py-3">
+
+                                                            <h5>Share your pics <span class="badge badge-success">FREE</span></h5>
+                                                            <FileReaderComponent ModuleId="@ModuleState.ModuleId.ToString()" ChatHubRoomId="@room.Id.ToString()" />
+
                                                         </div>
 
-                                                    </div>
+                                                    </BSTabContent>
 
-                                                </ChildContent>
+                                                </BSTab>
 
-                                            </MatTab>
+                                                <BSTab>
 
-                                            <MatTab>
+                                                    <BSTabLabel><div><span class="oi oi-camera-slr"></span></div></BSTabLabel>
 
-                                                <LabelContent><div><span class="oi oi-image"></span></div></LabelContent>
+                                                    <BSTabContent>
 
-                                                <ChildContent>
+                                                        <div class="px-sm-1 py-3">
 
-                                                    <div class="px-sm-1 py-3">
+                                                            <h5>Webcam Live Streams <span class="badge badge-success">NEW</span></h5>
 
-                                                        <h5>Share your pics <span class="badge badge-success">FREE</span></h5>
-                                                        <FileReaderComponent ModuleId="@ModuleState.ModuleId.ToString()" ChatHubRoomId="@room.Id.ToString()" />
+                                                            <button type="button" @onclick="() => ChatHubService.StartVideoChat(room)">Start Streaming</button>
+                                                            <button type="button" @onclick="async () => ChatHubService.StopVideoChat(room.Id)">Stop Streaming</button>
 
-                                                    </div>
+                                                            <VideoComponent ChatHubRoom="@room"></VideoComponent>
 
-                                                </ChildContent>
+                                                        </div>
 
-                                            </MatTab>
+                                                    </BSTabContent>
 
-                                            <MatTab>
+                                                </BSTab>
 
-                                                <LabelContent><div><span class="oi oi-camera-slr"></span></div></LabelContent>
+                                                <BSTab>
 
-                                                <ChildContent>
+                                                    <BSTabLabel><div><span class="oi oi-list"></span> (@ChatHubService.Invitations.Count())</div></BSTabLabel>
 
-                                                    <div class="px-sm-1 py-3">
+                                                    <BSTabContent>
 
-                                                        <h5>Webcam Live Streams <span class="badge badge-success">NEW</span></h5>
-                                                        <button type="button" @onclick="() => ChatHubService.StartVideoChat(room)">Start Streaming</button>
-                                                        <button type="button" @onclick="async () => ChatHubService.StopVideoChat(room.Id)">Stop Streaming</button>
+                                                        <div class="px-sm-1 py-3">
 
-                                                    </div>
+                                                            <h5>All your Invitations <span class="badge badge-success">NEW</span></h5>
 
-                                                </ChildContent>
-
-                                            </MatTab>
-
-                                            <MatTab>
-
-                                                <LabelContent><div><span class="oi oi-list"></span> (@ChatHubService.Invitations.Count())</div></LabelContent>
-
-                                                <ChildContent>
-
-                                                    <div class="px-sm-1 py-3">
-
-                                                        <h5>All your Invitations <span class="badge badge-success">NEW</span></h5>
-
-                                                        <div class="container">
-                                                            @foreach (var item in ChatHubService.Invitations)
-                                                            {
+                                                            <div class="container">
+                                                                @foreach (var item in ChatHubService.Invitations)
+                                                                {
                                                                 <div class="row">
                                                                     <div class="col-sm-9">
                                                                         <button type="button" @onclick="@(async () => await FollowInvitation_Clicked(item.Guid, item.RoomId))" class="btn btn-sm btn-link">@item.Hostname</button>
@@ -510,23 +511,24 @@
                                                                         </button>
                                                                     </div>
                                                                 </div>
-                                                            }
-                                                        </div>
+                                                                }
+                                                            </div>
 
-                                                        @if (!ChatHubService.Invitations.Any())
-                                                        {
+                                                            @if (!ChatHubService.Invitations.Any())
+                                                            {
                                                             <div class="alert alert-warning" role="alert">
                                                                 No invitations found yet.
                                                             </div>
-                                                        }
+                                                            }
 
-                                                    </div>
+                                                        </div>
 
-                                                </ChildContent>
+                                                    </BSTabContent>
 
-                                            </MatTab>
-
-                                        </MatTabGroup>
+                                                </BSTab>
+                                            </BSTabList>
+                                            <BSTabSelectedContent />
+                                        </BSTabGroup>
 
                                     </div>
                                 </div>

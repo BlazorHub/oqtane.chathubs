@@ -61,6 +61,8 @@ namespace BlazorWindows
                     StateHasChanged();
                 });
             }
+
+            this.NotifyStateChanged();
         }
 
         public void Dispose()
