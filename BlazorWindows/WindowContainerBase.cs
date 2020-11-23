@@ -22,7 +22,10 @@ namespace BlazorWindows
         {
             if (firstRender)
             {
-                await this.SetActiveWindow(this.WindowItems.FirstOrDefault());
+                if(this.ActiveWindow == null)
+                {
+                    await this.SetActiveWindow(this.WindowItems.FirstOrDefault());
+                }
             }
 
             await base.OnAfterRenderAsync(firstRender);
