@@ -244,8 +244,8 @@ namespace Oqtane.ChatHubs.Hubs
         public async Task Init()
         {
             ChatHubUser user = await this.GetChatHubUserAsync();
-            var rooms = this.chatHubRepository.GetChatHubRoomsByUser(user).ToList();
 
+            var rooms = this.chatHubRepository.GetChatHubRoomsByUser(user).Public().ToList();
             foreach (var room in rooms)
             {
                 await this.EnterChatRoom(room.Id);

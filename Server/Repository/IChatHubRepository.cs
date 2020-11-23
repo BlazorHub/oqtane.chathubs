@@ -17,7 +17,7 @@ namespace Oqtane.ChatHubs.Repository
         IQueryable<ChatHubUser> GetChatHubUsersByRoom(ChatHubRoom room);
         ChatHubRoom GetChatHubRoom(int ChatHubRoomId);
         ChatHubRoom GetChatHubRoomOneVsOne(string OneVsOneId);
-        IQueryable<ChatHubMessage> GetChatHubMessages(int roomId, TimeSpan timespan);
+        IQueryable<ChatHubMessage> GetChatHubMessages(int roomId);
         ChatHubMessage GetChatHubMessage(int ChatHubMessageId);
         IQueryable<ChatHubUser> GetOnlineUsers();
         IQueryable<ChatHubUser> GetOnlineUsers(int roomId);

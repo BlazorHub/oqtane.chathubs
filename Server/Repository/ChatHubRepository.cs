@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Oqtane.Shared.Enums;
 using Oqtane.Shared.Models;
 using Oqtane.Models;
+using Microsoft.AspNetCore.SignalR;
 
 namespace Oqtane.ChatHubs.Repository
 {
@@ -78,11 +79,11 @@ namespace Oqtane.ChatHubs.Repository
                 throw;
             }
         }
-        public IQueryable<ChatHubMessage> GetChatHubMessages(int roomId, TimeSpan timespan)
+        public IQueryable<ChatHubMessage> GetChatHubMessages(int roomId)
         {
             try
             {
-                return db.ChatHubMessage.Where(message => message.ChatHubRoomId == roomId).Where(i => i.CreatedOn.Add(timespan) >= DateTime.Now).Include(message => message.User);
+                return db.ChatHubMessage.Where(item => item.ChatHubRoomId == roomId).Include(item => item.User).OrderByDescending(item => item.CreatedOn);
             }
             catch
             {

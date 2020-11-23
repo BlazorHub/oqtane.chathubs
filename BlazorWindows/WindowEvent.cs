@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace BlazorWindows
 {
-    public class WindowEventArgs
+    public class WindowEvent
     {
 
         public IWindowItem ActivatedItem { get; set; }

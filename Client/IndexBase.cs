@@ -11,7 +11,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
-using BlazorStrap;
 using System.Text.RegularExpressions;
 using Oqtane.Shared.Models;
 using BlazorAlerts;
@@ -307,16 +306,10 @@ namespace Oqtane.ChatHubs
             this.ChatHubService.DisposeStreamTasks();
         }
 
-        public void ShowWindow(WindowEventArgs e)
+        public void ShowWindow(WindowEvent e)
         {
-            this.BlazorAlertsService.NewBlazorAlert("on show");
-        }
-        public void HideWindow(WindowEventArgs e)
-        {
-            this.BlazorAlertsService.NewBlazorAlert("on hide");
-        }
-        public void ShownWindow(WindowEventArgs e)
-        {
+            //this.BlazorAlertsService.NewBlazorAlert("on show");
+
             this.ChatHubService.ContextRoomId = e.ActivatedItem.Id.ToString();
             var room = this.ChatHubService.Rooms.FirstOrDefault(item => item.Id.ToString() == this.ChatHubService.ContextRoomId);
             if (room != null)
@@ -324,13 +317,23 @@ namespace Oqtane.ChatHubs
                 room.UnreadMessages = 0;
             }
         }
-        public void HiddenWindow(WindowEventArgs e)
+        public void HideWindow(WindowEvent e)
         {
+            //this.BlazorAlertsService.NewBlazorAlert("on hide");
+
             var room = this.ChatHubService.Rooms.FirstOrDefault(item => item.Id == e.DeactivatedItem.Id);
             if (room != null)
             {
                 this.ChatHubService.StopVideoChat(e.DeactivatedItem.Id);
             }
+        }
+        public void ShownWindow(WindowEvent e)
+        {
+            //this.BlazorAlertsService.NewBlazorAlert("on shown");
+        }
+        public void HiddenWindow(WindowEvent e)
+        {
+            //this.BlazorAlertsService.NewBlazorAlert("on hidden");
         }
 
     }

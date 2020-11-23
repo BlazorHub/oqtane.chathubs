@@ -18,23 +18,18 @@ namespace BlazorWindows
 
         [Parameter] public bool InitialSelection { get; set; }
 
-        public async void OnStateHasChanged()
-        {
-            await InvokeAsync(() =>
-            {
-                StateHasChanged();
-            });
-        }
-
         protected override async Task OnInitializedAsync()
         {
-            this.WindowContainer.OnChange += OnStateHasChanged;
-
             this.WindowContainer.AddWindowItem(this);
 
+            if (!this.WindowContainer.InitialSelection)
+            {
+                this.WindowContainer.ActiveWindow = this;
+                this.WindowContainer.InitialSelection = true;
+            }
             if (this.InitialSelection)
             {
-                this.WindowContainer.SetActiveWindow(this);
+                this.WindowContainer.ActiveWindow = this;
             }
 
             await base.OnInitializedAsync();
@@ -57,20 +52,13 @@ namespace BlazorWindows
 
         public string TitleCssClass => this.WindowContainer.ActiveWindow == this ? "active" : null;
 
-        public void ActivateWindow()
+        public async void ActivateWindow()
         {
-            WindowEventArgs eventArgs = new WindowEventArgs { DeactivatedItem = this.WindowContainer.ActiveWindow, ActivatedItem = this };
-
-            this.WindowContainer.SetActiveWindow(this);
-
-            this.WindowContainer.HiddenEvent.Invoke(eventArgs);
-            this.WindowContainer.ShownEvent.Invoke(eventArgs);
+            this.WindowContainer.ActiveWindow = this;
         }
 
         public void Dispose()
         {
-            this.WindowContainer.OnChange -= OnStateHasChanged;
-
             this.WindowContainer.RemoveWindowItem(this.Id);
         }
 
