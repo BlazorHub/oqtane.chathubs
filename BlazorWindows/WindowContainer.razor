@@ -5,12 +5,12 @@
 @using Microsoft.AspNetCore.Components.Web
 
 <CascadingValue Value=this>
-    <ul class="nav nav-tabs bg-secondary">
+    <ul class="nav nav-tabs">
         @ChildContent
     </ul>
 </CascadingValue>
 
-<div class="nav-tabs-body p-5 bg-light">
+<div class="nav-tabs-body">
     @ActiveWindow?.WindowContent
 </div>
 

@@ -307,31 +307,6 @@ namespace Oqtane.ChatHubs
             this.ChatHubService.DisposeStreamTasks();
         }
 
-        public void Show(BSTabEvent e)
-        {
-        }
-        public void Shown(BSTabEvent e)
-        {
-            this.ChatHubService.ContextRoomId = e.Activated.Id;
-            var room = this.ChatHubService.Rooms.FirstOrDefault(item => item.Id.ToString() == this.ChatHubService.ContextRoomId);
-            if(room != null)
-            {
-                room.UnreadMessages = 0;
-            }
-        }
-        public async Task HideAsync(BSTabEvent e)
-        {
-            var room = this.ChatHubService.Rooms.FirstOrDefault(item => item.Id.ToString() == this.ChatHubService.ContextRoomId);
-            if (room != null)
-            {
-                //this.ChatHubService.StopStreaming(int.Parse(this.ChatHubService.ContextRoomId));
-                this.ChatHubService.StopVideoChat(int.Parse(this.ChatHubService.ContextRoomId));
-            }
-        }
-        public void Hidden(BSTabEvent e)
-        {
-        }
-
         public void ShowWindow(WindowEventArgs e)
         {
             this.BlazorAlertsService.NewBlazorAlert("on show");
@@ -342,11 +317,21 @@ namespace Oqtane.ChatHubs
         }
         public void ShownWindow(WindowEventArgs e)
         {
-            this.BlazorAlertsService.NewBlazorAlert("on shown");
+            this.ChatHubService.ContextRoomId = e.ActivatedItem.Id.ToString();
+            var room = this.ChatHubService.Rooms.FirstOrDefault(item => item.Id.ToString() == this.ChatHubService.ContextRoomId);
+            if (room != null)
+            {
+                room.UnreadMessages = 0;
+            }
         }
         public void HiddenWindow(WindowEventArgs e)
         {
-            this.BlazorAlertsService.NewBlazorAlert("on hidden");
+            var room = this.ChatHubService.Rooms.FirstOrDefault(item => item.Id.ToString() == this.ChatHubService.ContextRoomId);
+            if (room != null)
+            {
+                //this.ChatHubService.StopStreaming(int.Parse(this.ChatHubService.ContextRoomId));
+                this.ChatHubService.StopVideoChat(int.Parse(this.ChatHubService.ContextRoomId));
+            }
         }
 
     }

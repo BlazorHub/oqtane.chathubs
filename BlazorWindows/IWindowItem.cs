@@ -7,5 +7,6 @@ namespace BlazorWindows
         WindowContainer WindowContainer { get; set; }
         RenderFragment WindowTitle { get; }
         RenderFragment WindowContent { get; }
+        int Id { get; set; }
     }
 }

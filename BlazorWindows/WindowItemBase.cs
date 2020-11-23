@@ -14,10 +14,14 @@ namespace BlazorWindows
 
         [Parameter] public RenderFragment WindowContent { get; set; }
 
+        [Parameter] public int Id { get; set; }
+
         [Parameter] public bool InitialSelection { get; set; }
 
         protected override async Task OnInitializedAsync()
         {
+            this.WindowContainer.AddWindowItem(this);
+
             if (this.InitialSelection)
             {
                 await this.WindowContainer.SetActiveWindow(this);
@@ -45,8 +49,8 @@ namespace BlazorWindows
 
         public async Task ActivateWindow()
         {
-            WindowEventArgs objShown = new WindowEventArgs { HiddenItem = this.WindowContainer.ActiveWindow, ShownItem = this };
-            WindowEventArgs objHidden = new WindowEventArgs { HiddenItem = this.WindowContainer.ActiveWindow, ShownItem = this };
+            WindowEventArgs objShown = new WindowEventArgs { DeactivatedItem = this.WindowContainer.ActiveWindow, ActivatedItem = this };
+            WindowEventArgs objHidden = new WindowEventArgs { DeactivatedItem = this.WindowContainer.ActiveWindow, ActivatedItem = this };
 
             await this.WindowContainer.SetActiveWindow(this);
             this.WindowContainer.ShownEvent.Invoke(objShown);
@@ -55,7 +59,8 @@ namespace BlazorWindows
 
         public void Dispose()
         {
-
+            this.WindowContainer.RemoveWindowItem(this.Id);
         }
+
     }
 }
