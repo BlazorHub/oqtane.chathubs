@@ -67,9 +67,9 @@
     }
     else if (ChatHubService.Connection?.State == HubConnectionState.Connected)
     {
-        <div class="d-flex justify-content-between bd-highlight mb-2">
-            <div class="flex-fill bd-highlight">
-                <small class="bg-white px-2 py-1 px-md-5 py-md-3" style="font-family: Consolas, monospace;">
+        <div class="d-flex justify-content-between bd-highlight my-3">
+            <div class="flex-fill bd-highlight bg-white p-1 p-md-3">
+                <small class="px-2 py-1 px-md-5 py-md-3" style="font-family: Consolas, monospace;">
                     Connected as @ChatHubService.ConnectedUser?.DisplayName
                 </small>
             </div>
@@ -103,7 +103,7 @@
 
             <WindowContainer ShowEvent="@ShowWindow" HideEvent="@HideWindow" ShownEvent="@ShownWindow" HiddenEvent="@HiddenWindow">
                 <WindowItem>
-                    <WindowTitle><button class="btn btn-link">Lobby</button></WindowTitle>
+                    <WindowTitle>Lobby</WindowTitle>
                     <WindowContent>
 
                         <div class="jumbotron jumbotron-fluid bg-white py-1 mb-0">
@@ -184,7 +184,8 @@
 
                             @room.Title&nbsp;
                             <BSBadge Color="Color.Warning" Class="@(room.UnreadMessages != 0 ? "" : "d-none")">@room.UnreadMessages</BSBadge>
-                            <MatIcon Icon="@MatIconNames.Close" @onclick="async () => await LeaveRoom_Clicked(room.Id, ModuleState.ModuleId)"></MatIcon>
+
+                            <MatIcon Icon="@MatIconNames.Close" @onclick="async () => await LeaveRoom_Clicked(room.Id, ModuleState.ModuleId)" Class="position-absolute" style="top: 0px; right: 0px;"></MatIcon>
 
                         </WindowTitle>
                         <WindowContent>
@@ -442,7 +443,7 @@
                                     </div>
                                 </div>
 
-                                <div class="bg-light p-0 p-sm-2 w-100 @(room.ShowSettings ? "position-absolute" : "d-none")" style="z-index: 1042; top: 0px; right: 0px; min-width: 340px; max-width: 340px;">
+                                <div class="bg-light p-0 p-sm-2 w-100 @(room.ShowSettings ? "position-absolute" : "d-none")" style="z-index: 1; top: 0px; right: 0px; min-width: 340px; max-width: 340px;">
                                     <div class="w-100 my-3" style="height: 100%; overflow: auto;">
 
                                         <button type="button" class="btn btn-light input-group-button @(room.ShowSettings ? "d-block" : "d-none")" @onclick="() => ChatHubService.ToggleSettings(room)" style="position: relative; float: right;"><span class="oi oi-x"></span></button>

@@ -4,8 +4,21 @@
 
 @using Microsoft.AspNetCore.Components.Web
 
+<style type="text/css">
+
+    .blazor-window-nav::-webkit-scrollbar {
+        height: 8px;
+        background-color: grey;
+    }
+
+    .blazor-window-nav {
+        scrollbar-width: thin;
+    }
+
+</style>
+
 <CascadingValue Value=this>
-    <ul class="nav nav-tabs">
+    <ul class="blazor-window-nav nav nav-tabs d-flex flex-nowrap overflow-auto">
         @ChildContent
     </ul>
 </CascadingValue>
