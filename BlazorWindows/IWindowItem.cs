@@ -5,8 +5,8 @@ namespace BlazorWindows
     public interface IWindowItem
     {
         WindowContainer WindowContainer { get; set; }
-        RenderFragment WindowTitle { get; }
-        RenderFragment WindowContent { get; }
+        RenderFragment WindowTitle { get; set; }
+        RenderFragment WindowContent { get; set; }
         int Id { get; set; }
     }
 }

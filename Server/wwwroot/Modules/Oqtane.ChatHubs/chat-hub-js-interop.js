@@ -95,8 +95,8 @@
             constrains: {
                 audio: true,
                 video: {
-                    width: { min: 320, ideal: 320, max: 320 },
-                    height: { min: 240, ideal: 240, max: 240 },
+                    width: { min: 300, ideal: 300, max: 300 },
+                    height: { min: 150, ideal: 150, max: 150 },
                     frameRate: 60,
                     facingMode: "user"
                 }
@@ -110,12 +110,12 @@
 
                 this.videolocalid = self.__obj.videolocalid + roomId;
                 this.getvideolocaldomelement = function () {
-                    return document.querySelector(this.videolocalid);
+                    return document.querySelector(__selflocallivestream.videolocalid);
                 };
 
                 this.canvaslocalid = self.__obj.canvaslocalid + roomId;
                 this.getcanvaslocaldomelement = function () {
-                    return document.querySelector(this.canvaslocalid);
+                    return document.querySelector(__selflocallivestream.canvaslocalid);
                 };
 
                 this.vElement = this.getvideolocaldomelement();
@@ -186,7 +186,7 @@
                         var canvasElement = __selflocallivestream.getcanvaslocaldomelement();
                         var ctx = this.getcanvaslocaldomelement().getContext('2d');
 
-                        ctx.drawImage(videoElement, 0, 0, 320, 240, 0, 0, 320, 240);
+                        ctx.drawImage(videoElement, 0, 0, 300, 150, 0, 0, 300, 150);
                         var dataURI = canvasElement.toDataURL('image/jpeg', 0.42);
                         __selflocallivestream.broadcastsnapshot(dataURI, 'image');
                     }
@@ -222,12 +222,12 @@
 
                 this.videoremoteid = self.__obj.videoremoteid + roomId;
                 this.getvideoremotedomelement = function () {
-                    return document.querySelector(this.videoremoteid);
+                    return document.querySelector(__selfremotelivestream.videoremoteid);
                 };
 
                 this.canvasremoteid = self.__obj.canvasremoteid + roomId;
                 this.getcanvasremotedomelement = function () {
-                    return document.querySelector(this.canvasremoteid);
+                    return document.querySelector(__selfremotelivestream.canvasremoteid);
                 };
 
                 this.remotemediasequences = [];
@@ -258,8 +258,8 @@
                 this.mediaSource.addEventListener('sourceclose', function (event) { console.log("on media source close"); });
 
                 this.video = this.getvideoremotedomelement();
-                this.video.width = 320;
-                this.video.height = 240;
+                this.video.width = 300;
+                this.video.height = 150;
                 this.video.controls = true;
                 this.video.autoplay = false;
                 this.video.preload = 'auto';
@@ -360,11 +360,11 @@
             },
             startstreaming: function (roomId) {
 
-                var livestream = new self.__obj.remotelivestream(roomId);
-                var livestreamdicitem = {
-                    id: roomId,
-                    item: livestream,
-                };
+                    var livestream = new self.__obj.remotelivestream(roomId);
+                    var livestreamdicitem = {
+                        id: roomId,
+                        item: livestream,
+                    };
 
                 self.__obj.addlivestream(livestreamdicitem);
             },

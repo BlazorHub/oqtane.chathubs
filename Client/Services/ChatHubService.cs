@@ -191,8 +191,9 @@ namespace Oqtane.ChatHubs.Services
                 if (task.IsCompleted)
                 {
                     this.HandleException(task);
+                    await this.VideoService.InitVideoJs();
 
-                    await this.Connection.SendAsync("Init").ContinueWith((task) =>
+                    await this.Connection.SendAsync("Init").ContinueWith(async (task) =>
                     {
                         if (task.IsCompleted)
                         {
@@ -209,7 +210,6 @@ namespace Oqtane.ChatHubs.Services
             {
                 if (room.CreatorId == this.ConnectedUser.UserId)
                 {
-                    await this.VideoService.InitVideoJs();
                     await this.VideoService.StartBroadcasting(room.Id);
 
                     CancellationTokenSource tokenSource = new CancellationTokenSource();
@@ -220,7 +220,6 @@ namespace Oqtane.ChatHubs.Services
                 }
                 else
                 {
-                    await this.VideoService.InitVideoJs();
                     await this.VideoService.StartStreaming(room.Id);
                 }
             }

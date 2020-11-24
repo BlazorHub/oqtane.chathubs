@@ -27,20 +27,6 @@
     @ActiveWindow?.WindowContent
 </div>
 
-@if(WindowItems.Count() > 3) {
-<div class="d-flex align-content-start overflow-auto my-3 py-3 bg-secondary border border-light">
-
-    @foreach(WindowItem windowItem in WindowItems) {
-
-        if(windowItem == WindowItems.First()) continue;
-        <div class="bd-highlight p-2">
-            @windowItem?.WindowContent
-        </div>
-    }
-
-</div>
-}
-
 @code {
 
 }

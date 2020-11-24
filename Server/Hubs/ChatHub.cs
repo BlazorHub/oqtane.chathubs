@@ -268,11 +268,13 @@ namespace Oqtane.ChatHubs.Hubs
 
             if (room.Public() || room.OneVsOne())
             {
+                /*
                 if (this.chatHubRepository.GetChatHubUsersByRoom(room).Online().ToList().Count() <= 0)
                 {
                     room.CreatorId = user.UserId;
                     this.chatHubRepository.UpdateChatHubRoom(room);
                 }
+                */
 
                 ChatHubRoomChatHubUser room_user = new ChatHubRoomChatHubUser()
                 {

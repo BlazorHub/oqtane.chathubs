@@ -303,7 +303,8 @@ namespace Oqtane.ChatHubs
         {
             BrowserResizeService.OnResize -= BrowserHasResized;
             this.ChatHubService.OnUpdateUI -= (object sender, EventArgs e) => UpdateUIStateHasChanged();
-            this.ChatHubService.DisposeStreamTasks();
+
+            //this.ChatHubService.DisposeStreamTasks();
         }
 
         public void ShowWindow(WindowEvent e)
@@ -324,7 +325,7 @@ namespace Oqtane.ChatHubs
             var room = this.ChatHubService.Rooms.FirstOrDefault(item => item.Id == e.DeactivatedItem.Id);
             if (room != null)
             {
-                this.ChatHubService.StopVideoChat(e.DeactivatedItem.Id);
+                //this.ChatHubService.StopVideoChat(e.DeactivatedItem.Id);
             }
         }
         public void ShownWindow(WindowEvent e)
