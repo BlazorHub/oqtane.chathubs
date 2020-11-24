@@ -14,6 +14,8 @@ namespace BlazorWindows
 
         [Parameter] public RenderFragment WindowContent { get; set; }
 
+        [Parameter] public RenderFragment WindowLivestream { get; set; }
+
         [Parameter] public int Id { get; set; }
 
         [Parameter] public bool InitialSelection { get; set; }

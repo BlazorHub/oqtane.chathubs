@@ -100,16 +100,7 @@
         }
         else
         {
-            @if(ChatHubService.Rooms.Any()) {
-                <div class="d-flex align-content-start overflow-auto my-3 py-3 bg-light border border-light">
-
-                    @foreach (ChatHubRoom room in ChatHubService.Rooms)
-                    {
-                        <VideoComponent ChatHubRoom="@room"></VideoComponent>
-                    }
-
-                </div>
-            }
+            
 
             <WindowContainer ShowEvent="@ShowWindow" HideEvent="@HideWindow" ShownEvent="@ShownWindow" HiddenEvent="@HiddenWindow">
                 <WindowItem>
@@ -198,6 +189,11 @@
                             <MatIcon Icon="@MatIconNames.Close" @onclick="async () => await LeaveRoom_Clicked(room.Id, ModuleState.ModuleId)" Class="position-absolute" style="top: 0px; right: 0px;"></MatIcon>
 
                         </WindowTitle>
+                        <WindowLivestream>
+
+                            <VideoComponent ChatHubRoom="@room"></VideoComponent>
+
+                        </WindowLivestream>
                         <WindowContent>
 
                             <div class="d-flex position-relative">
