@@ -105,8 +105,6 @@
             locallivestream: function (roomId, mediaStream) {
 
                 __selflocallivestream = this;
-                this.mediaStream = mediaStream;
-                this.id = roomId;
 
                 this.videolocalid = self.__obj.videolocalid + roomId;
                 this.getvideolocaldomelement = function () {
@@ -119,7 +117,7 @@
                 };
 
                 this.vElement = this.getvideolocaldomelement();
-                this.vElement.srcObject = this.mediaStream;
+                this.vElement.srcObject = mediaStream;
                 this.vElement.onloadedmetadata = function (e) {
 
                     __selflocallivestream.vElement.play();
@@ -129,7 +127,7 @@
                 this.vElement.muted = true;
 
                 this.options = { mimeType: __obj.videoMimeTypeObject.mimeType, videoBitsPerSecond: 1000, audioBitsPerSecond: 1000, ignoreMutedMedia: true };
-                this.recorder = new MediaRecorder(this.mediaStream, this.options);
+                this.recorder = new MediaRecorder(mediaStream, this.options);
 
                 this.requestDataInterval = 10000;
                 this.recorder.start();
@@ -200,25 +198,23 @@
                         console.log(obj.msg);
                     });
                 };
-                this.recyclebin = function () {
+                this.cancel = function () {
 
-                    var localElement = __selflocallivestream.getvideolocaldomelement();
-                    if (localElement !== null) {
-
+                    try {
                         if (__selflocallivestream.recorder.state === 'recording' || __selflocallivestream.recorder.state === 'paused') {
 
                             __selflocallivestream.recorder.stop();
                         }
-                        __selflocallivestream.mediaStream.getTracks().forEach(track => track.stop());
+                        mediaStream.getTracks().forEach(track => track.stop());
                     }
-
-                    self.__obj.removelivestream(roomId);
+                    catch (err) {
+                        console.error(err);
+                    }
                 };
             },
             remotelivestream: function (roomId) {
 
                 __selfremotelivestream = this;
-                this.id = roomId;
 
                 this.videoremoteid = self.__obj.videoremoteid + roomId;
                 this.getvideoremotedomelement = function () {
@@ -320,9 +316,8 @@
                     }
                 };
 
-                this.recyclebin = function () {
+                this.cancel = function () {
 
-                    self.__obj.removelivestream(roomId);
                 };
             },
             getlivestream: function (roomId) {
@@ -339,11 +334,16 @@
             },
             removelivestream: function (roomId) {
 
-                self.__obj.livestreams = self.__obj.livestreams.filter(item => item.id !== roomId);
+                //self.__obj.livestreams = self.__obj.livestreams.filter(item => item.id !== roomId);
+                var livestream = self.__obj.getlivestream(roomId);
+                if (livestream !== undefined) {
+
+                    self.__obj.livestreams.splice(self.__obj.livestreams.indexOf(livestream), 1);
+                }
             },
             startbroadcasting: function (roomId) {
 
-                navigator.mediaDevices.getUserMedia(this.constrains)
+                window.navigator.mediaDevices.getUserMedia(self.__obj.constrains)
                     .then(function (mediaStream) {
 
                         var livestream = new self.__obj.locallivestream(roomId, mediaStream);
@@ -413,14 +413,8 @@
                 var livestream = self.__obj.getlivestream(roomId);
                 if (livestream !== undefined) {
 
-                    if (livestream.item instanceof self.__obj.locallivestream) {
-
-                        livestream.item.recyclebin();
-                    }
-                    else if (livestream.item instanceof self.__obj.remotelivestream) {
-
-                        livestream.item.recyclebin();
-                    }
+                    livestream.item.cancel();
+                    self.__obj.removelivestream(roomId);
                 }
             },
             base64ToBlob: function (base64str) {
