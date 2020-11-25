@@ -12,6 +12,14 @@
     [Parameter]
     public RenderFragment ChildContent { get; set; }
 
+    protected override Task OnInitializedAsync()
+    {
+        this.WindowItem.WindowContent = ChildContent;
+        this.WindowItem.UpdateWindowContent();
+
+        return base.OnInitializedAsync();
+    }
+
     public void Dispose()
     {
 

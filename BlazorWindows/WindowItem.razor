@@ -6,7 +6,7 @@
 <CascadingValue Value=this>
 
     <li>
-        <a @onclick="async () => ActivateWindow()" class="nav-link position-relative @TitleCssClass" role="button" style="height: 48px; max-width: 120px; white-space: nowrap; text-overflow: ellipsis; overflow: hidden;">
+        <a class="nav-link position-relative @TitleCssClass" @onclick="() => ActivateWindow()" href="javascript:void(0);" role="button" style="height: 48px; max-width: 120px; white-space: nowrap; text-overflow: ellipsis; overflow: hidden;">
             @WindowTitle
         </a>
     </li>

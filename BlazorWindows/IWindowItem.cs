@@ -9,5 +9,6 @@ namespace BlazorWindows
         RenderFragment WindowContent { get; set; }
         RenderFragment WindowLivestream { get; set; }
         int Id { get; set; }
+        void UpdateWindowContent();
     }
 }

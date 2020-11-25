@@ -59,6 +59,14 @@ namespace BlazorWindows
             this.WindowContainer.ActiveWindow = this;
         }
 
+        public void UpdateWindowContent()
+        {            
+            if(this.WindowContainer.ActiveWindow == this)
+            {
+                InvokeAsync(StateHasChanged);
+            }
+        }
+
         public void Dispose()
         {
             this.WindowContainer.RemoveWindowItem(this.Id);
