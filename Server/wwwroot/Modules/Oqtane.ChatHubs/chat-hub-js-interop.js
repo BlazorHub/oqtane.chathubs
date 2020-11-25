@@ -42,16 +42,6 @@
         }
     };
 
-    window.saveAsFile = function (filename, bytesBase64) {
-
-        var link = document.createElement('a');
-        link.download = filename;
-        link.href = "data:application/octet-stream;base64," + bytesBase64;
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-    };
-
     window.showchathubscontainer = function () {
 
         var $chathubscontainer = $(".chathubs-container");
@@ -95,9 +85,9 @@
             constrains: {
                 audio: true,
                 video: {
-                    width: { min: 300, ideal: 300, max: 300 },
-                    height: { min: 150, ideal: 150, max: 150 },
-                    frameRate: 60,
+                    width: { min: 150, ideal: 150, max: 150 },
+                    height: { min: 100, ideal: 100, max: 100 },
+                    frameRate: 10,
                     facingMode: "user"
                 }
             },
@@ -128,18 +118,28 @@
 
                 this.options = { mimeType: __obj.videoMimeTypeObject.mimeType, videoBitsPerSecond: 1000, audioBitsPerSecond: 1000, ignoreMutedMedia: true };
                 this.recorder = new MediaRecorder(mediaStream, this.options);
-
-                this.requestDataInterval = 10000;
                 this.recorder.start();
 
-                this.recordsequence = function () {
+                this.startsequence = function () {
+
+                    try {
+
+                        if (__selflocallivestream.recorder.state === 'inactive' || __selflocallivestream.recorder.state === 'paused') {
+
+                            __selflocallivestream.recorder.start();
+                        }
+                    }
+                    catch (ex) {
+                        console.warn(ex);
+                    }
+                },
+                this.stopsequence = function () {
 
                     try {
 
                         if (__selflocallivestream.recorder.state === 'recording' || __selflocallivestream.recorder.state === 'paused') {
 
                             __selflocallivestream.recorder.stop();
-                            __selflocallivestream.recorder.start();
                         }
                     }
                     catch (ex) {
@@ -254,8 +254,6 @@
                 this.mediaSource.addEventListener('sourceclose', function (event) { console.log("on media source close"); });
 
                 this.video = this.getvideoremotedomelement();
-                this.video.width = 300;
-                this.video.height = 150;
                 this.video.controls = true;
                 this.video.autoplay = false;
                 this.video.preload = 'auto';
@@ -368,15 +366,20 @@
 
                 self.__obj.addlivestream(livestreamdicitem);
             },
-            recordsequence: function (roomId) {
+            startsequence: function (roomId) {
 
                 var livestream = self.__obj.getlivestream(roomId);
-                if (livestream !== undefined) {
+                if (livestream !== undefined && livestream.item instanceof self.__obj.locallivestream) {
 
-                    if (livestream.item instanceof self.__obj.locallivestream) {
+                    livestream.item.startsequence();
+                }
+            },
+            stopsequence: function (roomId) {
 
-                        livestream.item.recordsequence();
-                    }
+                var livestream = self.__obj.getlivestream(roomId);
+                if (livestream !== undefined && livestream.item instanceof self.__obj.locallivestream) {
+
+                    livestream.item.stopsequence();
                 }
             },
             drawimage: function (roomId) {
@@ -429,18 +432,6 @@
 
                 var blob = new Blob([arrayBuffer], { type: self.__obj.videoMimeTypeObject.mimeType });
                 return blob;
-            },
-            readAsDataUrlAsync: function (blob) {
-
-                return new Promise((resolve, reject) => {
-
-                    let fileReader = new window.FileReader();
-                    fileReader.onload = () => {
-
-                        resolve(fileReader.result);
-                    };
-                    fileReader.readAsDataURL(blob);
-                })
             },
         };
     };
