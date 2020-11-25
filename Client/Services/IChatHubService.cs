@@ -95,8 +95,6 @@ namespace Oqtane.ChatHubs.Services
 
         void ToggleUserlist(ChatHubRoom room);
 
-        void ToggleSettings(ChatHubRoom room);
-
         Task FixCorruptConnections(int ModuleId);
 
         Task DeleteRoomImageAsync(int ChatHubRoomId, int ModuleId);

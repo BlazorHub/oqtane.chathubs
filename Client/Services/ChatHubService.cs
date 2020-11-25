@@ -452,10 +452,6 @@ namespace Oqtane.ChatHubs.Services
         {
             room.ShowUserlist = !room.ShowUserlist;
         }
-        public void ToggleSettings(ChatHubRoom room)
-        {
-            room.ShowSettings = !room.ShowSettings;
-        }
 
         public async Task DisconnectAsync()
         {

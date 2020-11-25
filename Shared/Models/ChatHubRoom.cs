@@ -21,8 +21,6 @@ namespace Oqtane.Shared.Models
         public int UnreadMessages { get; set; } = 0;
         [NotMapped]
         public bool ShowUserlist { get; set; }
-        [NotMapped]
-        public bool ShowSettings { get; set; }
 
         [NotMapped]
         public virtual ICollection<ChatHubRoomChatHubUser> RoomUsers { get; set; }

@@ -21,67 +21,6 @@
                 </ChildContent>
             </MatTab>
 
-            <MatTab>
-                <LabelContent><div><span class="oi oi-shield"></span> (@ChatHubService.IgnoredUsers?.Count())</div></LabelContent>
-                <ChildContent>
-
-                    <div class="p-sm-3">
-
-                        <h5>Ignolist</h5>
-
-                        @if (ChatHubService.IgnoredUsers == null || !ChatHubService.IgnoredUsers.Any()) {
-                            <div class="alert alert-info"><small>No one found yet</small></div>
-                        }
-                        else
-                        {
-                            <table class="table table-sm">
-                                <tbody>
-                                    @foreach (var ignoredUser in ChatHubService.IgnoredUsers)
-                                    {
-                                        <tr>
-                                            <td>@ignoredUser.DisplayName</td>
-                                            <td>
-                                                <button type="button" class="btn btn-sm btn-link" @onclick="() => ChatHubService.UnignoreUser_Clicked(ignoredUser.Username)">
-                                                    <span class="oi oi-x"></span>
-                                                </button>
-                                            </td>
-                                        </tr>
-                                    }
-                                </tbody>
-                            </table>
-                        }
-
-                    </div>
-
-                </ChildContent>
-            </MatTab>
-
-            <MatTab>
-                <LabelContent><div><span class="oi oi-bug"></span> (@ChatHubService.IgnoredUsers?.Count())</div></LabelContent>
-                <ChildContent>
-
-                    <div class="p-sm-3">
-
-                        <h5>Ignored by list</h5>
-
-                        @if (ChatHubService.IgnoredUsers == null || !ChatHubService.IgnoredUsers.Any())
-                        {
-                            <div class="alert alert-info"><small>No one found yet</small></div>
-                        }
-                        else
-                        {
-                            @foreach (var ignoredUser in ChatHubService.IgnoredUsers)
-                            {
-                                <div>@ignoredUser.DisplayName</div>
-
-                            }
-                        }
-
-                    </div>
-
-                </ChildContent>
-            </MatTab>
-
         </MatTabGroup>
 
         <div class="my-3">
