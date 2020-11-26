@@ -47,7 +47,7 @@
     }
 </style>
 
-<div id="chathub-module-@ModuleState.ModuleId" class="p-sm-3 chathubs-container">
+<div id="chathub-module-@ModuleState.ModuleId" class="chathubs-container p-sm-3 mb-4">
 
     <WindowContainer>
         <WindowItem>
@@ -113,11 +113,11 @@
                                     </div>
 
                                     <section class="d-flex">
-                                        <div class="flex-fill flex-grow-1" style="max-width: 1200px; height:@(string.Format("{0}px", UserlistWindowHeight)); overflow: auto;">
+                                        <div class="flex-fill flex-grow-1" style="max-width: 1200px; overflow: auto;">
 
                                             <div class="w-100 bg-white p-sm-3">
 
-                                                <Table TableItem="ChatHubRoom" Items="@ChatHubService.Lobbies" PageSize="4" TableClass="table table-sm" TableHeadClass="chathub-table-visibility-collapse" ShowSearchBar="false">
+                                                <Table TableItem="ChatHubRoom" Items="@ChatHubService.Lobbies" PageSize="7" TableClass="table table-sm" TableHeadClass="chathub-table-visibility-collapse" ShowSearchBar="false">
 
                                                     <Column TableItem="ChatHubRoom" Title="Image" Field="@(x => x.ImageUrl)" Sortable="false" Filterable="false" Class="align-middle" Width="20%">
                                                         <Template>
@@ -493,9 +493,13 @@
                     }
                 }
 
-                <div class="mt-2 w-100">
+                <div class="d-flex flex-row-reverse my-2">
 
-                    <p class="float-right bg-white"><small>Project Url: <a href="https://github.com/boredanyway/oqtane.chathubs" target="_blank" title="oqtane chathub module dev">https://github.com/boredanyway/oqtane.chathubs</a></small></p>
+                    <p class="bg-white">
+                        <small>
+                            Project Url: <a href="https://github.com/boredanyway/oqtane.chathubs" target="_blank" title="oqtane chathub module dev">https://github.com/boredanyway/oqtane.chathubs</a>
+                        </small>
+                    </p>
 
                 </div>
 

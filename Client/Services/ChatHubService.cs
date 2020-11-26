@@ -243,7 +243,7 @@ namespace Oqtane.ChatHubs.Services
                 {
                     await this.VideoService.StopSequence(roomId);
                     await this.VideoService.StartSequence(roomId);
-                    await Task.Delay(420);
+                    await Task.Delay(1800);
                 }
                 catch (Exception ex)
                 {

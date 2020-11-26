@@ -85,9 +85,9 @@
             constrains: {
                 audio: true,
                 video: {
-                    width: { min: 150, ideal: 150, max: 150 },
+                    width: { min: 100, ideal: 100, max: 100 },
                     height: { min: 100, ideal: 100, max: 100 },
-                    frameRate: 10,
+                    frameRate: 20,
                     facingMode: "user"
                 }
             },
@@ -255,7 +255,7 @@
 
                 this.video = this.getvideoremotedomelement();
                 this.video.controls = true;
-                this.video.autoplay = false;
+                this.video.autoplay = true;
                 this.video.preload = 'auto';
                 this.video.muted = true;
 
@@ -302,10 +302,12 @@
                                 __selfremotelivestream.sourcebuffer.appendBuffer(new Uint8Array(item));
                                 __selfremotelivestream.appendsequencecounter++;
                             }
-                            if (__selfremotelivestream.appendsequencecounter === 10) {
+                            /*
+                            if (__selfremotelivestream.appendsequencecounter === 2) {
 
                                 __selfremotelivestream.video.play();
                             }
+                            */
                         }
                         reader.readAsArrayBuffer(blob);
                     }
