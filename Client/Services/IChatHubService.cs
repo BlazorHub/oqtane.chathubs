@@ -77,7 +77,7 @@ namespace Oqtane.ChatHubs.Services
 
         Task GetLobbyRooms(int moduleId);
 
-        void SendMessage(string content, int roomId, int moduleId);
+        Task SendMessage(string content, int roomId, int moduleId);
 
         Task<List<ChatHubRoom>> GetChatHubRoomsByModuleIdAsync(int ModuleId);
         Task<ChatHubRoom> GetChatHubRoomAsync(int ChatHubRoomId, int ModuleId);

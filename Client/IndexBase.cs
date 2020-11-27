@@ -174,18 +174,19 @@ namespace Oqtane.ChatHubs
             this.ChatHubService.RemoveInvitation(guid);
         }
 
-        public async void KeyDown(KeyboardEventArgs e, ChatHubRoom room)
+        public async Task KeyDown(KeyboardEventArgs e, ChatHubRoom room)
         {
             if (!e.ShiftKey && e.Key == "Enter")
             {
-                this.SendMessage_Clicked(room.MessageInput, room);
+                await this.SendMessage_Clicked(room.MessageInput, room);
             }
         }
 
-        public void SendMessage_Clicked(string messageInput, ChatHubRoom room)
+        public async Task SendMessage_Clicked(string messageInput, ChatHubRoom room)
         {
-            this.ChatHubService.SendMessage(messageInput, room.Id, ModuleState.ModuleId);
+            await this.ChatHubService.SendMessage(messageInput, room.Id, ModuleState.ModuleId);
             room.MessageInput = string.Empty;
+            this.StateHasChanged();
         }
         
         private async Task BrowserHasResized()

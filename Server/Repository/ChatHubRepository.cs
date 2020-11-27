@@ -200,14 +200,14 @@ namespace Oqtane.ChatHubs.Repository
                             .Select(u => new
                             {
                                 User = u,
-                                Connections = u.Connections.OrderByDescending(c => c.Status == Enum.GetName(typeof(ChatHubConnectionStatus), ChatHubConnectionStatus.Active)).Take(100),
+                                Connections = u.Connections.Where(c => c.Status == ChatHubConnectionStatus.Active.ToString()).ToList(),
                             })
                             .FirstOrDefaultAsync();
 
             if (item != null)
             {
                 ChatHubUser user = item.User;
-                user.Connections = item.User.Connections;
+                user.Connections = item.Connections;
 
                 return user;
             }
@@ -222,14 +222,14 @@ namespace Oqtane.ChatHubs.Repository
                             .Select(u => new
                             {
                                 User = u,
-                                Connections = u.Connections.OrderByDescending(c => c.Status == Enum.GetName(typeof(ChatHubConnectionStatus), ChatHubConnectionStatus.Active)).Take(100),
+                                Connections = u.Connections.Where(c => c.Status == ChatHubConnectionStatus.Active.ToString()).ToList(),
                             })
                             .FirstOrDefaultAsync();
 
             if (item != null)
             {
                 ChatHubUser user = item.User;
-                user.Connections = item.User.Connections;
+                user.Connections = item.Connections;
 
                 return user;
             }
@@ -238,7 +238,7 @@ namespace Oqtane.ChatHubs.Repository
         }
         public async Task<ChatHubUser> GetUserByDisplayName(string displayName)
         {
-            ChatHubUser user = await db.ChatHubUser.Include(u => u.Connections).Where(u => u.DisplayName == displayName).Where(u => u.Connections.Any(c => c.Status == Enum.GetName(typeof(ChatHubConnectionStatus), ChatHubConnectionStatus.Active))).FirstOrDefaultAsync();
+            ChatHubUser user = await db.ChatHubUser.Include(u => u.Connections).Where(u => u.DisplayName == displayName).Where(u => u.Connections.Any(c => c.Status == ChatHubConnectionStatus.Active.ToString())).FirstOrDefaultAsync();
             return user;
         }
 
