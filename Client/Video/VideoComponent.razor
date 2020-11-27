@@ -28,20 +28,20 @@
         @if (ChatHubService.ConnectedUser.UserId == ChatHubRoom.CreatorId)
         {
             <div class="bd-highlight px-1">
-                <pre class="text-white px-2 py-2 mb-0 ellipsis background-gradient-blue" style="width: 100px;">
+                <pre class="text-white px-2 py-2 mb-0 ellipsis background-gradient-blue" style="width: 150px;">
                     <small>[loc.] @ChatHubRoom.Title</small>
                 </pre>
-                <video id="chathubs-video-local-@ChatHubRoom.Id" class="chathubs-video-local mb-0" width="100" height="100" controls></video>
+                <video id="chathubs-video-local-@ChatHubRoom.Id" class="chathubs-video-local mb-0" width="150" height="100" controls></video>
                 <canvas id="chathubs-canvas-local-@ChatHubRoom.Id" class="chathubs-canvas-local bg-light d-none"></canvas>
             </div>
         }
         else
         {
             <div class="bd-highlight px-1">
-                <pre class="text-white px-2 py-2 mb-0 ellipsis background-gradient-red" style="width: 100px">
+                <pre class="text-white px-2 py-2 mb-0 ellipsis background-gradient-red" style="width: 150px">
                     <small>[rem.] @ChatHubRoom.Title</small>
                 </pre>
-                <video id="chathubs-video-remote-@ChatHubRoom.Id" class="chathubs-video-remote mb-0" width="100" height="100" controls></video>
+                <video id="chathubs-video-remote-@ChatHubRoom.Id" class="chathubs-video-remote mb-0" width="150" height="100" controls></video>
                 <canvas id="chathubs-canvas-remote-@ChatHubRoom.Id" class="chathubs-canvas-remote bg-light d-none"></canvas>
             </div>
         }

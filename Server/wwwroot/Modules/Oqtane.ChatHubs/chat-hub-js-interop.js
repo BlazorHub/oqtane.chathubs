@@ -85,9 +85,9 @@
             constrains: {
                 audio: true,
                 video: {
-                    width: { min: 100, ideal: 100, max: 100 },
+                    width: { min: 150, ideal: 150, max: 150 },
                     height: { min: 100, ideal: 100, max: 100 },
-                    frameRate: 20,
+                    frameRate: 24,
                     facingMode: "user"
                 }
             },
@@ -255,7 +255,7 @@
 
                 this.video = this.getvideoremotedomelement();
                 this.video.controls = true;
-                this.video.autoplay = true;
+                this.video.autoplay = false;
                 this.video.preload = 'auto';
                 this.video.muted = true;
 
@@ -295,19 +295,18 @@
                         reader.onloadend = function (event) {
 
                             __selfremotelivestream.remotemediasequences.push(reader.result);
-                            var item = __selfremotelivestream.remotemediasequences.shift();
 
                             if (!__selfremotelivestream.sourcebuffer.updating && __selfremotelivestream.mediaSource.readyState === 'open') {
 
+                                var item = __selfremotelivestream.remotemediasequences.shift();
                                 __selfremotelivestream.sourcebuffer.appendBuffer(new Uint8Array(item));
                                 __selfremotelivestream.appendsequencecounter++;
-                            }
-                            /*
-                            if (__selfremotelivestream.appendsequencecounter === 2) {
+                            }                            
+                            if (__selfremotelivestream.appendsequencecounter === 10) {
 
                                 __selfremotelivestream.video.play();
                             }
-                            */
+                            
                         }
                         reader.readAsArrayBuffer(blob);
                     }
