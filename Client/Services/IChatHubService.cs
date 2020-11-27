@@ -38,7 +38,6 @@ namespace Oqtane.ChatHubs.Services
         Dictionary<int, dynamic> StreamTasks { get; set; }
 
         System.Timers.Timer GetLobbyRoomsTimer { get; set; }
-        System.Timers.Timer VideoStreamTimer { get; set; }
 
         public event EventHandler OnUpdateUI;
         public event EventHandler<ChatHubUser> OnConnectedEvent;

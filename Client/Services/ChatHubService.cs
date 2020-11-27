@@ -52,7 +52,6 @@ namespace Oqtane.ChatHubs.Services
         public Dictionary<int, dynamic> StreamTasks { get; set; } = new Dictionary<int, dynamic>();
 
         public System.Timers.Timer GetLobbyRoomsTimer { get; set; } = new System.Timers.Timer();
-        public System.Timers.Timer VideoStreamTimer { get; set; } = new System.Timers.Timer();
 
         public event EventHandler OnUpdateUI;
         public event EventHandler<ChatHubUser> OnConnectedEvent;
@@ -99,6 +98,10 @@ namespace Oqtane.ChatHubs.Services
             this.OnRemoveIgnoredByUserEvent += OnRemoveIgnoredByUserExecute;
             this.OnClearHistoryEvent += OnClearHistoryExecute;
             this.OnDisconnectEvent += OnDisconnectExecute;
+
+            GetLobbyRoomsTimer.Elapsed += new ElapsedEventHandler(OnGetLobbyRoomsTimerElapsed);
+            GetLobbyRoomsTimer.Interval = 10000;
+            GetLobbyRoomsTimer.Enabled = true;
         }
 
         public void RunUpdateUI()
@@ -681,6 +684,8 @@ namespace Oqtane.ChatHubs.Services
             this.OnRemoveIgnoredByUserEvent -= OnRemoveIgnoredByUserExecute;
             this.OnClearHistoryEvent -= OnClearHistoryExecute;
             this.OnDisconnectEvent -= OnDisconnectExecute;
+
+            GetLobbyRoomsTimer.Elapsed -= new ElapsedEventHandler(OnGetLobbyRoomsTimerElapsed);
 
             this.Connection.StopAsync();
         }
