@@ -4,14 +4,14 @@
 
         scrollToBottom: function (elementId, animationTime) {
 
-            var $messageWindow = $(elementId);
-            var $lastChild = $messageWindow.children().last();
-            var lastChildHeight = Math.ceil($lastChild.height());
+            var $messagewindow = $(elementId);
+            var $lastchild = $messagewindow.children().last();
+            var lastchildheight = Math.ceil($lastchild.height());
             var tolerance = 30;
 
-            if (Math.ceil($messageWindow.scrollTop() + $messageWindow.innerHeight()) + lastChildHeight + tolerance >= $messageWindow.prop("scrollHeight")) {
+            if (Math.ceil($messagewindow.scrollTop() + $messagewindow.innerHeight()) + lastchildheight + tolerance >= $messagewindow.prop("scrollHeight")) {
 
-                $messageWindow.animate({ scrollTop: $messageWindow[0].scrollHeight }, { queue: false, duration: animationTime });
+                $messagewindow.animate({ scrollTop: $messagewindow[0].scrollHeight }, { queue: false, duration: animationTime });
             }
         }
     };
@@ -50,14 +50,8 @@
 
     window.cookies = {
 
-        setCookie: function (cookiename, cookievalue, expirationdays) {
-            var d = new Date();
-            d.setTime(d.getTime() + (expirationdays * 24 * 60 * 60 * 1000));
-            var expires = "expires=" + d.toUTCString();
-            document.cookie = cookiename + "=" + cookievalue + ";" + expires + ";path=/";
-        },
-        getCookie: function (cookiename) {
-            var name = cookiename + "=";
+        getCookie: function (cname) {
+            var name = cname + "=";
             var ca = document.cookie.split(';');
             for (var i = 0; i < ca.length; i++) {
                 var c = ca[i];
@@ -70,18 +64,24 @@
             }
             return "";
         },
+        setCookie: function (cname, cvalue, expirationdays) {
+            var d = new Date();
+            d.setTime(d.getTime() + (expirationdays * 24 * 60 * 60 * 1000));
+            var expires = "expires=" + d.toUTCString();
+            document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
+        },
     };
 
-    window.__jsstreams = function (videoserviceObjectReference) {
+    window.__jsstreams = function (videoserviceobjectreference) {
 
         __obj = {
 
-            videoservice: videoserviceObjectReference,
+            videoservice: videoserviceobjectreference,
             videolocalid: '#chathubs-video-local-',
             videoremoteid: '#chathubs-video-remote-',
             canvaslocalid: '#chathubs-canvas-local-',
             canvasremoteid: '#chathubs-canvas-remote-',
-            videoMimeTypeObject: { mimeType: 'video/webm;codecs=opus,vp9' },
+            videomimetypeobject: { mimetype: 'video/webm;codecs=opus,vp9' },
             constrains: {
                 audio: true,
                 video: {
@@ -92,9 +92,9 @@
                 }
             },
             livestreams: [],
-            locallivestream: function (roomId, mediaStream) {
+            locallivestream: function (roomId, mediastream) {
 
-                __selflocallivestream = this;
+                var __selflocallivestream = this;
 
                 this.videolocalid = self.__obj.videolocalid + roomId;
                 this.getvideolocaldomelement = function () {
@@ -107,7 +107,7 @@
                 };
 
                 this.vElement = this.getvideolocaldomelement();
-                this.vElement.srcObject = mediaStream;
+                this.vElement.srcObject = mediastream;
                 this.vElement.onloadedmetadata = function (e) {
 
                     __selflocallivestream.vElement.play();
@@ -116,8 +116,8 @@
                 this.vElement.controls = true;
                 this.vElement.muted = true;
 
-                this.options = { mimeType: __obj.videoMimeTypeObject.mimeType, videoBitsPerSecond: 1000, audioBitsPerSecond: 1000, ignoreMutedMedia: true };
-                this.recorder = new MediaRecorder(mediaStream, this.options);
+                this.options = { mimeType: __obj.videomimetypeobject.mimetype, videoBitsPerSecond: 1000, audioBitsPerSecond: 1000, ignoreMutedMedia: true };
+                this.recorder = new MediaRecorder(mediastream, this.options);
                 this.recorder.start();
 
                 this.startsequence = function () {
@@ -205,7 +205,7 @@
 
                             __selflocallivestream.recorder.stop();
                         }
-                        mediaStream.getTracks().forEach(track => track.stop());
+                        mediastream.getTracks().forEach(track => track.stop());
                     }
                     catch (err) {
                         console.error(err);
@@ -214,7 +214,7 @@
             },
             remotelivestream: function (roomId) {
 
-                __selfremotelivestream = this;
+                var __selfremotelivestream = this;
 
                 this.videoremoteid = self.__obj.videoremoteid + roomId;
                 this.getvideoremotedomelement = function () {
@@ -228,15 +228,17 @@
 
                 this.remotemediasequences = [];
 
-                this.mediaSource = new MediaSource();
-                this.mediaSource.addEventListener('sourceopen', function (event) {
+                this.mediasource = new MediaSource();
+                this.sourcebuffer = undefined;
 
-                    if (!('MediaSource' in window) || !(MediaSource.isTypeSupported(__obj.videoMimeTypeObject.mimeType))) {
+                this.mediasource.addEventListener('sourceopen', function (event) {
 
-                        console.error('Unsupported MIME type or codec: ', self.__obj.videoMimeTypeObject.mimeType);
+                    if (!('MediaSource' in window) || !(window.MediaSource.isTypeSupported(__obj.videomimetypeobject.mimetype))) {
+
+                        console.error('Unsupported MIME type or codec: ', self.__obj.videomimetypeobject.mimetype);
                     }
 
-                    __selfremotelivestream.sourcebuffer = __selfremotelivestream.mediaSource.addSourceBuffer(__obj.videoMimeTypeObject.mimeType);
+                    __selfremotelivestream.sourcebuffer = __selfremotelivestream.mediasource.addSourceBuffer(__obj.videomimetypeobject.mimetype);
                     __selfremotelivestream.sourcebuffer.mode = 'sequence';
 
                     __selfremotelivestream.sourcebuffer.addEventListener('updatestart', function (e) {});
@@ -250,8 +252,8 @@
                         }
                     });
                 });
-                this.mediaSource.addEventListener('sourceended', function (event) { console.log("on media source ended"); });
-                this.mediaSource.addEventListener('sourceclose', function (event) { console.log("on media source close"); });
+                this.mediasource.addEventListener('sourceended', function (event) { console.log("on media source ended"); });
+                this.mediasource.addEventListener('sourceclose', function (event) { console.log("on media source close"); });
 
                 this.video = this.getvideoremotedomelement();
                 this.video.controls = true;
@@ -260,10 +262,10 @@
                 this.video.muted = true;
 
                 try {
-                    this.video.srcObject = this.mediaSource;
+                    this.video.srcObject = this.mediasource;
                 } catch (ex) {
                     console.warn(ex);
-                    this.video.src = URL.createObjectURL(this.mediaSource);
+                    this.video.src = URL.createObjectURL(this.mediasource);
                 }
 
                 this.drawimage = function (base64str) {
@@ -284,19 +286,19 @@
                 };
 
                 this.appendsequencecounter = 0;
-                this.appendBuffer = async function (base64str) {
+                this.appendbuffer = async function (base64str) {
 
                     try {
 
                         console.log(base64str);
-                        var blob = self.__obj.base64ToBlob(base64str);
+                        var blob = self.__obj.base64toblob(base64str);
 
                         var reader = new FileReader();
                         reader.onloadend = function (event) {
 
                             __selfremotelivestream.remotemediasequences.push(reader.result);
 
-                            if (!__selfremotelivestream.sourcebuffer.updating && __selfremotelivestream.mediaSource.readyState === 'open') {
+                            if (!__selfremotelivestream.sourcebuffer.updating && __selfremotelivestream.mediasource.readyState === 'open') {
 
                                 var item = __selfremotelivestream.remotemediasequences.shift();
                                 __selfremotelivestream.sourcebuffer.appendBuffer(new Uint8Array(item));
@@ -359,11 +361,11 @@
             },
             startstreaming: function (roomId) {
 
-                    var livestream = new self.__obj.remotelivestream(roomId);
-                    var livestreamdicitem = {
-                        id: roomId,
-                        item: livestream,
-                    };
+                var livestream = new self.__obj.remotelivestream(roomId);
+                var livestreamdicitem = {
+                    id: roomId,
+                    item: livestream,
+                };
 
                 self.__obj.addlivestream(livestreamdicitem);
             },
@@ -403,7 +405,7 @@
 
                         if (dataType === 'video') {
 
-                            livestream.item.appendBuffer(dataURI);
+                            livestream.item.appendbuffer(dataURI);
                         }
                         else if (dataType === 'image') {
 
@@ -421,25 +423,25 @@
                     self.__obj.removelivestream(roomId);
                 }
             },
-            base64ToBlob: function (base64str) {
+            base64toblob: function (base64str) {
 
-                var byteString = atob(base64str.split('base64,')[1]);
-                var arrayBuffer = new ArrayBuffer(byteString.length);
+                var bytestring = atob(base64str.split('base64,')[1]);
+                var arraybuffer = new ArrayBuffer(bytestring.length);
 
-                var bytes = new Uint8Array(arrayBuffer);
-                for (var i = 0; i < byteString.length; i++) {
-                    bytes[i] = byteString.charCodeAt(i);
+                var bytes = new Uint8Array(arraybuffer);
+                for (var i = 0; i < bytestring.length; i++) {
+                    bytes[i] = bytestring.charCodeAt(i);
                 }
 
-                var blob = new Blob([arrayBuffer], { type: self.__obj.videoMimeTypeObject.mimeType });
+                var blob = new Blob([arraybuffer], { type: self.__obj.videomimetypeobject.mimetype });
                 return blob;
             },
         };
     };
 
-    window.__initjsstreams = function (videoserviceObjectReference) {
+    window.__initjsstreams = function (videoserviceobjectreference) {
 
-        return storeObjectRef(new window.__jsstreams(videoserviceObjectReference));
+        return storeObjectRef(new window.__jsstreams(videoserviceobjectreference));
     };
 
     var jsObjectRefs = {};

@@ -7,7 +7,5 @@ namespace Oqtane.ChatHubs.Client.Video
     public interface IVideoService
     {
 
-
-
     }
 }

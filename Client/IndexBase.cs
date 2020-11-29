@@ -301,14 +301,6 @@ namespace Oqtane.ChatHubs
             });
         }
 
-        public void Dispose()
-        {
-            BrowserResizeService.OnResize -= BrowserHasResized;
-            this.ChatHubService.OnUpdateUI -= (object sender, EventArgs e) => UpdateUIStateHasChanged();
-
-            //this.ChatHubService.DisposeStreamTasks();
-        }
-
         public void ShowWindow(WindowEvent e)
         {
             //this.BlazorAlertsService.NewBlazorAlert("on show");
@@ -337,6 +329,14 @@ namespace Oqtane.ChatHubs
         public void HiddenWindow(WindowEvent e)
         {
             //this.BlazorAlertsService.NewBlazorAlert("on hidden");
+        }
+
+        public void Dispose()
+        {
+            BrowserResizeService.OnResize -= BrowserHasResized;
+            this.ChatHubService.OnUpdateUI -= (object sender, EventArgs e) => UpdateUIStateHasChanged();
+
+            //this.ChatHubService.DisposeStreamTasks();
         }
 
     }

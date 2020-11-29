@@ -211,6 +211,8 @@ namespace Oqtane.ChatHubs.Services
         {
             try
             {
+                this.StopVideoChat(room.Id);
+
                 if (room.CreatorId == this.ConnectedUser.UserId)
                 {
                     await this.VideoService.StartBroadcasting(room.Id);
@@ -265,8 +267,15 @@ namespace Oqtane.ChatHubs.Services
 
         public async void StopVideoChat(int roomId)
         {
-            this.RemoveStreamTask(roomId);
-            await this.VideoService.CloseLivestream(roomId);            
+            try
+            {
+                this.RemoveStreamTask(roomId);
+                await this.VideoService.CloseLivestream(roomId);
+            }
+            catch (Exception ex)
+            {
+                this.BlazorAlertsService.NewBlazorAlert(ex.ToString());
+            }                        
         }
 
         public void RemoveStreamTask(int roomId)
