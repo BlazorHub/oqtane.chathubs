@@ -11,6 +11,7 @@
 @using System.Web
 @using BlazorAlerts
 @using BlazorWindows
+@using BlazorPager
 
 <style type="text/css">
 
@@ -112,66 +113,45 @@
                                         </div>
                                     </div>
 
-                                    <section class="d-flex">
-                                        <div class="flex-fill flex-grow-1" style="max-width: 1200px; overflow: auto;">
+                                    <BlazorPagerComponent Items="@ChatHubService.Lobbies" ItemsPerPage="7" Class="w-100 bg-white p-sm-3">
 
-                                            <div class="w-100 bg-white p-sm-3">
+                                        <BlazorPagerItem>
 
-                                                <Table TableItem="ChatHubRoom" Items="@ChatHubService.Lobbies" PageSize="7" TableClass="table table-sm" TableHeadClass="chathub-table-visibility-collapse" ShowSearchBar="false">
+                                            <div class="d-flex flex-fill flex-nowrap align-items-center">
 
-                                                    <Column TableItem="ChatHubRoom" Title="Image" Field="@(x => x.ImageUrl)" Sortable="false" Filterable="false" Class="align-middle" Width="20%">
-                                                        <Template>
+                                                <MatCard class="chathub-photo-mat-card" style="width: 140px">
+                                                    <MatCardContent>
+                                                        <MatCardMedia Wide="true" ImageUrl="@string.Format("{0}/modules/oqtane.chathubs/images/rooms/{1}", NavigationManager.BaseUri, context.ImageUrl)" class="@(string.IsNullOrEmpty(context.ImageUrl) ? "d-none" : "img-fuid bg-light")"></MatCardMedia>
+                                                        <MatCardMedia Wide="true" ImageUrl="@string.Format("{0}/modules/oqtane.chathubs/images/chat-room-image.png", NavigationManager.BaseUri, context.ImageUrl)" class="@(string.IsNullOrEmpty(context.ImageUrl) ? "img-fluid bg-light" : "d-none")"></MatCardMedia>
+                                                    </MatCardContent>
+                                                </MatCard>
 
-                                                            <MatCard class="chathub-photo-mat-card">
-                                                                <MatCardContent>
-                                                                    <MatCardMedia Wide="true" ImageUrl="@string.Format("{0}/modules/oqtane.chathubs/images/rooms/{1}", NavigationManager.BaseUri, context.ImageUrl)" class="@(string.IsNullOrEmpty(context.ImageUrl) ? "d-none" : "img-fuid bg-light")"></MatCardMedia>
-                                                                    <MatCardMedia Wide="true" ImageUrl="@string.Format("{0}/modules/oqtane.chathubs/images/chat-room-image.png", NavigationManager.BaseUri, context.ImageUrl)" class="@(string.IsNullOrEmpty(context.ImageUrl) ? "img-fluid bg-light" : "d-none")"></MatCardMedia>
-                                                                </MatCardContent>
-                                                            </MatCard>
+                                                <div class="px-1 py-2">
+                                                    <a href="@NavigateUrl(PageState.Page.Path, "moduleid=" + context.ModuleId.ToString() + "&" + "roomid=" + context.Id.ToString())">
+                                                        <h6>@context.Title</h6>
+                                                    </a>
+                                                    <p class="text-muted">
+                                                        <span>@context.Content</span>
+                                                        &nbsp;
+                                                        <span class="text-muted">(Posted by @context.CreatedBy on @context.CreatedOn.ToShortDateString())</span>
+                                                        <br />
+                                                        Online Users: @context.Users.Count()
+                                                    </p>
+                                                    <div class="form-group">
+                                                        <button type="button" class="btn btn-sm btn-link bg-light border-0" @onclick="@(async () => await EnterRoom_Clicked(context.Id, context.ModuleId))">Enter Room</button>
+                                                    </div>
+                                                </div>
 
-                                                        </Template>
-                                                    </Column>
-
-                                                    <Column TableItem="ChatHubRoom" Title="Content" Field="@(x => x.Content)" Sortable="false" Filterable="false">
-                                                        <Template>
-                                                            <div class="px-1 py-2">
-                                                                <a href="@NavigateUrl(PageState.Page.Path, "moduleid=" + context.ModuleId.ToString() + "&" + "roomid=" + context.Id.ToString())">
-                                                                    <h6>@context.Title</h6>
-                                                                </a>
-                                                                <p class="text-muted">
-                                                                    <span>@context.Content</span>
-                                                                    &nbsp;
-                                                                    <span class="text-muted">(Posted by @context.CreatedBy on @context.CreatedOn.ToShortDateString())</span>
-                                                                    <br />
-                                                                    Online Users: @context.Users.Count()
-                                                                </p>
-                                                                <div class="form-group">
-                                                                    <button type="button" class="btn btn-sm btn-link bg-light border-0" @onclick="@(async () => await EnterRoom_Clicked(context.Id, context.ModuleId))">Enter Room</button>
-                                                                </div>
-                                                            </div>
-                                                        </Template>
-                                                    </Column>
-
-                                                    <Column TableItem="ChatHubRoom" Title="Edit" Sortable="false" Filterable="false" Class="@(UserSecurity.IsAuthorized(PageState.User, PermissionNames.Edit, PageState.Page.Permissions) && PageState.EditMode ? "d-table-cell" : "d-none")">
-                                                        <Template>
-                                                            <ActionLink Action="Edit" Security="SecurityAccessLevel.Edit" Parameters="@($"moduleid=" + context.ModuleId.ToString() + "&" + "roomid=" + context.Id.ToString())" />
-                                                        </Template>
-                                                    </Column>
-
-                                                    <Column TableItem="ChatHubRoom" Title="Delete" Sortable="false" Filterable="false" Class="@(UserSecurity.IsAuthorized(PageState.User, PermissionNames.Edit, PageState.Page.Permissions) && PageState.EditMode ? "d-table-cell" : "d-none")">
-                                                        <Template>
-                                                            <ActionDialog Header="Delete Room" Message="@("Are You Sure You Wish To Delete This Room?")" Action="Delete" Security="SecurityAccessLevel.Edit" Class="btn btn-danger" OnClick="@(async () => await DeleteRoom(context.Id))" />
-                                                        </Template>
-                                                    </Column>
-
-                                                    <BlazorTable.Pager ShowPageNumber="true" ShowTotalCount="true" />
-
-                                                </Table>
+                                                <div class="ml-auto px-1">
+                                                    <ActionLink Action="Edit" Security="SecurityAccessLevel.Edit" Parameters="@($"moduleid=" + context.ModuleId.ToString() + "&" + "roomid=" + context.Id.ToString())" />
+                                                    <ActionDialog Header="Delete Room" Message="@("Are You Sure You Wish To Delete This Room?")" Action="Delete" Security="SecurityAccessLevel.Edit" Class="btn btn-danger" OnClick="@(async () => await DeleteRoom(context.Id))" />
+                                                </div>
 
                                             </div>
 
-                                        </div>
-                                    </section>
+                                        </BlazorPagerItem>
+
+                                    </BlazorPagerComponent>
 
                                 </WindowContent>
                             </WindowItem>

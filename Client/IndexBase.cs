@@ -15,6 +15,7 @@ using System.Text.RegularExpressions;
 using Oqtane.Shared.Models;
 using BlazorAlerts;
 using BlazorWindows;
+using BlazorPager;
 using System.Net;
 
 namespace Oqtane.ChatHubs

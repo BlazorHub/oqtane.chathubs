@@ -20,6 +20,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mobile.Blazor.Chathubs.iOS"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BlazorWindows", "BlazorWindows\BlazorWindows.csproj", "{39C78991-3C3E-4ABC-8F9E-7FA32DDD2501}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BlazorPager", "BlazorPager\BlazorPager.csproj", "{7DD2B998-C24D-4632-A69D-F689D406F7EE}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -202,6 +204,24 @@ Global
 		{39C78991-3C3E-4ABC-8F9E-7FA32DDD2501}.Wasm|iPhone.Build.0 = Debug|Any CPU
 		{39C78991-3C3E-4ABC-8F9E-7FA32DDD2501}.Wasm|iPhoneSimulator.ActiveCfg = Debug|Any CPU
 		{39C78991-3C3E-4ABC-8F9E-7FA32DDD2501}.Wasm|iPhoneSimulator.Build.0 = Debug|Any CPU
+		{7DD2B998-C24D-4632-A69D-F689D406F7EE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7DD2B998-C24D-4632-A69D-F689D406F7EE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7DD2B998-C24D-4632-A69D-F689D406F7EE}.Debug|iPhone.ActiveCfg = Debug|Any CPU
+		{7DD2B998-C24D-4632-A69D-F689D406F7EE}.Debug|iPhone.Build.0 = Debug|Any CPU
+		{7DD2B998-C24D-4632-A69D-F689D406F7EE}.Debug|iPhoneSimulator.ActiveCfg = Debug|Any CPU
+		{7DD2B998-C24D-4632-A69D-F689D406F7EE}.Debug|iPhoneSimulator.Build.0 = Debug|Any CPU
+		{7DD2B998-C24D-4632-A69D-F689D406F7EE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7DD2B998-C24D-4632-A69D-F689D406F7EE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7DD2B998-C24D-4632-A69D-F689D406F7EE}.Release|iPhone.ActiveCfg = Release|Any CPU
+		{7DD2B998-C24D-4632-A69D-F689D406F7EE}.Release|iPhone.Build.0 = Release|Any CPU
+		{7DD2B998-C24D-4632-A69D-F689D406F7EE}.Release|iPhoneSimulator.ActiveCfg = Release|Any CPU
+		{7DD2B998-C24D-4632-A69D-F689D406F7EE}.Release|iPhoneSimulator.Build.0 = Release|Any CPU
+		{7DD2B998-C24D-4632-A69D-F689D406F7EE}.Wasm|Any CPU.ActiveCfg = Debug|Any CPU
+		{7DD2B998-C24D-4632-A69D-F689D406F7EE}.Wasm|Any CPU.Build.0 = Debug|Any CPU
+		{7DD2B998-C24D-4632-A69D-F689D406F7EE}.Wasm|iPhone.ActiveCfg = Debug|Any CPU
+		{7DD2B998-C24D-4632-A69D-F689D406F7EE}.Wasm|iPhone.Build.0 = Debug|Any CPU
+		{7DD2B998-C24D-4632-A69D-F689D406F7EE}.Wasm|iPhoneSimulator.ActiveCfg = Debug|Any CPU
+		{7DD2B998-C24D-4632-A69D-F689D406F7EE}.Wasm|iPhoneSimulator.Build.0 = Debug|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

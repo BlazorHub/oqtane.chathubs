@@ -33,6 +33,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\BlazorAlerts\BlazorAlerts.csproj" />
+    <ProjectReference Include="..\BlazorPager\BlazorPager.csproj" />
     <ProjectReference Include="..\BlazorWindows\BlazorWindows.csproj" />
     <ProjectReference Include="..\Shared\Oqtane.ChatHubs.Shared.csproj" />
   </ItemGroup>
