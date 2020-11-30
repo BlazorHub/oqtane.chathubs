@@ -10,4 +10,6 @@ XCOPY "..\BlazorWindows\bin\Debug\net5.0\BlazorWindows.dll" "..\..\oqtane.framew
 XCOPY "..\BlazorWindows\bin\Debug\net5.0\BlazorWindows.pdb" "..\..\oqtane.framework\Oqtane.Server\bin\Debug\net5.0\" /Y
 XCOPY "..\BlazorPager\bin\Debug\net5.0\BlazorPager.dll" "..\..\oqtane.framework\Oqtane.Server\bin\Debug\net5.0\" /Y
 XCOPY "..\BlazorPager\bin\Debug\net5.0\BlazorPager.pdb" "..\..\oqtane.framework\Oqtane.Server\bin\Debug\net5.0\" /Y
+XCOPY "..\BlazorDraggableList\bin\Debug\net5.0\BlazorDraggableList.dll" "..\..\oqtane.framework\Oqtane.Server\bin\Debug\net5.0\" /Y
+XCOPY "..\BlazorDraggableList\bin\Debug\net5.0\BlazorDraggableList.pdb" "..\..\oqtane.framework\Oqtane.Server\bin\Debug\net5.0\" /Y
 XCOPY "..\Server\wwwroot\Modules\Oqtane.ChatHubs\*" "..\..\oqtane.framework\Oqtane.Server\wwwroot\Modules\Oqtane.ChatHubs\" /Y /S /I

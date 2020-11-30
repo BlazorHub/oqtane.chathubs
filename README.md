@@ -27,6 +27,7 @@ Edit _Host.cshtml end of body tag:
 Edit startup.cs configure services methode:
 ```C#
 services.AddScoped<BlazorAlertsService, BlazorAlertsService>();
+services.AddScoped<BlazorDraggableListService, BlazorDraggableListService>();
 services.AddFileReaderService();
 
 services.AddMvc()

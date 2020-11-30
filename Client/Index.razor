@@ -595,6 +595,28 @@
 
                     </section>
 
+                    <section class="my-1 p-sm-3">
+
+                        <div>
+
+                            <h5><span class="oi oi-list"></span> Sort all rooms <span class="badge badge-success">NEW</span></h5>
+
+                            <BlazorDraggableList.BlazorDraggableListComponent Items="ChatHubService.Rooms" Class="w-100">
+
+                                <BlazorDraggableListItem>
+
+                                    <div class="p-2 bg-light">
+                                        <h5>@context.Title</h5>
+                                    </div>
+
+                                </BlazorDraggableListItem>
+
+                            </BlazorDraggableList.BlazorDraggableListComponent>
+
+                        </div>
+
+                    </section>
+
                 </div>
 
             </WindowContent>

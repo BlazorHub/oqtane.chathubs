@@ -1,7 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using Microsoft.AspNetCore.Components;
+using Microsoft.JSInterop;
+using System;
 using System.Threading.Tasks;
 
 namespace BlazorDraggableList
@@ -9,7 +8,21 @@ namespace BlazorDraggableList
     public class BlazorDraggableListService : IBlazorDraggableListService
     {
 
+        private readonly IJSRuntime JSRuntime;
 
+        public static event EventHandler<BlazorDraggableListEvent> OnDropEvent;
+
+        public BlazorDraggableListService(IJSRuntime JSRuntime)
+        {
+            this.JSRuntime = JSRuntime;
+        }
+
+        [JSInvokable("OnDrop")]
+        public static void OnDrop(int oldIndex, int newIndex)
+        {
+            BlazorDraggableListEvent eventParameters = new BlazorDraggableListEvent() { DraggableItemOldIndex = oldIndex, DraggableItemNewIndex = newIndex };
+            OnDropEvent?.Invoke(typeof(BlazorDraggableListService), eventParameters);
+        }
 
     }
 }

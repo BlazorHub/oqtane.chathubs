@@ -456,3 +456,35 @@
     };
 
 });
+
+window.addEventListener('DOMContentLoaded', () => {
+
+    window.blazordraggablelist_dragstart = function (event) {
+
+        var id = event.target.id;
+        var arr = id.split('-');
+        var dragstartindex = arr[arr.length - 1];
+
+        event.dataTransfer.setData("index", dragstartindex);
+    };
+
+    window.blazordraggablelist_dragover = function (event) {
+
+        event.preventDefault();
+        event.dataTransfer.dropEffect = 'move';
+    };
+
+    window.blazordraggablelist_drop = function (event) {
+
+        event.preventDefault();
+
+        var dragindex = event.dataTransfer.getData('index');
+
+        var id = event.target.id;
+        var arr = id.split('-');
+        var dropindex = arr[arr.length - 1];
+
+        DotNet.invokeMethodAsync("BlazorDraggableList", 'OnDrop', parseInt(dragindex), parseInt(dropindex));
+    };
+    
+});
