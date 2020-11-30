@@ -1,0 +1,27 @@
+﻿@namespace BlazorDraggableList
+
+@inherits BlazorDraggableListBase<TItemGeneric>
+
+@typeparam TItemGeneric
+
+
+<section class="blazor-draggable-list">
+
+    <div class="@Class">
+
+        @for (int i = 0; i < Items.Count(); i++)
+        {
+            var temp = i;
+
+            <div id="draggable-item-@temp" draggable="true">
+                @DraggableItem(Items[temp]);
+            </div>
+        }
+
+    </div>
+
+</section>
+
+@code {
+
+}
