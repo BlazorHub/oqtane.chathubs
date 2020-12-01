@@ -5,10 +5,30 @@
 
 <style type="text/css">
 
-    .ellipsis {
+    .video-items div:first-of-type {
+        padding-left: 0px !important;
+    }
+
+    .video-items div:last-of-type {
+        padding-right: 0px !important;
+    }
+
+    .video-resize-container {
+        resize: both;
+        overflow: auto;
+        background-color: darkseagreen;
+    }
+
+    .video-resize-container:hover .video-ellipsis {
+        display: initial;
+    }
+
+    .video-ellipsis {
         text-overflow: ellipsis;
         overflow: hidden;
         white-space: nowrap;
+        z-index: 1;
+        display: initial;
     }
 
     .background-gradient-blue {
@@ -21,32 +41,32 @@
 
 </style>
 
-<div>
+<div class="bd-highlight video-item px-1">
 
-    <div class="d-flex align-items-center bd-highlight">
-
-        @if (ChatHubService.ConnectedUser.UserId == ChatHubRoom.CreatorId)
-        {
-            <div class="bd-highlight px-1">
-                <pre class="text-white px-2 py-2 mb-0 ellipsis background-gradient-blue" style="width: 150px;">
-                    <small>[loc.] @ChatHubRoom.Title</small>
-                </pre>
-                <video id="chathubs-video-local-@ChatHubRoom.Id" class="chathubs-video-local mb-0" width="150" height="100" controls></video>
+    @if (ChatHubService.ConnectedUser.UserId == ChatHubRoom.CreatorId)
+    {
+        <div>
+            <div class="video-resize-container position-relative">
+                <div class="text-white mb-0 w-100 position-absolute video-ellipsis">
+                    <small class="px-2 py-1">[loc.] @ChatHubRoom.Title</small>
+                </div>
+                <video id="chathubs-video-local-@ChatHubRoom.Id" class="chathubs-video-local mb-0 w-100 h-100" style="min-width: 320px; min-height: 160px;" controls></video>
                 <canvas id="chathubs-canvas-local-@ChatHubRoom.Id" class="chathubs-canvas-local bg-light d-none"></canvas>
             </div>
-        }
-        else
-        {
-            <div class="bd-highlight px-1">
-                <pre class="text-white px-2 py-2 mb-0 ellipsis background-gradient-red" style="width: 150px">
-                    <small>[rem.] @ChatHubRoom.Title</small>
-                </pre>
-                <video id="chathubs-video-remote-@ChatHubRoom.Id" class="chathubs-video-remote mb-0" width="150" height="100" controls></video>
+        </div>
+    }
+    else
+    {
+        <div>
+            <div class="video-resize-container position-relative">
+                <div class="text-white mb-0 w-100 position-absolute video-ellipsis">
+                    <small class="px-2 py-1">[rem.] @ChatHubRoom.Title</small>
+                </div>
+                <video id="chathubs-video-remote-@ChatHubRoom.Id" class="chathubs-video-remote mb-0 w-100 h-100" style="min-width: 320px; min-height: 160px;" controls></video>
                 <canvas id="chathubs-canvas-remote-@ChatHubRoom.Id" class="chathubs-canvas-remote bg-light d-none"></canvas>
             </div>
-        }
-
-    </div>
+        </div>
+    }
 
 </div>
 

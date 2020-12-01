@@ -18,15 +18,13 @@
 
 @if (WindowItems.Count() > 1)
 {
-    <div class="d-flex align-content-start overflow-auto my-4 py-0 bg-light border border-light blazor-window-nav">
+    <div class="video-items d-flex align-content-start overflow-auto my-4 py-0 bg-light border border-light blazor-window-nav">
 
         @foreach (WindowItem windowItem in WindowItems)
         {
             if (windowItem == WindowItems.FirstOrDefault()) continue;
 
-            <div>
-                @windowItem.WindowLivestream
-            </div>
+            @windowItem.WindowLivestream
         }
 
     </div>
