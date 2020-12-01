@@ -605,13 +605,20 @@
 
                                 <BlazorDraggableListItem>
 
-                                    <div class="p-2 bg-light">
-                                        <h5>@context.Title</h5>
+                                    <div class="px-4 py-2 bg-light">
+                                        <p>@context.Title</p>
                                     </div>
 
                                 </BlazorDraggableListItem>
 
                             </BlazorDraggableList.BlazorDraggableListComponent>
+
+                            @if (!ChatHubService.Rooms.Any())
+                            {
+                                <div class="alert alert-warning" role="alert">
+                                    No rooms found yet.
+                                </div>
+                            }
 
                         </div>
 

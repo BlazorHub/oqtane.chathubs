@@ -461,6 +461,8 @@ window.addEventListener('DOMContentLoaded', () => {
 
     window.blazordraggablelist_dragstart = function (event) {
 
+        event.dataTransfer.effectAllowed = "move";
+
         var id = event.target.id;
         var arr = id.split('-');
         var dragstartindex = arr[arr.length - 1];
