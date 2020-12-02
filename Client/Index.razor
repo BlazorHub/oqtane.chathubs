@@ -156,8 +156,12 @@
                                 </WindowContent>
                             </WindowItem>
 
-                            @foreach (ChatHubRoom room in ChatHubService.Rooms)
-                            {
+                            @foreach (var item in ChatHubService.Rooms.Select((value, i) => new { value, i }))
+                            {                                
+                                
+                                ChatHubRoom room = item.value;
+                                int room_index = item.i;                                
+
                                 <WindowItem @key="room" Id="@room.Id" InitialSelection="@(ChatHubService.ContextRoomId == room.Id.ToString())">
                                     <WindowTitle>
 
@@ -169,7 +173,7 @@
                                     </WindowTitle>
                                     <WindowLivestream>
 
-                                        <VideoComponent ChatHubRoom="@room"></VideoComponent>
+                                        <VideoComponent ChatHubRoom="@room" ItemIndex="@room_index"></VideoComponent>
 
                                     </WindowLivestream>
                                     <WindowContent>
