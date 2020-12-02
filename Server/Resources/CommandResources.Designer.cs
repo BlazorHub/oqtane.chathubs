@@ -61,6 +61,15 @@ namespace Oqtane.ChatHubs.Server.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to ciaobella.
+        /// </summary>
+        public static string ciaobella {
+            get {
+                return ResourceManager.GetString("ciaobella", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to clear;recycle;free;.
         /// </summary>
         public static string clear {
