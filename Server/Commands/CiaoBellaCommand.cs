@@ -32,7 +32,7 @@ namespace Oqtane.ChatHubs.Commands
             }
 
             // TODO: delete user with all its relations
-            throw new HubException("Ciao Bella Command: somhoew is this not implemented yet but how why??", new NotImplementedException("??"));
+            throw new HubException("somhow is this not implemented yet but how why??", new NotImplementedException("??"));
 
             foreach(var connection in targetUser.Connections)
             {
