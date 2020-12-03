@@ -5,6 +5,7 @@
 
 <style type="text/css">
 
+    /*
     .video-items div:first-of-type {
         padding-left: 0px !important;
     }
@@ -12,18 +13,24 @@
     .video-items div:last-of-type {
         padding-right: 0px !important;
     }
+    */
 
-    .video-resize-container-@ItemIndex {
-        resize: both;
-        overflow: auto;
-        background-color: @_videoItemBackgroundColor;
+    .video-item-@ItemIndex {
+        width: 300px;
+        height: 200px;
     }
 
-    .video-resize-container:hover .video-ellipsis {
+    .video-item-resize-container-@ItemIndex {
+        resize: both;
+        overflow: auto;
+        background-color: @VideoItemBackgroundColor;
+    }
+
+    .video-item-resize-container:hover .video-ellipsis {
         display: initial;
     }
 
-    .video-ellipsis {
+    .video-item-ellipsis {
         text-overflow: ellipsis;
         overflow: hidden;
         white-space: nowrap;
@@ -41,16 +48,16 @@
 
 </style>
 
-<div class="bd-highlight video-item px-1">
+<div class="bd-highlight video-item p-1">
 
     @if (ChatHubService.ConnectedUser.UserId == ChatHubRoom.CreatorId)
     {
         <div>
-            <div class="video-resize-container-@ItemIndex position-relative">
-                <div class="text-white mb-0 w-100 position-absolute video-ellipsis">
-                    <small class="px-2 py-1">[loc.] @ChatHubRoom.Title [@ItemIndex]</small>
+            <div class="video-item-resize-container-@ItemIndex position-relative">
+                <div class="text-white mb-0 w-100 position-absolute video-item-ellipsis">
+                    <small class="px-2 py-1">[loc.] @ChatHubRoom.Title</small>
                 </div>
-                <video id="chathubs-video-local-@ChatHubRoom.Id" class="chathubs-video-local mb-0 w-100 h-100" style="min-width: 320px; min-height: 160px;" controls></video>
+                <video id="chathubs-video-local-@ChatHubRoom.Id" class="chathubs-video-local mb-0 w-100 h-100" style="min-width: 300px; min-height: 200px;" controls></video>
                 <canvas id="chathubs-canvas-local-@ChatHubRoom.Id" class="chathubs-canvas-local bg-light d-none"></canvas>
             </div>
         </div>
@@ -58,11 +65,11 @@
     else
     {
         <div>
-            <div class="video-resize-container-@ItemIndex position-relative">
-                <div class="text-white mb-0 w-100 position-absolute video-ellipsis">
-                    <small class="px-2 py-1">[rem.] @ChatHubRoom.Title [@ItemIndex]</small>
+            <div class="video-item-resize-container-@ItemIndex position-relative">
+                <div class="text-white mb-0 w-100 position-absolute video-item-ellipsis">
+                    <small class="px-2 py-1">[rem.] @ChatHubRoom.Title</small>
                 </div>
-                <video id="chathubs-video-remote-@ChatHubRoom.Id" class="chathubs-video-remote mb-0 w-100 h-100" style="min-width: 320px; min-height: 160px;" controls></video>
+                <video id="chathubs-video-remote-@ChatHubRoom.Id" class="chathubs-video-remote mb-0 w-100 h-100" style="min-width: 300px; min-height: 200px;" controls></video>
                 <canvas id="chathubs-canvas-remote-@ChatHubRoom.Id" class="chathubs-canvas-remote bg-light d-none"></canvas>
             </div>
         </div>
@@ -95,13 +102,17 @@
         "YellowGreen"
     };
 
-    private string _videoItemBackgroundColor
+    private string _videoItemBackgroundColor { get; set; }
+
+    protected string VideoItemBackgroundColor
     {
-        get => this._colors[new Random().Next(0, this._colors.Count() - 1)];
+        get => this._videoItemBackgroundColor;
+        set => this._videoItemBackgroundColor = value;
     }
 
     protected override void OnInitialized()
     {
+        this.VideoItemBackgroundColor = this._colors[new Random().Next(0, this._colors.Count() - 1)];
         base.OnInitialized();
     }
 
