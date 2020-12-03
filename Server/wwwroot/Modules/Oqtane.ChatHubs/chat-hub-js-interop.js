@@ -85,8 +85,8 @@
             constrains: {
                 audio: true,
                 video: {
-                    width: { min: 320, ideal: 320, max: 320 },
-                    height: { min: 160, ideal: 160, max: 160 },
+                    width: { min: 300, ideal: 300, max: 300 },
+                    height: { min: 150, ideal: 150, max: 150 },
                     frameRate: 12,
                     facingMode: "user"
                 }
