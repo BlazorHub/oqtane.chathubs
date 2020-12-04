@@ -737,6 +737,9 @@ namespace Oqtane.ChatHubs.Services
         public void Dispose()
         {
             this.VideoService.OnDataAvailableEventHandler -= async (object sender, dynamic e) => await OnDataAvailableEventHandlerExecute(e.dataURI, e.roomId, e.dataType);
+            this.VideoService.OnPauseLivestreamTask -= (object sender, int e) => OnPauseLivestreamTaskExecute(sender, e);
+            this.VideoService.OnContinueLivestreamTask -= (object sender, int e) => OnContinueLivestreamTaskExecute(sender, e);
+            this.DisposeStreamTasks();
 
             this.OnConnectedEvent -= OnConnectedExecute;
             this.OnAddChatHubRoomEvent -= OnAddChatHubRoomExecute;
