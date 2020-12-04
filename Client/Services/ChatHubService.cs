@@ -274,7 +274,7 @@ namespace Oqtane.ChatHubs.Services
 
                             await Task.Delay(420);
                         }
-                        else if (obj.streamTaskStatus == StreamTaskStatus.Active)
+                        else if (obj.streamTaskStatus == StreamTaskStatus.Paused)
                         {
                             await Task.Delay(2400);
                         }
