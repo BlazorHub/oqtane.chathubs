@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Dynamic;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -35,7 +36,7 @@ namespace Oqtane.ChatHubs.Services
         List<ChatHubUser> IgnoredUsers { get; set; }
         List<ChatHubUser> IgnoredByUsers { get; set; }
 
-        Dictionary<int, dynamic> StreamTasks { get; set; }
+        Dictionary<int, ExpandoObject> StreamTasks { get; set; }
 
         System.Timers.Timer GetLobbyRoomsTimer { get; set; }
 

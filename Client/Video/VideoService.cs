@@ -24,6 +24,8 @@ namespace Oqtane.ChatHubs
         private readonly IJSRuntime JSRuntime;
 
         public event EventHandler<dynamic> OnDataAvailableEventHandler;
+        public event EventHandler<int> OnPauseLivestreamTask;
+        public event EventHandler<int> OnContinueLivestreamTask;
 
         public VideoService(HttpClient httpClient, IJSRuntime JSRuntime) : base(httpClient)
         {
@@ -41,6 +43,18 @@ namespace Oqtane.ChatHubs
         {
             OnDataAvailableEventHandler?.Invoke(typeof(VideoService), new { dataURI = dataURI, roomId = roomId, dataType = dataType });
             return new { msg = string.Format("room id: {1}; dataType: {2}; dataUri: {0}", dataURI, roomId, dataType) };
+        }
+
+        [JSInvokable("PauseLivestreamTask")]
+        public void PauseLivestreamTask(int roomId)
+        {
+            this.OnPauseLivestreamTask?.Invoke(typeof(VideoService), roomId);
+        }
+
+        [JSInvokable("ContinueLivestreamTask")]
+        public void ContinueLivestreamTask(int roomId)
+        {
+            this.OnContinueLivestreamTask?.Invoke(typeof(VideoService), roomId);
         }
 
         public async Task StartBroadcasting(int roomId)

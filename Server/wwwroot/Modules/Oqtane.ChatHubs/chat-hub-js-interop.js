@@ -116,6 +116,12 @@
                 this.vElement.controls = true;
                 this.vElement.muted = true;
 
+                this.vElement.addEventListener("pause", function () {
+
+                    console.warn('on video pause: ' + roomId);
+                    __selflocallivestream.pauselivestreamtask();
+                });
+
                 this.options = { mimeType: __obj.videomimetypeobject.mimetype, videoBitsPerSecond: 1000, audioBitsPerSecond: 1000, ignoreMutedMedia: true };
                 this.recorder = new MediaRecorder(mediastream, this.options);
                 this.recorder.start();
@@ -198,6 +204,15 @@
                         console.log(obj.msg);
                     });
                 };
+
+                this.pauselivestreamtask = function () {
+
+                    self.__obj.videoservice.invokeMethodAsync('PauseLivestreamTask', roomId);
+                },
+                this.continuelivestreamtask = function () {
+
+                    self.__obj.videoservice.invokeMethodAsync('ContinueLivestreamTask', roomId);
+                },
                 this.cancel = function () {
 
                     try {
