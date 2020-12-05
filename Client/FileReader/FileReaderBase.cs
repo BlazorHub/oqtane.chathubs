@@ -13,21 +13,14 @@ namespace Oqtane.ChatHubs
     public class FileReaderBase : ComponentBase
     {
 
-        [Inject]
-        protected IFileReaderService FileReaderService { get; set; }
-        [Inject]
-        protected NavigationManager NavigationManager { get; set; }
-        [Inject]
-        protected HttpClient HttpClient { get; set; }
-        [Inject]
-        protected SiteState SiteState { get; set; }
-        [Inject]
-        public IChatHubService ChatHubService { get; set; }
+        [Inject] protected IFileReaderService FileReaderService { get; set; }
+        [Inject] protected NavigationManager NavigationManager { get; set; }
+        [Inject] protected HttpClient HttpClient { get; set; }
+        [Inject] protected SiteState SiteState { get; set; }
+        [Inject] public IChatHubService ChatHubService { get; set; }
 
-        [Parameter]
-        public string ModuleId { get; set; }
-        [Parameter]
-        public string ChatHubRoomId { get; set; }
+        [Parameter] public string ModuleId { get; set; }
+        [Parameter] public string ChatHubRoomId { get; set; }
 
         public ElementReference dropTargetElement;
         public IFileReaderRef dropReference;
@@ -152,10 +145,6 @@ namespace Oqtane.ChatHubs
             catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
-            }
-            finally
-            {
-
             }
 
         }

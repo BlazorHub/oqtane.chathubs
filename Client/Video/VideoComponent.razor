@@ -116,14 +116,14 @@
         base.OnInitialized();
     }
 
-        protected override void OnAfterRender(bool firstRender)
-        {
-            if(firstRender) {
+    protected override void OnAfterRender(bool firstRender)
+    {
+        if(firstRender) {
                 
-                this.VideoService.ContinueLivestreamTask(ChatHubRoom.Id);
-            }
-
-            base.OnAfterRender(firstRender);
+            this.VideoService.ContinueLivestreamTask(ChatHubRoom.Id);
         }
+
+        base.OnAfterRender(firstRender);
+    }
 
 }

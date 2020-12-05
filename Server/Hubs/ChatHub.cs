@@ -14,9 +14,7 @@ using Microsoft.EntityFrameworkCore;
 using Oqtane.Shared.Models;
 using Oqtane.ChatHubs.Services;
 using Oqtane.ChatHubs.Repository;
-using Microsoft.AspNetCore.Http;
 using Oqtane.ChatHubs.Commands;
-using Microsoft.AspNetCore.Components.Authorization;
 using Oqtane.Modules;
 using System.Security.Claims;
 

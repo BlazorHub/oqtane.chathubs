@@ -274,15 +274,8 @@ namespace Oqtane.ChatHubs.Services
 
         public async void StopVideoChat(int roomId)
         {
-            try
-            {
-                this.RemoveStreamTask(roomId);
-                await this.VideoService.CloseLivestream(roomId);
-            }
-            catch (Exception ex)
-            {
-                this.BlazorAlertsService.NewBlazorAlert(ex.ToString());
-            }                        
+            this.RemoveStreamTask(roomId);
+            await this.VideoService.CloseLivestream(roomId);                      
         }
 
         public void RemoveStreamTask(int roomId)
@@ -342,11 +335,7 @@ namespace Oqtane.ChatHubs.Services
 
         public async Task OnContinueLivestreamTaskExecute(object sender, int roomId)
         {
-            List<KeyValuePair<int, dynamic>> list = this.StreamTasks.Where(item => item.Key == roomId).ToList();
-            if (list.Any())
-            {
-                await this.StartVideoChat(roomId);
-            }
+            await this.StartVideoChat(roomId);            
         }
 
         public async void OnDownloadBytesExecuteAsync(object sender, dynamic e)
