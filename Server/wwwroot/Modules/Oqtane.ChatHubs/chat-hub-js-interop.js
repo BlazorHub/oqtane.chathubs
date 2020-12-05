@@ -115,10 +115,8 @@
                 this.vElement.autoplay = true;
                 this.vElement.controls = true;
                 this.vElement.muted = true;
-
                 this.vElement.addEventListener("pause", function () {
 
-                    console.warn('on video pause: ' + roomId);
                     __selflocallivestream.pauselivestreamtask();
                 });
 

@@ -453,7 +453,7 @@
 
                                                                     <h5>Webcam Live Streams <span class="badge badge-success">NEW</span></h5>
 
-                                                                    <button type="button" @onclick="() => ChatHubService.StartVideoChat(room)">Start Streaming</button>
+                                                                    <button type="button" @onclick="() => ChatHubService.StartVideoChat(room.Id)">Start Streaming</button>
                                                                     <button type="button" @onclick="async () => ChatHubService.StopVideoChat(room.Id)">Stop Streaming</button>
 
                                                                 </div>

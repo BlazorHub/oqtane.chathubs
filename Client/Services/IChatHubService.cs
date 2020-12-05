@@ -36,7 +36,7 @@ namespace Oqtane.ChatHubs.Services
         List<ChatHubUser> IgnoredUsers { get; set; }
         List<ChatHubUser> IgnoredByUsers { get; set; }
 
-        Dictionary<int, ExpandoObject> StreamTasks { get; set; }
+        Dictionary<int, dynamic> StreamTasks { get; set; }
 
         System.Timers.Timer GetLobbyRoomsTimer { get; set; }
 
@@ -65,7 +65,7 @@ namespace Oqtane.ChatHubs.Services
 
         Task ConnectAsync();
 
-        Task StartVideoChat(ChatHubRoom room);
+        Task StartVideoChat(int roomId);
 
         void DisposeStreamTasks();
 

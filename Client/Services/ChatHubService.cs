@@ -50,13 +50,7 @@ namespace Oqtane.ChatHubs.Services
         public List<ChatHubUser> IgnoredUsers { get; set; } = new List<ChatHubUser>();
         public List<ChatHubUser> IgnoredByUsers { get; set; } = new List<ChatHubUser>();
 
-        public Dictionary<int, ExpandoObject> StreamTasks { get; set; } = new Dictionary<int, ExpandoObject>();
-
-        public enum StreamTaskStatus
-        {
-            Active,
-            Paused
-        }
+        public Dictionary<int, dynamic> StreamTasks { get; set; } = new Dictionary<int, dynamic>();
 
         public System.Timers.Timer GetLobbyRoomsTimer { get; set; } = new System.Timers.Timer();
 
@@ -216,10 +210,11 @@ namespace Oqtane.ChatHubs.Services
             });
         }
 
-        public async Task StartVideoChat(ChatHubRoom room)
+        public async Task StartVideoChat(int roomId)
         {
             try
             {
+                var room = this.Rooms.FirstOrDefault(item => item.Id == roomId);
                 this.StopVideoChat(room.Id);
 
                 if (room.CreatorId == this.ConnectedUser.UserId)
@@ -228,9 +223,8 @@ namespace Oqtane.ChatHubs.Services
 
                     CancellationTokenSource tokenSource = new CancellationTokenSource();
                     CancellationToken token = tokenSource.Token;
-                    StreamTaskStatus streamTaskStatus = StreamTaskStatus.Active;
-                    Task task = new Task(async () => await this.StreamTaskImplementation(room.Id, token, streamTaskStatus), token);
-                    this.AddStreamTask(room.Id, task, tokenSource, streamTaskStatus);
+                    Task task = new Task(async () => await this.StreamTaskImplementation(room.Id, token), token);
+                    this.AddStreamTask(room.Id, task, tokenSource);
                     task.Start();
                 }
                 else
@@ -244,41 +238,24 @@ namespace Oqtane.ChatHubs.Services
             }
         }
 
-        public void AddStreamTask(int roomId, Task task, CancellationTokenSource tokenSource, StreamTaskStatus streamTaskStatus)
+        public void AddStreamTask(int roomId, Task task, CancellationTokenSource tokenSource)
         {
             this.RemoveStreamTask(roomId);
 
-            ExpandoObject obj = new ExpandoObject();
-            obj.TryAdd("task", task);
-            obj.TryAdd("tokenSource", tokenSource);
-            obj.TryAdd("streamTaskStatus", streamTaskStatus);
-
+            dynamic obj = new { task = task, tokenSource = tokenSource };
             this.StreamTasks.Add(roomId, obj);
         }
 
-        public async Task StreamTaskImplementation(int roomId, CancellationToken token, StreamTaskStatus streamTaskStatus)
+        public async Task StreamTaskImplementation(int roomId, CancellationToken token)
         {
             while (!token.IsCancellationRequested)
             {
                 try
                 {
-                    List<KeyValuePair<int, ExpandoObject>> list = this.StreamTasks.Where(item => item.Key == roomId).ToList();
-                    if (list.Any())
-                    {
-                        KeyValuePair<int, ExpandoObject> keyValuePair = list.FirstOrDefault();
-                        dynamic obj = keyValuePair.Value;
-                        if (obj.streamTaskStatus == StreamTaskStatus.Active)
-                        {
-                            await this.VideoService.StopSequence(roomId);
-                            await this.VideoService.StartSequence(roomId);
+                    await this.VideoService.StopSequence(roomId);
+                    await this.VideoService.StartSequence(roomId);
 
-                            await Task.Delay(420);
-                        }
-                        else if (obj.streamTaskStatus == StreamTaskStatus.Paused)
-                        {
-                            await Task.Delay(2400);
-                        }
-                    }
+                    await Task.Delay(420);
                 }
                 catch (Exception ex)
                 {
@@ -310,10 +287,10 @@ namespace Oqtane.ChatHubs.Services
 
         public void RemoveStreamTask(int roomId)
         {
-            List<KeyValuePair<int, ExpandoObject>> list = this.StreamTasks.Where(item => item.Key == roomId).ToList();
+            List<KeyValuePair<int, dynamic>> list = this.StreamTasks.Where(item => item.Key == roomId).ToList();
             if (list.Any())
             {
-                KeyValuePair<int, ExpandoObject> keyValuePair = list.FirstOrDefault();
+                KeyValuePair<int, dynamic> keyValuePair = list.FirstOrDefault();
                 dynamic obj = keyValuePair.Value;
                 obj.tokenSource.Cancel();
                 obj.task.Dispose();
@@ -353,30 +330,22 @@ namespace Oqtane.ChatHubs.Services
 
         public void OnPauseLivestreamTaskExecute(object sender, int roomId)
         {
-            List<KeyValuePair<int, ExpandoObject>> list = this.StreamTasks.Where(item => item.Key == roomId).ToList();
+            List<KeyValuePair<int, dynamic>> list = this.StreamTasks.Where(item => item.Key == roomId).ToList();
             if (list.Any())
             {
-                KeyValuePair<int, ExpandoObject> keyValuePair = list.FirstOrDefault();
-                ExpandoObject obj = keyValuePair.Value;
-                var dic = (IDictionary<string, Object>)obj;
-                if(dic.ContainsKey("streamTaskStatus")) {
-                    dic["streamTaskStatus"] = StreamTaskStatus.Paused;
-                }
+                KeyValuePair<int, dynamic> keyValuePair = list.FirstOrDefault();
+                dynamic obj = keyValuePair.Value;
+                obj.tokenSource.Cancel();
+                obj.task.Dispose();
             }
         }
 
-        public void OnContinueLivestreamTaskExecute(object sender, int roomId)
+        public async Task OnContinueLivestreamTaskExecute(object sender, int roomId)
         {
-            List<KeyValuePair<int, ExpandoObject>> list = this.StreamTasks.Where(item => item.Key == roomId).ToList();
+            List<KeyValuePair<int, dynamic>> list = this.StreamTasks.Where(item => item.Key == roomId).ToList();
             if (list.Any())
             {
-                KeyValuePair<int, ExpandoObject> keyValuePair = list.FirstOrDefault();
-                ExpandoObject obj = keyValuePair.Value;
-                var dic = (IDictionary<string, Object>)obj;
-                if (dic.ContainsKey("streamTaskStatus"))
-                {
-                    dic["streamTaskStatus"] = StreamTaskStatus.Active;
-                }
+                await this.StartVideoChat(roomId);
             }
         }
 
