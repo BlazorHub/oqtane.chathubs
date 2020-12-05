@@ -50,7 +50,9 @@ namespace Oqtane.ChatHubs.Services
         public List<ChatHubUser> IgnoredUsers { get; set; } = new List<ChatHubUser>();
         public List<ChatHubUser> IgnoredByUsers { get; set; } = new List<ChatHubUser>();
 
-        public Dictionary<int, dynamic> StreamTasks { get; set; } = new Dictionary<int, dynamic>();
+        public Dictionary<int, dynamic> LocalStreamTasks { get; set; } = new Dictionary<int, dynamic>();
+
+        public List<int> RemoteStreamTasks { get; set; } = new List<int>();
 
         public System.Timers.Timer GetLobbyRoomsTimer { get; set; } = new System.Timers.Timer();
 
@@ -224,11 +226,12 @@ namespace Oqtane.ChatHubs.Services
                     CancellationTokenSource tokenSource = new CancellationTokenSource();
                     CancellationToken token = tokenSource.Token;
                     Task task = new Task(async () => await this.StreamTaskImplementation(room.Id, token), token);
-                    this.AddStreamTask(room.Id, task, tokenSource);
+                    this.AddLocalStreamTask(room.Id, task, tokenSource);
                     task.Start();
                 }
                 else
                 {
+                    this.AddRemoteStreamTask(roomId);
                     await this.VideoService.StartStreaming(room.Id);
                 }
             }
@@ -238,12 +241,59 @@ namespace Oqtane.ChatHubs.Services
             }
         }
 
-        public void AddStreamTask(int roomId, Task task, CancellationTokenSource tokenSource)
+        public async void StopVideoChat(int roomId)
         {
-            this.RemoveStreamTask(roomId);
+            var room = this.Rooms.FirstOrDefault(item => item.Id == roomId);
+            if (room.CreatorId == this.ConnectedUser.UserId)
+            {
+                this.RemoveLocalStreamTask(roomId);
+                await this.VideoService.CloseLivestream(roomId);
+            }
+            else
+            {
+                await this.VideoService.CloseLivestream(roomId);
+            }
+        }
+
+        public void AddLocalStreamTask(int roomId, Task task, CancellationTokenSource tokenSource)
+        {
+            this.RemoveLocalStreamTask(roomId);
 
             dynamic obj = new { task = task, tokenSource = tokenSource };
-            this.StreamTasks.Add(roomId, obj);
+            this.LocalStreamTasks.Add(roomId, obj);
+        }
+
+        public void RemoveLocalStreamTask(int roomId)
+        {
+            List<KeyValuePair<int, dynamic>> list = this.LocalStreamTasks.Where(item => item.Key == roomId).ToList();
+            if (list.Any())
+            {
+                KeyValuePair<int, dynamic> keyValuePair = list.FirstOrDefault();
+                dynamic obj = keyValuePair.Value;
+
+                obj.tokenSource?.Cancel();
+                obj.task?.Dispose();
+
+                this.LocalStreamTasks.Remove(keyValuePair.Key);
+            }
+        }
+
+        public void AddRemoteStreamTask(int roomId)
+        {
+            var items = this.RemoteStreamTasks.Where(id => id == roomId);
+            if(!items.Any())
+            {
+                this.RemoteStreamTasks.Add(roomId);
+            }
+        }
+
+        public void RemoveRemoteStreamTask(int roomId)
+        {
+            var items = this.RemoteStreamTasks.Where(id => id == roomId);
+            if (items.Any())
+            {
+                this.RemoteStreamTasks.Remove(roomId);
+            }
         }
 
         public async Task StreamTaskImplementation(int roomId, CancellationToken token)
@@ -266,28 +316,9 @@ namespace Oqtane.ChatHubs.Services
 
         public void DisposeStreamTasks()
         {
-            foreach(var task in StreamTasks)
+            foreach(var task in LocalStreamTasks)
             {
                 this.StopVideoChat(task.Key);
-            }
-        }
-
-        public async void StopVideoChat(int roomId)
-        {
-            this.RemoveStreamTask(roomId);
-            await this.VideoService.CloseLivestream(roomId);                      
-        }
-
-        public void RemoveStreamTask(int roomId)
-        {
-            List<KeyValuePair<int, dynamic>> list = this.StreamTasks.Where(item => item.Key == roomId).ToList();
-            if (list.Any())
-            {
-                KeyValuePair<int, dynamic> keyValuePair = list.FirstOrDefault();
-                dynamic obj = keyValuePair.Value;
-                obj.tokenSource.Cancel();
-                obj.task.Dispose();
-                this.StreamTasks.Remove(keyValuePair.Key);
             }
         }
 
@@ -323,7 +354,7 @@ namespace Oqtane.ChatHubs.Services
 
         public void OnPauseLivestreamTaskExecute(object sender, int roomId)
         {
-            List<KeyValuePair<int, dynamic>> list = this.StreamTasks.Where(item => item.Key == roomId).ToList();
+            List<KeyValuePair<int, dynamic>> list = this.LocalStreamTasks.Where(item => item.Key == roomId).ToList();
             if (list.Any())
             {
                 KeyValuePair<int, dynamic> keyValuePair = list.FirstOrDefault();
@@ -335,7 +366,13 @@ namespace Oqtane.ChatHubs.Services
 
         public async Task OnContinueLivestreamTaskExecute(object sender, int roomId)
         {
-            await this.StartVideoChat(roomId);            
+            List<KeyValuePair<int, dynamic>> localList = this.LocalStreamTasks.Where(item => item.Key == roomId).ToList();
+            List<int> remoteList = this.RemoteStreamTasks.Where(item => item == roomId).ToList();
+
+            if (localList.Any() || remoteList.Any())
+            {
+                await this.StartVideoChat(roomId);
+            }
         }
 
         public async void OnDownloadBytesExecuteAsync(object sender, dynamic e)

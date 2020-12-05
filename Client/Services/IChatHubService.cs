@@ -36,7 +36,9 @@ namespace Oqtane.ChatHubs.Services
         List<ChatHubUser> IgnoredUsers { get; set; }
         List<ChatHubUser> IgnoredByUsers { get; set; }
 
-        Dictionary<int, dynamic> StreamTasks { get; set; }
+        Dictionary<int, dynamic> LocalStreamTasks { get; set; }
+
+        List<int> RemoteStreamTasks { get; set; }
 
         System.Timers.Timer GetLobbyRoomsTimer { get; set; }
 
