@@ -270,7 +270,7 @@
 
                 this.video = this.getvideoremotedomelement();
                 this.video.controls = true;
-                this.video.autoplay = false;
+                this.video.autoplay = true;
                 this.video.preload = 'auto';
                 this.video.muted = true;
 
@@ -298,7 +298,6 @@
                     }
                 };
 
-                this.appendsequencecounter = 0;
                 this.appendbuffer = async function (base64str) {
 
                     try {
@@ -315,13 +314,7 @@
 
                                 var item = __selfremotelivestream.remotemediasequences.shift();
                                 __selfremotelivestream.sourcebuffer.appendBuffer(new Uint8Array(item));
-                                __selfremotelivestream.appendsequencecounter++;
-                            }                            
-                            if (__selfremotelivestream.appendsequencecounter === 10) {
-
-                                __selfremotelivestream.video.play();
                             }
-                            
                         }
                         reader.readAsArrayBuffer(blob);
                     }
