@@ -126,7 +126,7 @@ namespace Oqtane.ChatHubs
             }
         }
 
-        public async Task ConnectAsGuest()
+        public async Task ConnectToChat()
         {
             try
             {

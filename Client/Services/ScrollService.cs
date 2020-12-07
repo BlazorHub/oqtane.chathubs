@@ -16,9 +16,9 @@ namespace Oqtane.ChatHubs.Services
             this.JSRuntime = jsRuntime;
         }
 
-        public async Task ScrollToBottom(string element, int time)
+        public async Task ScrollToBottom(string element)
         {
-            await this.JSRuntime.InvokeAsync<object>("scroll.scrollToBottom", element, time);
+            await this.JSRuntime.InvokeAsync<object>("scroll.scrollToBottom", element);
         }
 
     }

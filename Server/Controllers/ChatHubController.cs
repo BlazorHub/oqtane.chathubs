@@ -132,7 +132,7 @@ namespace Oqtane.ChatHubs.Controllers
 
         [HttpPost]
         [ActionName("AddChatHubRoom")]
-        [Authorize(Policy = "EditModule")]
+        [AllowAnonymous]
         public async Task<ChatHubRoom> PostAsync([FromBody] ChatHubRoom ChatHubRoom)
         {
             try

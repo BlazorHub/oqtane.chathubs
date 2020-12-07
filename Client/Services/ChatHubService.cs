@@ -560,11 +560,10 @@ namespace Oqtane.ChatHubs.Services
                 this.Rooms.FirstOrDefault(room => room.Id == message.ChatHubRoomId).UnreadMessages++;
             }
 
-            string elementId = string.Concat("#message-window-", this.ModuleId.ToString(), "-", message.ChatHubRoomId.ToString());
-            int animationTime = 1000;
-            await this.ScrollService.ScrollToBottom(elementId, animationTime);
-
             this.RunUpdateUI();
+
+            string elementId = string.Concat("#message-window-", this.ModuleId.ToString(), "-", message.ChatHubRoomId.ToString());
+            await this.ScrollService.ScrollToBottom(elementId);
         }
 
         private void OnAddChatHubInvitationExecute(object sender, ChatHubInvitation item)

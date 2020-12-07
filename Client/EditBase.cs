@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.IO;
 using Oqtane.Shared.Models;
 using Oqtane.Shared;
+using BlazorAlerts;
 
 namespace Oqtane.ChatHubs
 {
@@ -23,6 +24,7 @@ namespace Oqtane.ChatHubs
         [Inject] public SiteState SiteState { get; set; }
         [Inject] public IFileReaderService fileReaderService { get; set; }
         [Inject] public IChatHubService ChatHubService { get; set; }
+        [Inject] public BlazorAlertsService BlazorAlertsService { get; set; }
 
         public override SecurityAccessLevel SecurityAccessLevel { get { return SecurityAccessLevel.Anonymous; } }
         public override string Actions { get { return "Add,Edit"; } }

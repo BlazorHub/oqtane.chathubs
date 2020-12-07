@@ -1,17 +1,24 @@
-﻿$(document).ready(function () {
+﻿window.addEventListener('DOMContentLoaded', () => {
 
     window.scroll = {
 
-        scrollToBottom: function (elementId, animationTime) {
+        scrollToBottom: function (elementId) {
 
-            var $messagewindow = $(elementId);
-            var $lastchild = $messagewindow.children().last();
-            var lastchildheight = Math.ceil($lastchild.height());
-            var tolerance = 30;
+            var messagewindow = document.querySelector(elementId);
+            if (messagewindow !== null) {
 
-            if (Math.ceil($messagewindow.scrollTop() + $messagewindow.innerHeight()) + lastchildheight + tolerance >= $messagewindow.prop("scrollHeight")) {
+                var lastchild = messagewindow.lastChild;
+                var lastchildheight = lastchild.offsetHeight;
+                var tolerance = 100;
 
-                $messagewindow.animate({ scrollTop: $messagewindow[0].scrollHeight }, { queue: false, duration: animationTime });
+                if (messagewindow.scrollTop + messagewindow.offsetHeight + lastchildheight + tolerance >= messagewindow.scrollHeight) {
+
+                    messagewindow.scrollTo({
+                        top: messagewindow.scrollHeight,
+                        left: 0,
+                        behavior: 'smooth'
+                    });
+                }
             }
         }
     };
@@ -27,7 +34,7 @@
         registerResizeCallback: function () {
 
             var resizeTimer;
-            $(window).on('resize', function (e) {
+            window.addEventListener('resize', function (e) {
 
                 clearTimeout(resizeTimer);
                 resizeTimer = setTimeout(() => {
@@ -44,8 +51,10 @@
 
     window.showchathubscontainer = function () {
 
-        var $chathubscontainer = $(".chathubs-container");
-        $chathubscontainer.fadeIn(240);
+        var chathubscontainer = document.querySelector('.chathubs-container');
+
+        chathubscontainer.style.transition = "opacity 0.24s";
+        chathubscontainer.style.opacity = "1";
     };
 
     window.cookies = {
