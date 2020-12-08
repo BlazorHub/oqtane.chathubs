@@ -18,16 +18,13 @@
 
 @if (WindowItems.Count() > 1)
 {
-    <div class="video-items d-flex flex-wrap align-items-center justify-content-center overflow-auto my-4 p-2 bg-light border border-light blazor-window-nav">
+    <BlazorDraggableList.BlazorDraggableListComponent Items="WindowItems" Class="video-items d-flex flex-wrap align-items-center justify-content-center overflow-auto my-4 p-2 bg-light border border-light blazor-window-nav">
 
-        @foreach (WindowItem windowItem in WindowItems)
-        {
-            if (windowItem == WindowItems.FirstOrDefault()) continue;
+        <BlazorDraggableListItem>
+            @context.WindowLivestream
+        </BlazorDraggableListItem>
 
-            @windowItem.WindowLivestream
-        }
-
-    </div>
+    </BlazorDraggableList.BlazorDraggableListComponent>
 }
 
 <CascadingValue Value=this>
