@@ -73,7 +73,7 @@
                 <AuthorizeView>
                     <Authorizing>
 
-                        <pre>loading..</pre>
+                        <text>loading..</text>
 
                     </Authorizing>
                     <Authorized>
@@ -83,7 +83,7 @@
                             <div class="form-group mt-3">
                                 <button type="button" class="btn btn-sm btn-link bg-white border border-light" @onclick="@(async () => await ConnectToChat())">Connect to chat</button>
                             </div>
-                        }                       
+                        }
 
                     </Authorized>
                     <NotAuthorized>
@@ -99,13 +99,13 @@
                         }
 
                     </NotAuthorized>
-                </AuthorizeView>                
+                </AuthorizeView>
 
                 @if (ChatHubService.Connection?.State == HubConnectionState.Connected)
                 {
                     <div class="d-flex justify-content-between bd-highlight my-3">
-                        <div class="flex-fill bd-highlight bg-yellow p-1 p-md-3">
-                            <small class="px-2 py-1 px-md-5 py-md-3" style="font-family: Consolas, monospace;">
+                        <div class="flex-fill bd-highlight bg-yellow p-md-3 px-2 py-1 px-md-5 py-md-3">
+                            <small style="font-family: Consolas, monospace;">
                                 Connected as @ChatHubService.ConnectedUser?.DisplayName
                             </small>
                         </div>
@@ -148,7 +148,7 @@
                                         </div>
                                     </div>
 
-                                    <BlazorPagerComponent Items="@ChatHubService.Lobbies" ItemsPerPage="7" Class="w-100 bg-white p-sm-3">
+                                    <BlazorPagerComponent Items="@ChatHubService.Lobbies" ItemsPerPage="7" Class="w-100 bg-white py-sm-3">
 
                                         <BlazorPagerItem>
 
@@ -192,10 +192,10 @@
                             </WindowItem>
 
                             @foreach (var item in ChatHubService.Rooms.Select((value, i) => new { value, i }))
-                            {                                
-                                
+                            {
+
                                 ChatHubRoom room = item.value;
-                                int room_index = item.i;                                
+                                int room_index = item.i;
 
                                 <WindowItem @key="room" Id="@room.Id" InitialSelection="@(ChatHubService.ContextRoomId == room.Id.ToString())">
                                     <WindowTitle>
@@ -213,8 +213,8 @@
                                     </WindowLivestream>
                                     <WindowContent>
 
-                                        <div class="d-flex position-relative">
-                                            <div class="flex-fill flex-grow-1 @(room.ShowUserlist ? "d-none" : "d-flex")">
+                                        <div class="d-flex">
+                                            <div class="flex-fill @(room.ShowUserlist ? "d-none" : "d-flex")">
                                                 <div class="w-100 bg-white p-sm-3">
 
                                                     <div id="message-window-@ModuleState.ModuleId-@room.Id" style="height: @(string.Format("{0}px", MessageWindowHeight)); overflow: auto;">
@@ -512,18 +512,6 @@
                     }
                 }
 
-                <div class="d-flex flex-row-reverse my-2">
-
-                    <p class="bg-yellow">
-                        <small>
-                            Project Url: <a href="https://github.com/boredanyway/oqtane.chathubs" target="_blank" title="oqtane chathub module dev">https://github.com/boredanyway/oqtane.chathubs</a>
-                        </small>
-                    </p>
-
-                </div>
-
-                <BlazorAlertsComponent></BlazorAlertsComponent>
-
             </WindowContent>
         </WindowItem>
         <WindowItem>
@@ -607,14 +595,14 @@
 
                             <h5><span class="oi oi-list"></span> (@ChatHubService.Invitations.Count()) All your Invitations <span class="badge badge-success">NEW</span></h5>
 
-                            <div class="container">
+                            <div>
                                 @foreach (var item in ChatHubService.Invitations)
                                 {
-                                    <div class="row">
-                                        <div class="col-sm-9">
+                                    <div class="d-flex">
+                                        <div class="flex-fill">
                                             <button type="button" @onclick="@(async () => await FollowInvitation_Clicked(item.Guid, item.RoomId))" class="btn btn-sm btn-link">@item.Hostname</button>
                                         </div>
-                                        <div class="col-sm-3">
+                                        <div class="flex-fill">
                                             <button type="button" @onclick="@(() => RemoveInvitation_Clicked(item.Guid))" class="btn btn-sm btn-danger">
                                                 <span aria-hidden="true">&times;</span>
                                             </button>
@@ -644,8 +632,8 @@
 
                                 <BlazorDraggableListItem>
 
-                                    <div class="px-4 py-3 bg-light">
-                                        <div>@context.Title</div>
+                                    <div class="p-3 bg-light">
+                                        @context.Title
                                     </div>
 
                                 </BlazorDraggableListItem>
@@ -669,6 +657,18 @@
 
         </WindowItem>
     </WindowContainer>
+
+    <div class="d-flex flex-row-reverse my-2">
+
+        <p class="bg-yellow">
+            <small>
+                Project Url: <a href="https://github.com/boredanyway/oqtane.chathubs" target="_blank" title="oqtane chathub module dev">https://github.com/boredanyway/oqtane.chathubs</a>
+            </small>
+        </p>
+
+    </div>
+
+    <BlazorAlertsComponent></BlazorAlertsComponent>
 
 </div>
 

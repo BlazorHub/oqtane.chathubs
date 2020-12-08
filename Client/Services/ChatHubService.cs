@@ -19,7 +19,6 @@ using System.Data;
 using Microsoft.AspNetCore.SignalR;
 using BlazorAlerts;
 using System.Net;
-using System.Dynamic;
 
 namespace Oqtane.ChatHubs.Services
 {
@@ -768,15 +767,14 @@ namespace Oqtane.ChatHubs.Services
             string message = string.Empty;
             if (exception.InnerException != null && exception.InnerException is HubException)
             {
-                message = exception.ToString();
-                //message = exception.InnerException.Message.Substring(exception.InnerException.Message.IndexOf("HubException"));
+                message = exception.Message.ToString();
             }
             else
             {
                 message = exception.ToString();
             }
 
-            BlazorAlertsService.NewBlazorAlert(message);
+            BlazorAlertsService.NewBlazorAlert(message, "Javascript Application", PositionType.Fixed);
             this.RunUpdateUI();
         }
 

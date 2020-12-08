@@ -482,7 +482,24 @@ window.addEventListener('DOMContentLoaded', () => {
         var arr = id.split('-');
         var dragstartindex = arr[arr.length - 1];
 
+        var exceptDropzone = '.dropzone-' + dragstartindex;
+        var dropzones = document.querySelectorAll('.dropzone:not(' + exceptDropzone + ')');
+        Array.prototype.forEach.call(dropzones, function (item) {
+
+            item.style.display = "block";
+        });
+
         event.dataTransfer.setData("index", dragstartindex);
+    };
+
+    window.blazordraggablelist_dragenter = function (event) {
+
+        event.target.classList.add('active-dropzone');
+    };
+
+    window.blazordraggablelist_dragleave = function (event) {
+
+        event.target.classList.remove('active-dropzone');
     };
 
     window.blazordraggablelist_dragover = function (event) {
@@ -500,6 +517,12 @@ window.addEventListener('DOMContentLoaded', () => {
         var id = event.target.id;
         var arr = id.split('-');
         var dropindex = arr[arr.length - 1];
+
+        var dropzones = document.getElementsByClassName('dropzone');
+        Array.prototype.forEach.call(dropzones, function (item) {
+
+            item.style.display = "none";
+        });
 
         DotNet.invokeMethodAsync("BlazorDraggableList", 'OnDrop', parseInt(dragindex), parseInt(dropindex));
     };
