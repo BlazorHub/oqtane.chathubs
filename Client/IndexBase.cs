@@ -17,6 +17,7 @@ using BlazorAlerts;
 using BlazorWindows;
 using BlazorPager;
 using System.Net;
+using BlazorDraggableList;
 
 namespace Oqtane.ChatHubs
 {
@@ -41,7 +42,6 @@ namespace Oqtane.ChatHubs
         public string GuestUsername { get; set; } = string.Empty;
         public ChatHubRoom contextRoom { get; set; }
 
-        public List<ChatHubRoom> rooms;
         public int maxUserNameCharacters;
 
         public int InnerHeight = 0;
@@ -61,10 +61,26 @@ namespace Oqtane.ChatHubs
 
         protected override void OnInitialized()
         {
+            BlazorDraggableListService.OnDropEvent += OnDropEventExecute;
             BrowserResizeService.OnResize += BrowserHasResized;
             this.ChatHubService.OnUpdateUI += (object sender, EventArgs e) => UpdateUIStateHasChanged();
 
             base.OnInitialized();
+        }
+
+        private void OnDropEventExecute(object sender, BlazorDraggableListEvent e)
+        {
+            try
+            {
+                this.ChatHubService.Rooms = this.ChatHubService.Rooms.Swap(e.DraggableItemOldIndex, e.DraggableItemNewIndex).ToList<ChatHubRoom>();
+                this.ChatHubService.RestartStreamTaskAsync(this.ChatHubService.Rooms[e.DraggableItemOldIndex].Id, this.ChatHubService.Rooms[e.DraggableItemNewIndex].Id);
+                
+                this.UpdateUIStateHasChanged();
+            }
+            catch (Exception ex)
+            {
+                this.ChatHubService.HandleException(ex);
+            }
         }
 
         protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -333,6 +349,7 @@ namespace Oqtane.ChatHubs
 
         public void Dispose()
         {
+            BlazorDraggableListService.OnDropEvent -= OnDropEventExecute;
             BrowserResizeService.OnResize -= BrowserHasResized;
             this.ChatHubService.OnUpdateUI -= (object sender, EventArgs e) => UpdateUIStateHasChanged();
 
@@ -340,4 +357,16 @@ namespace Oqtane.ChatHubs
         }
 
     }
+
+    public static class IndexBaseExtensionMethods
+    {
+        public static IList<ChatHubRoom> Swap<TItemGeneric>(this IList<ChatHubRoom> list, int x, int y)
+        {
+            ChatHubRoom temp = list[x];
+            list[x] = list[y];
+            list[y] = temp;
+            return list;
+        }
+    }
+
 }

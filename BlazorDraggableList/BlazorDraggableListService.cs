@@ -20,8 +20,10 @@ namespace BlazorDraggableList
         [JSInvokable("OnDrop")]
         public static void OnDrop(int oldIndex, int newIndex)
         {
-            BlazorDraggableListEvent eventParameters = new BlazorDraggableListEvent() { DraggableItemOldIndex = oldIndex, DraggableItemNewIndex = newIndex };
-            OnDropEvent?.Invoke(typeof(BlazorDraggableListService), eventParameters);
+            if(oldIndex >= 0 && newIndex >= 0) {
+                BlazorDraggableListEvent eventParameters = new BlazorDraggableListEvent() { DraggableItemOldIndex = oldIndex, DraggableItemNewIndex = newIndex };
+                OnDropEvent?.Invoke(typeof(BlazorDraggableListService), eventParameters);
+            }
         }
 
     }

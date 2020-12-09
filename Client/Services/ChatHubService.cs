@@ -43,14 +43,10 @@ namespace Oqtane.ChatHubs.Services
 
         public List<ChatHubRoom> Lobbies { get; set; } = new List<ChatHubRoom>();
         public List<ChatHubRoom> Rooms { get; set; } = new List<ChatHubRoom>();
-
         public List<ChatHubInvitation> Invitations { get; set; } = new List<ChatHubInvitation>();
-
         public List<ChatHubUser> IgnoredUsers { get; set; } = new List<ChatHubUser>();
         public List<ChatHubUser> IgnoredByUsers { get; set; } = new List<ChatHubUser>();
-
         public Dictionary<int, dynamic> LocalStreamTasks { get; set; } = new Dictionary<int, dynamic>();
-
         public List<int> RemoteStreamTasks { get; set; } = new List<int>();
 
         public System.Timers.Timer GetLobbyRoomsTimer { get; set; } = new System.Timers.Timer();
@@ -252,6 +248,22 @@ namespace Oqtane.ChatHubs.Services
             {
                 await this.VideoService.CloseLivestream(roomId);
             }
+        }
+
+        public async Task RestartStreamTaskAsync(int roomIdOldIndex, int roomIdNewIndex)
+        {
+            if (this.LocalStreamTasks.Any(item => item.Key == roomIdOldIndex) || this.RemoteStreamTasks.Any(item => item == roomIdOldIndex))
+            {
+                this.StopVideoChat(roomIdOldIndex);
+                await this.StartVideoChat(roomIdOldIndex);
+            }
+            if (this.LocalStreamTasks.Any(item => item.Key == roomIdNewIndex) || this.RemoteStreamTasks.Any(item => item == roomIdNewIndex))
+            {
+                this.StopVideoChat(roomIdNewIndex);
+                await this.StartVideoChat(roomIdNewIndex);
+            }
+
+            this.RunUpdateUI();
         }
 
         public void AddLocalStreamTask(int roomId, Task task, CancellationTokenSource tokenSource)
@@ -755,14 +767,14 @@ namespace Oqtane.ChatHubs.Services
             this.Connection.StopAsync();
         }
 
-        private void HandleException(Task task)
+        public void HandleException(Task task)
         {
             if (task.Exception != null)
             {
                 this.HandleException(task.Exception);
             }
         }
-        private void HandleException(Exception exception)
+        public void HandleException(Exception exception)
         {
             string message = string.Empty;
             if (exception.InnerException != null && exception.InnerException is HubException)

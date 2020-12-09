@@ -3,6 +3,7 @@
 @inherits WindowContainerBase
 
 @using Microsoft.AspNetCore.Components.Web
+@using BlazorDraggableList
 
 <style type="text/css">
 
@@ -16,21 +17,23 @@
     }
 </style>
 
-@if (WindowItems.Count() > 1)
+@if (WindowItems.Count() >= 1 && RenderLivestreams)
 {
-    <BlazorDraggableList.BlazorDraggableListComponent Items="WindowItems" Class="video-items d-flex flex-wrap align-items-center justify-content-center overflow-auto my-4 p-2 bg-light border border-light blazor-window-nav">
+    <BlazorDraggableListComponent Items="WindowItems" Class="video-items d-flex flex-wrap align-items-center justify-content-center overflow-auto my-4 p-2 bg-light border border-light blazor-window-nav">
 
         <BlazorDraggableListItem>
             @context.WindowLivestream
         </BlazorDraggableListItem>
 
-    </BlazorDraggableList.BlazorDraggableListComponent>
+    </BlazorDraggableListComponent>
 }
 
 <CascadingValue Value=this>
+
     <ul class="blazor-window-nav nav nav-tabs d-flex flex-nowrap overflow-auto">
         @ChildContent
     </ul>
+
 </CascadingValue>
 
 <div class="nav-tabs-body">

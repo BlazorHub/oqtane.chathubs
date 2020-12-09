@@ -11,6 +11,8 @@ namespace BlazorWindows
     {
         [Parameter] public RenderFragment ChildContent { get; set; }
 
+        [Parameter] public bool RenderLivestreams { get; set; }
+
         [Parameter] public EventCallback<WindowEvent> ShowEvent { get; set; }
         [Parameter] public EventCallback<WindowEvent> ShownEvent { get; set; }
         [Parameter] public EventCallback<WindowEvent> HideEvent { get; set; }
@@ -58,7 +60,7 @@ namespace BlazorWindows
 
             for (var i = 0; i < this.WindowEvents.Count; i++)
             {
-                this.WindowEvents[i].InvokeAsync(WindowEvent);
+                await this.WindowEvents[i].InvokeAsync(WindowEvent);
                 this.WindowEvents.RemoveAt(i);
             }
 

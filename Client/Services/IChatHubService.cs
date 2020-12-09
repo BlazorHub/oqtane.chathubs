@@ -73,6 +73,8 @@ namespace Oqtane.ChatHubs.Services
 
         void StopVideoChat(int roomId);
 
+        Task RestartStreamTaskAsync(int roomIdOldIndex, int roomIdNewIndex);
+
         Task EnterChatRoom(int roomId);
 
         Task LeaveChatRoom(int roomId);
@@ -100,6 +102,8 @@ namespace Oqtane.ChatHubs.Services
         Task FixCorruptConnections(int ModuleId);
 
         Task DeleteRoomImageAsync(int ChatHubRoomId, int ModuleId);
+
+        void HandleException(Exception exception);
 
         Task DisconnectAsync();
 

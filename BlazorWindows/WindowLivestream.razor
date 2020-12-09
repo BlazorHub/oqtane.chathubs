@@ -12,6 +12,12 @@
     [Parameter]
     public RenderFragment ChildContent { get; set; }
 
+    protected override Task OnInitializedAsync()
+    {
+        this.WindowItem.WindowLivestream = ChildContent;
+        return base.OnInitializedAsync();
+    }
+
     public void Dispose()
     {
 
