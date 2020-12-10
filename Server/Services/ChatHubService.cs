@@ -34,6 +34,8 @@ namespace Oqtane.ChatHubs.Services
             List<ChatHubUser> onlineUsers = await this.chatHubRepository.GetChatHubUsersByRoom(room).Online().ToListAsync();
             onlineUsers = onlineUsers != null && onlineUsers.Any() ? onlineUsers = onlineUsers.Select(item => this.CreateChatHubUserClientModel(item)).ToList() : new List<ChatHubUser>();
 
+            var creator = await this.chatHubRepository.GetUserByIdAsync(room.CreatorId);
+
             return new ChatHubRoom()
             {
                 Id = room.Id,
@@ -45,6 +47,7 @@ namespace Oqtane.ChatHubs.Services
                 Status = room.Status,
                 OneVsOneId = room.OneVsOneId,
                 CreatorId = room.CreatorId,
+                Creator = creator,
                 Messages = lastMessages,
                 Users = onlineUsers,
                 CreatedOn = room.CreatedOn,

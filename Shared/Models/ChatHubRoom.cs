@@ -14,7 +14,7 @@ namespace Oqtane.Shared.Models
         public string Status { get; set; }
         public string OneVsOneId { get; set; }
         public int CreatorId { get; set; }
-
+        
         [NotMapped]
         public string MessageInput { get; set; }
         [NotMapped]
@@ -28,6 +28,8 @@ namespace Oqtane.Shared.Models
         public virtual ICollection<ChatHubMessage> Messages { get; set; }
         [NotMapped]
         public virtual ICollection<ChatHubUser> Users { get; set; }
+        [NotMapped]
+        public virtual ChatHubUser Creator { get; set; }
 
     }
 }
