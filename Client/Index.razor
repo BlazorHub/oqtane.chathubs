@@ -46,19 +46,6 @@
     .chathub-table-visibility-collapse {
         visibility: collapse;
     }
-
-    .chathub-photo-mat-card {
-        color: #1a1a1a !important;
-        max-width: 400px;
-        background-color: white;
-        border-radius: 0px;
-        box-shadow: none;
-    }
-
-    .mdc-tab {
-        padding-left: 0px !important;
-        padding-right: 0px !important;
-    }
 </style>
 
 <div id="chathub-module-@ModuleState.ModuleId" class="chathubs-container p-sm-3 mb-4">
@@ -80,9 +67,9 @@
 
                     <BlazorPagerItem>
 
-                        <div class="d-flex flex-nowrap align-items-center">
+                        <div class="d-flex flex-nowrap align-items-center w-100">
 
-                            <div class="chathub-photo-mat-card" style="width: 140px">
+                            <div style="max-width: 140px">
                                 <img src="@string.Format("{0}/modules/oqtane.chathubs/images/rooms/{1}", NavigationManager.BaseUri, context.ImageUrl)" class="@(string.IsNullOrEmpty(context.ImageUrl) ? "d-none" : "img-fuid bg-light")" />
                                 <img src="@string.Format("{0}/modules/oqtane.chathubs/images/chat-room-image.png", NavigationManager.BaseUri, context.ImageUrl)" class="@(string.IsNullOrEmpty(context.ImageUrl) ? "img-fluid bg-light" : "d-none")" />
                             </div>
@@ -125,6 +112,8 @@
                 @ModuleState.ModuleDefinition.Name
             </WindowTitle>
             <WindowContent>
+
+                <div class="d-flex flex-nowrap align-items-center"></div>
 
                 <AuthorizeView>
                     <Authorizing>
@@ -190,7 +179,7 @@
                             </div>
                         }
                     }
-                    else if(ChatHubService.Rooms.Any())
+                    else if (ChatHubService.Rooms.Any())
                     {
                         <WindowContainer RenderLivestreams="@true" ShowEvent="@ShowWindow" HideEvent="@HideWindow" ShownEvent="@ShownWindow" HiddenEvent="@HiddenWindow">
 
@@ -518,13 +507,14 @@
 
             </WindowContent>
         </WindowItem>
+
         <WindowItem>
             <WindowTitle>
                 Settings
             </WindowTitle>
             <WindowContent>
 
-                <div class="bg-white py-3">
+                <div class="d-flex flex-column bg-white py-3 w-100">
 
                     @if (UserSecurity.IsAuthorized(PageState.User, PermissionNames.Edit, PageState.Page.Permissions))
                     {
@@ -626,51 +616,21 @@
 
                     </section>
 
-                    <!--
-                    <section class="my-1 p-sm-3">
-
-                        <div>
-
-                            <h5><span class="oi oi-list"></span> Sort all rooms <span class="badge badge-success">NEW</span></h5>
-
-                            <BlazorDraggableList.BlazorDraggableListComponent Items="ChatHubService.Rooms" Class="w-100">
-
-                                <BlazorDraggableListItem>
-
-                                    <div class="p-3 bg-light">
-                                        @context.Title
-                                    </div>
-
-                                </BlazorDraggableListItem>
-
-                            </BlazorDraggableList.BlazorDraggableListComponent>
-
-                            @if (!ChatHubService.Rooms.Any())
-                            {
-                                <div class="alert alert-warning" role="alert">
-                                    No rooms found yet.
-                                </div>
-                            }
-
-                        </div>
-
-                    </section>
-                    -->
-
                 </div>
 
             </WindowContent>
 
         </WindowItem>
+
     </WindowContainer>
 
-    <div class="d-flex flex-row-reverse my-2">
+    <div class="d-flex my-2">
 
-        <p class="bg-yellow">
+        <div class="ml-auto bg-yellow">
             <small>
                 Project Url: <a href="https://github.com/boredanyway/oqtane.chathubs" target="_blank" title="oqtane chathub module dev">https://github.com/boredanyway/oqtane.chathubs</a>
             </small>
-        </p>
+        </div>
 
     </div>
 
