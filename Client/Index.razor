@@ -76,30 +76,28 @@
                     </div>
                 </div>
 
-                <BlazorPagerComponent Items="@ChatHubService.Lobbies" ItemsPerPage="7" Class="w-100 bg-white py-sm-3">
+                <BlazorPagerComponent Items="@ChatHubService.Lobbies" ItemsPerPage="7" Class="bg-white py-sm-3">
 
                     <BlazorPagerItem>
 
-                        <div class="d-flex flex-fill flex-nowrap align-items-center">
+                        <div class="d-flex flex-nowrap align-items-center">
 
-                            <MatCard class="chathub-photo-mat-card" style="width: 140px">
-                                <MatCardContent>
-                                    <MatCardMedia Wide="true" ImageUrl="@string.Format("{0}/modules/oqtane.chathubs/images/rooms/{1}", NavigationManager.BaseUri, context.ImageUrl)" class="@(string.IsNullOrEmpty(context.ImageUrl) ? "d-none" : "img-fuid bg-light")"></MatCardMedia>
-                                    <MatCardMedia Wide="true" ImageUrl="@string.Format("{0}/modules/oqtane.chathubs/images/chat-room-image.png", NavigationManager.BaseUri, context.ImageUrl)" class="@(string.IsNullOrEmpty(context.ImageUrl) ? "img-fluid bg-light" : "d-none")"></MatCardMedia>
-                                </MatCardContent>
-                            </MatCard>
+                            <div class="chathub-photo-mat-card" style="width: 140px">
+                                <img src="@string.Format("{0}/modules/oqtane.chathubs/images/rooms/{1}", NavigationManager.BaseUri, context.ImageUrl)" class="@(string.IsNullOrEmpty(context.ImageUrl) ? "d-none" : "img-fuid bg-light")" />
+                                <img src="@string.Format("{0}/modules/oqtane.chathubs/images/chat-room-image.png", NavigationManager.BaseUri, context.ImageUrl)" class="@(string.IsNullOrEmpty(context.ImageUrl) ? "img-fluid bg-light" : "d-none")" />
+                            </div>
 
                             <div class="px-1 py-2">
                                 <a href="@NavigateUrl(PageState.Page.Path, "moduleid=" + context.ModuleId.ToString() + "&" + "roomid=" + context.Id.ToString())">
                                     <h6>@context.Title</h6>
                                 </a>
-                                <p class="text-muted">
+                                <div class="text-muted">
                                     <span>@context.Content</span>
                                     &nbsp;
                                     <span class="text-muted">(Posted by @context.CreatedBy on @context.CreatedOn.ToShortDateString())</span>
                                     <br />
                                     Online Users: @context.Users.Count()
-                                </p>
+                                </div>
                                 <div class="form-group">
                                     <button type="button" class="btn btn-sm btn-link bg-light border-0" @onclick="@(async () => await EnterRoom_Clicked(context.Id, context.ModuleId))">Enter Room</button>
                                 </div>
@@ -170,7 +168,7 @@
                     </div>
                 }
 
-                @if (ChatHubService.Lobbies != null)
+                @if (ChatHubService.Lobbies.Any())
                 {
                     if (PageState.QueryString.ContainsKey("moduleid") && PageState.QueryString.ContainsKey("roomid") && int.Parse(PageState.QueryString["moduleid"]) == ModuleState.ModuleId)
                     {
@@ -189,7 +187,7 @@
                             </div>
                         }
                     }
-                    else
+                    else if(ChatHubService.Rooms.Any())
                     {
                         <WindowContainer RenderLivestreams="@true" ShowEvent="@ShowWindow" HideEvent="@HideWindow" ShownEvent="@ShownWindow" HiddenEvent="@HiddenWindow">
 

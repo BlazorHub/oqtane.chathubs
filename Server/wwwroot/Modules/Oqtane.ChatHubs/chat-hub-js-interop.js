@@ -518,13 +518,17 @@ window.addEventListener('DOMContentLoaded', () => {
         var arr = id.split('-');
         var dropindex = arr[arr.length - 1];
 
+        DotNet.invokeMethodAsync("BlazorDraggableList", 'OnDrop', parseInt(dragindex), parseInt(dropindex));
+    };
+
+    window.blazordraggablelist_dragend = function (event) {
+
         var dropzones = document.getElementsByClassName('dropzone');
         Array.prototype.forEach.call(dropzones, function (item) {
 
             item.style.display = "none";
+            item.classList.remove('active-dropzone');
         });
-
-        DotNet.invokeMethodAsync("BlazorDraggableList", 'OnDrop', parseInt(dragindex), parseInt(dropindex));
     };
     
 });

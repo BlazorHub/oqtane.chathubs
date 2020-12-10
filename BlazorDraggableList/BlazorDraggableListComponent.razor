@@ -24,6 +24,7 @@
 
     .active-dropzone {
         background-color: rgba(76, 255, 0, 0.3);
+        border: 3px dashed rgb(0, 255, 144);
     }
 
 </style>
@@ -39,7 +40,7 @@
 
             <div class="position-relative">
 
-                <div id="blazor-draggable-list-item-@temp" class="draggable-item" draggable="true" ondragstart="blazordraggablelist_dragstart(event)">
+                <div id="blazor-draggable-list-item-@temp" class="draggable-item" draggable="true" ondragstart="blazordraggablelist_dragstart(event)" ondragend="blazordraggablelist_dragend(event)">
                     @BlazorDraggableListItem(Items[temp])
                 </div>
 
