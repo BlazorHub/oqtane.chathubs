@@ -339,12 +339,16 @@ namespace Oqtane.ChatHubs
         public void HiddenWindow(WindowEvent e)
         {
         }
-        public void AddWindow(WindowEvent e)
+        public void AddedWindow(WindowEvent e)
         {
+
         }
-        public void RemoveWindow(WindowEvent e)
+        public async void RemovedWindow(WindowEvent e)
         {
-            
+            foreach (var item in this.ChatHubService.Rooms)
+            {
+                await this.ChatHubService.RestartStreamTaskAsync(item.Id);
+            }
         }
 
         public void Dispose()

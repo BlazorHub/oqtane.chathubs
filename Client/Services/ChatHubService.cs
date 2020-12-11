@@ -547,11 +547,6 @@ namespace Oqtane.ChatHubs.Services
         }
         private async void OnRemoveChatHubRoomExecute(object sender, ChatHubRoom room)
         {
-            foreach (var item in this.Rooms)
-            {
-                await this.RestartStreamTaskAsync(item.Id);
-            }
-
             this.RemoveRoom(room);
             this.RunUpdateUI();
         }

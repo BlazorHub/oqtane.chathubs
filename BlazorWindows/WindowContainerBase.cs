@@ -16,8 +16,8 @@ namespace BlazorWindows
         [Parameter] public EventCallback<WindowEvent> ShownEvent { get; set; }
         [Parameter] public EventCallback<WindowEvent> HideEvent { get; set; }
         [Parameter] public EventCallback<WindowEvent> HiddenEvent { get; set; }
-        [Parameter] public EventCallback<WindowEvent> AddEvent { get; set; }
-        [Parameter] public EventCallback<WindowEvent> RemoveEvent { get; set; }
+        [Parameter] public EventCallback<WindowEvent> AddedEvent { get; set; }
+        [Parameter] public EventCallback<WindowEvent> RemovedEvent { get; set; }
 
         private bool Disposing { get; set; } = false;
         private bool HasRendered { get; set; } = false;
@@ -61,7 +61,7 @@ namespace BlazorWindows
 
             for (var i = 0; i < this.WindowEvents.Count; i++)
             {
-                await this.WindowEvents[i].InvokeAsync(WindowEvent);
+                await this.WindowEvents[i].InvokeAsync(this.WindowEvent);
                 this.WindowEvents.RemoveAt(i);
             }
 
@@ -78,9 +78,7 @@ namespace BlazorWindows
             if (!WindowItems.Any(item => item.Id == windowItem.Id))
             {
                 this.WindowItems.Add(windowItem);
-
-                var wEvent = new WindowEvent() { ActivatedItem = windowItem, DeactivatedItem = null };
-                InvokeAsync(() => this.AddEvent.InvokeAsync(wEvent));
+                this.WindowEvents.Add(AddedEvent);
             }
         }
 
@@ -90,9 +88,7 @@ namespace BlazorWindows
             if (windowItem != null)
             {
                 this.WindowItems.Remove(windowItem);
-
-                var wEvent = new WindowEvent() { ActivatedItem = null, DeactivatedItem = windowItem };
-                InvokeAsync(() => this.RemoveEvent.InvokeAsync(wEvent));
+                this.WindowEvents.Add(RemovedEvent);
             }
         }
 

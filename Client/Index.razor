@@ -186,7 +186,7 @@
 
                     if (ChatHubService.Rooms.Any())
                     {
-                        <WindowContainer RenderLivestreams="@true" ShowEvent="@ShowWindow" HideEvent="@HideWindow" ShownEvent="@ShownWindow" HiddenEvent="@HiddenWindow" AddEvent="@AddWindow" RemoveEvent="@RemoveWindow">
+                        <WindowContainer RenderLivestreams="@true" ShowEvent="@ShowWindow" HideEvent="@HideWindow" ShownEvent="@ShownWindow" HiddenEvent="@HiddenWindow" AddedEvent="@AddedWindow" RemovedEvent="@RemovedWindow">
 
                             @foreach (var item in ChatHubService.Rooms.Select((value, i) => new { value, i }))
                             {
