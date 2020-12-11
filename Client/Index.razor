@@ -56,53 +56,74 @@
             <WindowTitle>Lobby</WindowTitle>
             <WindowContent>
 
-                <div class="jumbotron jumbotron-fluid bg-white py-1 mb-0">
-                    <div class="container">
-                        <h1 class="display-4">Video chat app</h1>
-                        <p class="lead">This is a base video chat implementation in its beta version but free to use and have fun.</p>
-                    </div>
-                </div>
+                @if (PageState.QueryString.ContainsKey("moduleid") && PageState.QueryString.ContainsKey("roomid") && int.Parse(PageState.QueryString["moduleid"]) == ModuleState.ModuleId)
+                {
+                    if (ChatHubService.Lobbies?.Count > 0)
+                    {
+                        <div>
 
-                <BlazorPagerComponent Items="@ChatHubService.Lobbies" ItemsPerPage="7" Class="bg-white py-sm-3">
-
-                    <BlazorPagerItem>
-
-                        <div class="d-flex flex-nowrap align-items-center w-100">
-
-                            <div style="max-width: 140px">
-                                <img src="@string.Format("{0}/modules/oqtane.chathubs/images/rooms/{1}", NavigationManager.BaseUri, context.ImageUrl)" class="@(string.IsNullOrEmpty(context.ImageUrl) ? "d-none" : "img-fuid bg-light")" />
-                                <img src="@string.Format("{0}/modules/oqtane.chathubs/images/chat-room-image.png", NavigationManager.BaseUri, context.ImageUrl)" class="@(string.IsNullOrEmpty(context.ImageUrl) ? "img-fluid bg-light" : "d-none")" />
-                            </div>
-
-                            <div class="px-1 py-2">
-                                <a href="@NavigateUrl(PageState.Page.Path, "moduleid=" + context.ModuleId.ToString() + "&" + "roomid=" + context.Id.ToString())">
-                                    <h6>@context.Title</h6>
-                                </a>
-                                <div>
-                                    <div>@context.Content</div>
-                                    <div>Room Creator: @context.Creator.DisplayName</div>
-                                    <div>
-                                        Online Users: @context.Users.Count()
-                                    </div>
-                                    <div>
-                                        <small class="text-muted">Posted by @context.CreatedBy on @context.CreatedOn.ToShortDateString()</small>
-                                    </div>
+                            <div class="jumbotron jumbotron-fluid bg-white py-1 mb-0">
+                                <div class="container">
+                                    <h1 class="display-4">@contextRoom?.Title</h1>
+                                    <p class="lead">Posted by @contextRoom?.Creator.DisplayName on @contextRoom?.CreatedOn.ToShortDateString()</p>
+                                    <NavLink class="btn btn-secondary" href="@NavigateUrl()">View All Rooms</NavLink>
                                 </div>
                             </div>
 
-                            <div class="ml-auto px-1">
+                        </div>
+                    }
+                }
+                else
+                {
 
-                                <button type="button" class="btn btn-link bg-light" @onclick="@(async () => await EnterRoom_Clicked(context.Id, context.ModuleId))">Enter Room</button>
+                    <div class="jumbotron jumbotron-fluid bg-white py-1 mb-0">
+                        <div class="container">
+                            <h1 class="display-4">Video chat app</h1>
+                            <p class="lead">This is a base video chat implementation in its beta version but free to use and have fun.</p>
+                        </div>
+                    </div>
 
-                                <ActionLink Action="Edit" Security="SecurityAccessLevel.Edit" Parameters="@($"moduleid=" + context.ModuleId.ToString() + "&" + "roomid=" + context.Id.ToString())" />
-                                <ActionDialog Header="Delete Room" Message="@("Are You Sure You Wish To Delete This Room?")" Action="Delete" Security="SecurityAccessLevel.Edit" Class="btn btn-danger" OnClick="@(async () => await DeleteRoom(context.Id))" />
+                    <BlazorPagerComponent Items="@ChatHubService.Lobbies" ItemsPerPage="7" Class="bg-white py-sm-3">
+
+                        <BlazorPagerItem>
+
+                            <div class="d-flex flex-nowrap align-items-center w-100">
+
+                                <div style="max-width: 140px">
+                                    <img src="@string.Format("{0}/modules/oqtane.chathubs/images/rooms/{1}", NavigationManager.BaseUri, context.ImageUrl)" class="@(string.IsNullOrEmpty(context.ImageUrl) ? "d-none" : "img-fuid bg-light")" />
+                                    <img src="@string.Format("{0}/modules/oqtane.chathubs/images/chat-room-image.png", NavigationManager.BaseUri, context.ImageUrl)" class="@(string.IsNullOrEmpty(context.ImageUrl) ? "img-fluid bg-light" : "d-none")" />
+                                </div>
+
+                                <div class="px-1 py-2">
+                                    <a href="@NavigateUrl(PageState.Page.Path, "moduleid=" + context.ModuleId.ToString() + "&" + "roomid=" + context.Id.ToString())">
+                                        <h6>@context.Title</h6>
+                                    </a>
+                                    <div>
+                                        <div>@context.Content</div>
+                                        <div>
+                                            Online Users: @context.Users.Count()
+                                        </div>
+                                        <div>
+                                            <small class="text-muted">Posted by @context.Creator.DisplayName on @context.CreatedOn.ToShortDateString()</small>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="ml-auto px-1">
+
+                                    <button type="button" class="btn btn-link bg-light" @onclick="@(async () => await EnterRoom_Clicked(context.Id, context.ModuleId))">Enter Room</button>
+
+                                    <ActionLink Action="Edit" Security="SecurityAccessLevel.Edit" Parameters="@($"moduleid=" + context.ModuleId.ToString() + "&" + "roomid=" + context.Id.ToString())" />
+                                    <ActionDialog Header="Delete Room" Message="@("Are You Sure You Wish To Delete This Room?")" Action="Delete" Security="SecurityAccessLevel.Edit" Class="btn btn-danger" OnClick="@(async () => await DeleteRoom(context.Id))" />
+                                </div>
+
                             </div>
 
-                        </div>
+                        </BlazorPagerItem>
 
-                    </BlazorPagerItem>
+                    </BlazorPagerComponent>
 
-                </BlazorPagerComponent>
+                }
 
             </WindowContent>
         </WindowItem>
@@ -162,24 +183,8 @@
 
                 @if (ChatHubService.Lobbies.Any())
                 {
-                    if (PageState.QueryString.ContainsKey("moduleid") && PageState.QueryString.ContainsKey("roomid") && int.Parse(PageState.QueryString["moduleid"]) == ModuleState.ModuleId)
-                    {
-                        if (ChatHubService.Lobbies?.Count > 0)
-                        {
-                            <div>
 
-                                <h2>@contextRoom?.Title</h2>
-                                <p>
-                                    @((MarkupString)@contextRoom?.Content)
-                                    <br /><br /><b>Posted by</b> @contextRoom?.CreatedBy <b>on</b> @contextRoom?.CreatedOn.ToShortDateString()
-                                </p>
-
-                                <NavLink class="btn btn-secondary" href="@NavigateUrl()">View All Rooms</NavLink>
-
-                            </div>
-                        }
-                    }
-                    else if (ChatHubService.Rooms.Any())
+                    if (ChatHubService.Rooms.Any())
                     {
                         <WindowContainer RenderLivestreams="@true" ShowEvent="@ShowWindow" HideEvent="@HideWindow" ShownEvent="@ShownWindow" HiddenEvent="@HiddenWindow">
 
