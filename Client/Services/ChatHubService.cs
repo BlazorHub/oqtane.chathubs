@@ -196,7 +196,7 @@ namespace Oqtane.ChatHubs.Services
                     this.HandleException(task);
                     await this.VideoService.InitVideoJs();
 
-                    await this.Connection.SendAsync("Init").ContinueWith(async (task) =>
+                    await this.Connection.SendAsync("Init").ContinueWith((task) =>
                     {
                         if (task.IsCompleted)
                         {
@@ -250,7 +250,7 @@ namespace Oqtane.ChatHubs.Services
             }
         }
 
-        public async Task RestartStreamTaskAsync(int roomIdOldIndex, int roomIdNewIndex)
+        public async Task RestartStreamTaskAsync(int roomIdNewIndex, int roomIdOldIndex = -1)
         {
             if (this.LocalStreamTasks.Any(item => item.Key == roomIdOldIndex) || this.RemoteStreamTasks.Any(item => item == roomIdOldIndex))
             {
@@ -545,8 +545,13 @@ namespace Oqtane.ChatHubs.Services
             this.AddRoom(room);
             this.RunUpdateUI();
         }
-        private void OnRemoveChatHubRoomExecute(object sender, ChatHubRoom room)
+        private async void OnRemoveChatHubRoomExecute(object sender, ChatHubRoom room)
         {
+            foreach (var item in this.Rooms)
+            {
+                await this.RestartStreamTaskAsync(item.Id);
+            }
+
             this.RemoveRoom(room);
             this.RunUpdateUI();
         }

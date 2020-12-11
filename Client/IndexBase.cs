@@ -15,7 +15,6 @@ using System.Text.RegularExpressions;
 using Oqtane.Shared.Models;
 using BlazorAlerts;
 using BlazorWindows;
-using BlazorPager;
 using System.Net;
 using BlazorDraggableList;
 
@@ -319,8 +318,6 @@ namespace Oqtane.ChatHubs
 
         public void ShowWindow(WindowEvent e)
         {
-            //this.BlazorAlertsService.NewBlazorAlert("on show");
-
             this.ChatHubService.ContextRoomId = e.ActivatedItem.Id.ToString();
             var room = this.ChatHubService.Rooms.FirstOrDefault(item => item.Id.ToString() == this.ChatHubService.ContextRoomId);
             if (room != null)
@@ -330,8 +327,6 @@ namespace Oqtane.ChatHubs
         }
         public void HideWindow(WindowEvent e)
         {
-            //this.BlazorAlertsService.NewBlazorAlert("on hide");
-
             var room = this.ChatHubService.Rooms.FirstOrDefault(item => item.Id == e.DeactivatedItem.Id);
             if (room != null)
             {
@@ -340,11 +335,16 @@ namespace Oqtane.ChatHubs
         }
         public void ShownWindow(WindowEvent e)
         {
-            //this.BlazorAlertsService.NewBlazorAlert("on shown");
         }
         public void HiddenWindow(WindowEvent e)
         {
-            //this.BlazorAlertsService.NewBlazorAlert("on hidden");
+        }
+        public void AddWindow(WindowEvent e)
+        {
+        }
+        public void RemoveWindow(WindowEvent e)
+        {
+            
         }
 
         public void Dispose()
