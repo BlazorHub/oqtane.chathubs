@@ -69,9 +69,9 @@ namespace Oqtane.ChatHubs.Services
 
         Task StartVideoChat(int roomId);
 
-        void DisposeStreamTasks();
+        Task StopVideoChat(int roomId);
 
-        void StopVideoChat(int roomId);
+        Task DisposeStreamTasksAsync();
 
         Task RestartStreamTaskAsync(int roomIdNewIndex, int roomIdOldIndex = -1);
 

@@ -212,7 +212,7 @@ namespace Oqtane.ChatHubs.Services
             try
             {
                 var room = this.Rooms.FirstOrDefault(item => item.Id == roomId);
-                this.StopVideoChat(room.Id);
+                await this.StopVideoChat(room.Id);
 
                 if (room.CreatorId == this.ConnectedUser.UserId)
                 {
@@ -236,7 +236,7 @@ namespace Oqtane.ChatHubs.Services
             }
         }
 
-        public async void StopVideoChat(int roomId)
+        public async Task StopVideoChat(int roomId)
         {
             var room = this.Rooms.FirstOrDefault(item => item.Id == roomId);
             if (room.CreatorId == this.ConnectedUser.UserId)
@@ -254,12 +254,12 @@ namespace Oqtane.ChatHubs.Services
         {
             if (this.LocalStreamTasks.Any(item => item.Key == roomIdOldIndex) || this.RemoteStreamTasks.Any(item => item == roomIdOldIndex))
             {
-                this.StopVideoChat(roomIdOldIndex);
+                await this.StopVideoChat(roomIdOldIndex);
                 await this.StartVideoChat(roomIdOldIndex);
             }
             if (this.LocalStreamTasks.Any(item => item.Key == roomIdNewIndex) || this.RemoteStreamTasks.Any(item => item == roomIdNewIndex))
             {
-                this.StopVideoChat(roomIdNewIndex);
+                await this.StopVideoChat(roomIdNewIndex);
                 await this.StartVideoChat(roomIdNewIndex);
             }
 
@@ -325,11 +325,11 @@ namespace Oqtane.ChatHubs.Services
             }
         }
 
-        public void DisposeStreamTasks()
+        public async Task DisposeStreamTasksAsync()
         {
             foreach(var task in LocalStreamTasks)
             {
-                this.StopVideoChat(task.Key);
+                await this.StopVideoChat(task.Key);
             }
         }
 
@@ -545,7 +545,7 @@ namespace Oqtane.ChatHubs.Services
             this.AddRoom(room);
             this.RunUpdateUI();
         }
-        private async void OnRemoveChatHubRoomExecute(object sender, ChatHubRoom room)
+        private void OnRemoveChatHubRoomExecute(object sender, ChatHubRoom room)
         {
             this.RemoveRoom(room);
             this.RunUpdateUI();
@@ -744,7 +744,7 @@ namespace Oqtane.ChatHubs.Services
             this.VideoService.OnDataAvailableEventHandler -= async (object sender, dynamic e) => await OnDataAvailableEventHandlerExecute(e.dataURI, e.roomId, e.dataType);
             this.VideoService.OnPauseLivestreamTask -= (object sender, int e) => OnPauseLivestreamTaskExecute(sender, e);
             this.VideoService.OnContinueLivestreamTask -= (object sender, int e) => OnContinueLivestreamTaskExecute(sender, e);
-            this.DisposeStreamTasks();
+            this.DisposeStreamTasksAsync();
 
             this.OnConnectedEvent -= OnConnectedExecute;
             this.OnAddChatHubRoomEvent -= OnAddChatHubRoomExecute;
