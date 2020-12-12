@@ -37,8 +37,8 @@
     <file src="..\Client\bin\Release\net5.0\Oqtane.ChatHubs.Client.Oqtane.pdb" target="lib\net5.0" />
     <file src="..\Server\bin\Release\net5.0\Oqtane.ChatHubs.Server.Oqtane.dll" target="lib\net5.0" />
     <file src="..\Server\bin\Release\net5.0\Oqtane.ChatHubs.Server.Oqtane.pdb" target="lib\net5.0" />
-    <file src="..\Shared\bin\Release\netstandard2.1\Oqtane.ChatHubs.Shared.Oqtane.dll" target="lib\netstandard2.1" />
-    <file src="..\Shared\bin\Release\netstandard2.1\Oqtane.ChatHubs.Shared.Oqtane.pdb" target="lib\netstandard2.1" />
+    <file src="..\Shared\bin\Release\net5.0\Oqtane.ChatHubs.Shared.Oqtane.dll" target="lib\net5.0" />
+    <file src="..\Shared\bin\Release\net5.0\Oqtane.ChatHubs.Shared.Oqtane.pdb" target="lib\net5.0" />
     <file src="..\BlazorAlerts\bin\Release\net5.0\BlazorAlerts.dll" target="lib\net5.0" />
     <file src="..\BlazorAlerts\bin\Release\net5.0\BlazorAlerts.pdb" target="lib\net5.0" />
     <file src="..\BlazorWindows\bin\Release\net5.0\BlazorWindows.dll" target="lib\net5.0" />

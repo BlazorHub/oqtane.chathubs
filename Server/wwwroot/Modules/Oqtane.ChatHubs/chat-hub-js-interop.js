@@ -81,7 +81,7 @@
         },
     };
 
-    window.__jsstreams = function (videoserviceobjectreference) {
+    window.__videojs = function (videoserviceobjectreference) {
 
         __obj = {
 
@@ -454,9 +454,76 @@
         };
     };
 
-    window.__initjsstreams = function (videoserviceobjectreference) {
+    window.__draggablejs = function (draggableserviceobjectreference) {
 
-        return storeObjectRef(new window.__jsstreams(videoserviceobjectreference));
+        __obj = {
+
+            draggableservice: draggableserviceobjectreference,
+            initeventlisteners: function () {
+
+                document.addEventListener('dragstart', function (event) {
+
+                    event.dataTransfer.effectAllowed = "move";
+
+                    var id = event.target.id;
+                    var arr = id.split('-');
+                    var dragstartindex = arr[arr.length - 1];
+
+                    var exceptDropzone = '.dropzone-' + dragstartindex;
+                    var dropzones = document.querySelectorAll('.dropzone:not(' + exceptDropzone + ')');
+                    Array.prototype.forEach.call(dropzones, function (item) {
+
+                        item.style.display = "block";
+                    });
+
+                    event.dataTransfer.setData("index", dragstartindex);
+                });
+                document.addEventListener('dragenter', function (event) {
+
+                    event.target.classList.add('active-dropzone');
+                });
+                document.addEventListener('dragleave', function (event) {
+
+                    event.target.classList.remove('active-dropzone');
+                });
+                document.addEventListener('dragover', function (event) {
+
+                    event.preventDefault();
+                    event.dataTransfer.dropEffect = 'move';
+                });
+                document.addEventListener('drop', function (event) {
+
+                    event.preventDefault();
+
+                    var dragindex = event.dataTransfer.getData('index');
+
+                    var id = event.target.id;
+                    var arr = id.split('-');
+                    var dropindex = arr[arr.length - 1];
+
+                    self.__obj.draggableservice.invokeMethodAsync('OnDrop', parseInt(dragindex), parseInt(dropindex));
+                });
+                document.addEventListener('dragend', function (event) {
+
+                    var dropzones = document.getElementsByClassName('dropzone');
+                    Array.prototype.forEach.call(dropzones, function (item) {
+
+                        item.style.display = "none";
+                        item.classList.remove('active-dropzone');
+                    });
+                });
+            },
+        }
+    };
+
+    window.__initvideojs = function (videojsdotnetobj) {
+
+        return storeObjectRef(new window.__videojs(videojsdotnetobj));
+    };
+
+    window.__initdraggablejs = function (draggablejsdotnetobj) {
+
+        return storeObjectRef(new window.__draggablejs(draggablejsdotnetobj));
     };
 
     var jsObjectRefs = {};
@@ -470,65 +537,4 @@
         return jsRef;
     };
 
-});
-
-window.addEventListener('DOMContentLoaded', () => {
-
-    window.blazordraggablelist_dragstart = function (event) {
-
-        event.dataTransfer.effectAllowed = "move";
-
-        var id = event.target.id;
-        var arr = id.split('-');
-        var dragstartindex = arr[arr.length - 1];
-
-        var exceptDropzone = '.dropzone-' + dragstartindex;
-        var dropzones = document.querySelectorAll('.dropzone:not(' + exceptDropzone + ')');
-        Array.prototype.forEach.call(dropzones, function (item) {
-
-            item.style.display = "block";
-        });
-
-        event.dataTransfer.setData("index", dragstartindex);
-    };
-
-    window.blazordraggablelist_dragenter = function (event) {
-
-        event.target.classList.add('active-dropzone');
-    };
-
-    window.blazordraggablelist_dragleave = function (event) {
-
-        event.target.classList.remove('active-dropzone');
-    };
-
-    window.blazordraggablelist_dragover = function (event) {
-
-        event.preventDefault();
-        event.dataTransfer.dropEffect = 'move';
-    };
-
-    window.blazordraggablelist_drop = function (event) {
-
-        event.preventDefault();
-
-        var dragindex = event.dataTransfer.getData('index');
-
-        var id = event.target.id;
-        var arr = id.split('-');
-        var dropindex = arr[arr.length - 1];
-
-        DotNet.invokeMethodAsync("BlazorDraggableList", 'OnDrop', parseInt(dragindex), parseInt(dropindex));
-    };
-
-    window.blazordraggablelist_dragend = function (event) {
-
-        var dropzones = document.getElementsByClassName('dropzone');
-        Array.prototype.forEach.call(dropzones, function (item) {
-
-            item.style.display = "none";
-            item.classList.remove('active-dropzone');
-        });
-    };
-    
 });

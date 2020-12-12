@@ -19,7 +19,7 @@ namespace BlazorDraggableList
 
         protected override Task OnInitializedAsync()
         {
-            BlazorDraggableListService.OnDropEvent += OnDropEventExecute;
+            BlazorDraggableListService.BlazorDraggableListServiceExtension.OnDropEvent += OnDropEventExecute;
             return base.OnInitializedAsync();
         }
 
@@ -31,7 +31,7 @@ namespace BlazorDraggableList
 
         public void Dispose()
         {
-            BlazorDraggableListService.OnDropEvent -= OnDropEventExecute;
+            BlazorDraggableListService.BlazorDraggableListServiceExtension.OnDropEvent -= OnDropEventExecute;
         }
     }
 

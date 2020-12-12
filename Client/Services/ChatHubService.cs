@@ -19,6 +19,7 @@ using System.Data;
 using Microsoft.AspNetCore.SignalR;
 using BlazorAlerts;
 using System.Net;
+using BlazorDraggableList;
 
 namespace Oqtane.ChatHubs.Services
 {
@@ -33,6 +34,7 @@ namespace Oqtane.ChatHubs.Services
         public VideoService VideoService { get; set; }
         public ScrollService ScrollService { get; set; }
         public BlazorAlertsService BlazorAlertsService { get; set; }
+        public BlazorDraggableListService BlazorDraggableListService { get; set; }
 
         public HubConnection Connection { get; set; }
         public ChatHubUser ConnectedUser { get; set; }
@@ -69,7 +71,7 @@ namespace Oqtane.ChatHubs.Services
         public event EventHandler<ChatHubUser> OnDisconnectEvent;
         public event EventHandler<dynamic> OnExceptionEvent;
 
-        public ChatHubService(HttpClient httpClient, SiteState siteState, NavigationManager navigationManager, IJSRuntime JSRuntime, VideoService videoService, ScrollService scrollService, BlazorAlertsService blazorAlertsService) : base (httpClient)
+        public ChatHubService(HttpClient httpClient, SiteState siteState, NavigationManager navigationManager, IJSRuntime JSRuntime, VideoService videoService, ScrollService scrollService, BlazorAlertsService blazorAlertsService, BlazorDraggableListService blazorDraggableListService) : base (httpClient)
         {
             this.HttpClient = httpClient;
             this.SiteState = siteState;
@@ -78,9 +80,10 @@ namespace Oqtane.ChatHubs.Services
             this.VideoService = videoService;
             this.ScrollService = scrollService;
             this.BlazorAlertsService = blazorAlertsService;
+            this.BlazorDraggableListService = blazorDraggableListService;
 
-            this.VideoService.OnDataAvailableEventHandler += async (object sender, dynamic e) => await OnDataAvailableEventHandlerExecute(e.dataURI, e.roomId, e.dataType);
-            this.VideoService.OnPauseLivestreamTask += (object sender, int e) => OnPauseLivestreamTaskExecute(sender, e);
+            this.VideoService.VideoServiceExtension.OnDataAvailableEventHandler += async (object sender, dynamic e) => await OnDataAvailableEventHandlerExecute(e.dataURI, e.roomId, e.dataType);
+            this.VideoService.VideoServiceExtension.OnPauseLivestreamTask += (object sender, int e) => OnPauseLivestreamTaskExecute(sender, e);
             this.VideoService.OnContinueLivestreamTask += (object sender, int e) => OnContinueLivestreamTaskExecute(sender, e);
 
             this.OnConnectedEvent += OnConnectedExecute;
@@ -194,7 +197,9 @@ namespace Oqtane.ChatHubs.Services
                 if (task.IsCompleted)
                 {
                     this.HandleException(task);
+
                     await this.VideoService.InitVideoJs();
+                    //await this.BlazorDraggableListService.InitDraggableJs();
 
                     await this.Connection.SendAsync("Init").ContinueWith((task) =>
                     {
@@ -741,8 +746,8 @@ namespace Oqtane.ChatHubs.Services
 
         public void Dispose()
         {
-            this.VideoService.OnDataAvailableEventHandler -= async (object sender, dynamic e) => await OnDataAvailableEventHandlerExecute(e.dataURI, e.roomId, e.dataType);
-            this.VideoService.OnPauseLivestreamTask -= (object sender, int e) => OnPauseLivestreamTaskExecute(sender, e);
+            this.VideoService.VideoServiceExtension.OnDataAvailableEventHandler -= async (object sender, dynamic e) => await OnDataAvailableEventHandlerExecute(e.dataURI, e.roomId, e.dataType);
+            this.VideoService.VideoServiceExtension.OnPauseLivestreamTask -= (object sender, int e) => OnPauseLivestreamTaskExecute(sender, e);
             this.VideoService.OnContinueLivestreamTask -= (object sender, int e) => OnContinueLivestreamTaskExecute(sender, e);
             this.DisposeStreamTasksAsync();
 

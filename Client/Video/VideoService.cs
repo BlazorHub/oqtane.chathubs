@@ -4,6 +4,7 @@ using Oqtane.Modules;
 using Oqtane.Services;
 using System;
 using System.Net.Http;
+using System.Runtime.CompilerServices;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
@@ -20,48 +21,33 @@ namespace Oqtane.ChatHubs
             public int JsObjectRefId { get; set; }
         }
 
+        public VideoServiceExtension VideoServiceExtension;
+        private DotNetObjectReference<VideoServiceExtension> dotNetObjectReference;
+
         private readonly HttpClient HttpClient;
         private readonly IJSRuntime JSRuntime;
-
-        public event EventHandler<dynamic> OnDataAvailableEventHandler;
-        public event EventHandler<int> OnPauseLivestreamTask;
+        
         public event EventHandler<int> OnContinueLivestreamTask;
 
         public VideoService(HttpClient httpClient, IJSRuntime JSRuntime) : base(httpClient)
         {
             this.HttpClient = httpClient;
             this.JSRuntime = JSRuntime;
+
+            this.VideoServiceExtension = new VideoServiceExtension(this);
         }
 
         public async Task InitVideoJs()
         {
-            this.__jsRuntimeObjectRef = await this.JSRuntime.InvokeAsync<JsRuntimeObjectRef>("__initjsstreams", DotNetObjectReference.Create(this));
-        }
-
-        [JSInvokable("OnDataAvailable")]
-        public object OnDataAvailable(string dataURI, int roomId, string dataType)
-        {
-            OnDataAvailableEventHandler?.Invoke(typeof(VideoService), new { dataURI = dataURI, roomId = roomId, dataType = dataType });
-            return new { msg = string.Format("room id: {1}; dataType: {2}; dataUri: {0}", dataURI, roomId, dataType) };
-        }
-
-        [JSInvokable("PauseLivestreamTask")]
-        public void PauseLivestreamTask(int roomId)
-        {
-            this.OnPauseLivestreamTask?.Invoke(typeof(VideoService), roomId);
-        }
-
-        [JSInvokable("ContinueLivestreamTask")]
-        public void ContinueLivestreamTask(int roomId)
-        {
-            this.OnContinueLivestreamTask?.Invoke(typeof(VideoService), roomId);
+            this.dotNetObjectReference = DotNetObjectReference.Create(this.VideoServiceExtension);
+            this.__jsRuntimeObjectRef = await this.JSRuntime.InvokeAsync<JsRuntimeObjectRef>("__initvideojs", this.dotNetObjectReference);
         }
 
         public async Task StartBroadcasting(int roomId)
         {
             if (this.__jsRuntimeObjectRef != null)
             {
-                await this.JSRuntime.InvokeVoidAsync("__obj.startbroadcasting", roomId, __jsRuntimeObjectRef);
+                await this.JSRuntime.InvokeVoidAsync("__obj.startbroadcasting", roomId, this.__jsRuntimeObjectRef);
             }
         }
 
@@ -77,7 +63,7 @@ namespace Oqtane.ChatHubs
         {
             if (this.__jsRuntimeObjectRef != null)
             {
-                await this.JSRuntime.InvokeVoidAsync("__obj.closelivestream", roomId, __jsRuntimeObjectRef);
+                await this.JSRuntime.InvokeVoidAsync("__obj.closelivestream", roomId, this.__jsRuntimeObjectRef);
             }
         }
 
@@ -85,7 +71,7 @@ namespace Oqtane.ChatHubs
         {
             if (this.__jsRuntimeObjectRef != null)
             {
-                await this.JSRuntime.InvokeVoidAsync("__obj.startsequence", roomId, __jsRuntimeObjectRef);
+                await this.JSRuntime.InvokeVoidAsync("__obj.startsequence", roomId, this.__jsRuntimeObjectRef);
             }
         }
 
@@ -93,7 +79,7 @@ namespace Oqtane.ChatHubs
         {
             if (this.__jsRuntimeObjectRef != null)
             {
-                await this.JSRuntime.InvokeVoidAsync("__obj.stopsequence", roomId, __jsRuntimeObjectRef);
+                await this.JSRuntime.InvokeVoidAsync("__obj.stopsequence", roomId, this.__jsRuntimeObjectRef);
             }
         }
 
@@ -101,7 +87,7 @@ namespace Oqtane.ChatHubs
         {
             if (this.__jsRuntimeObjectRef != null)
             {
-                await this.JSRuntime.InvokeVoidAsync("__obj.drawimage", roomId, __jsRuntimeObjectRef);
+                await this.JSRuntime.InvokeVoidAsync("__obj.drawimage", roomId, this.__jsRuntimeObjectRef);
             }
         }
 
@@ -109,9 +95,42 @@ namespace Oqtane.ChatHubs
         {
             if (this.__jsRuntimeObjectRef != null)
             {
-                await this.JSRuntime.InvokeVoidAsync("__obj.appendbuffer", dataURI, roomId, dataType, __jsRuntimeObjectRef);
+                await this.JSRuntime.InvokeVoidAsync("__obj.appendbuffer", dataURI, roomId, dataType, this.__jsRuntimeObjectRef);
             }
         }
 
+        public void ContinueLivestreamTask(int roomId)
+        {
+            this.OnContinueLivestreamTask?.Invoke(typeof(VideoService), roomId);
+        }
+
     }
+
+    public class VideoServiceExtension
+    {
+        private VideoService VideoService { get; set; }
+
+        public event EventHandler<dynamic> OnDataAvailableEventHandler;
+        public event EventHandler<int> OnPauseLivestreamTask;
+
+        public VideoServiceExtension(VideoService videoService)
+        {
+            this.VideoService = videoService;
+        }
+
+        [JSInvokable("OnDataAvailable")]
+        public object OnDataAvailable(string dataURI, int roomId, string dataType)
+        {
+            this.OnDataAvailableEventHandler?.Invoke(typeof(VideoServiceExtension), new { dataURI = dataURI, roomId = roomId, dataType = dataType });
+            return new { msg = string.Format("room id: {1}; dataType: {2}; dataUri: {0}", dataURI, roomId, dataType) };
+        }
+
+        [JSInvokable("PauseLivestreamTask")]
+        public void PauseLivestreamTask(int roomId)
+        {
+            this.OnPauseLivestreamTask?.Invoke(typeof(VideoServiceExtension), roomId);
+        }        
+
+    }
+
 }

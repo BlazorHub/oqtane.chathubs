@@ -34,6 +34,7 @@ namespace Oqtane.ChatHubs
         [Inject] protected BrowserResizeService BrowserResizeService { get; set; }
         [Inject] protected ScrollService ScrollService { get; set; }
         [Inject] protected CookieService CookieService { get; set; }
+        [Inject] protected BlazorDraggableListService BlazorDraggableListService { get; set; }
 
         public int MessageWindowHeight { get; set; }
         public int UserlistWindowHeight { get; set; }
@@ -60,7 +61,7 @@ namespace Oqtane.ChatHubs
 
         protected override void OnInitialized()
         {
-            BlazorDraggableListService.OnDropEvent += OnDropEventExecute;
+            this.BlazorDraggableListService.BlazorDraggableListServiceExtension.OnDropEvent += OnDropEventExecute;
             BrowserResizeService.OnResize += BrowserHasResized;
             this.ChatHubService.OnUpdateUI += (object sender, EventArgs e) => UpdateUIStateHasChanged();
 
@@ -73,7 +74,7 @@ namespace Oqtane.ChatHubs
             {
                 this.ChatHubService.Rooms = this.ChatHubService.Rooms.Swap(e.DraggableItemOldIndex, e.DraggableItemNewIndex).ToList<ChatHubRoom>();
                 this.ChatHubService.RestartStreamTaskAsync(this.ChatHubService.Rooms[e.DraggableItemOldIndex].Id, this.ChatHubService.Rooms[e.DraggableItemNewIndex].Id);
-                
+
                 this.UpdateUIStateHasChanged();
             }
             catch (Exception ex)
@@ -353,7 +354,7 @@ namespace Oqtane.ChatHubs
 
         public void Dispose()
         {
-            BlazorDraggableListService.OnDropEvent -= OnDropEventExecute;
+            BlazorDraggableListService.BlazorDraggableListServiceExtension.OnDropEvent -= OnDropEventExecute;
             BrowserResizeService.OnResize -= BrowserHasResized;
             this.ChatHubService.OnUpdateUI -= (object sender, EventArgs e) => UpdateUIStateHasChanged();
 
