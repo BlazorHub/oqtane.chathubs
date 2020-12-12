@@ -81,11 +81,11 @@
         },
     };
 
-    window.__videojs = function (videoserviceobjectreference) {
+    window.__initjs = function (videoserviceobjectreference, draggablejsdotnetobj) {
 
         __obj = {
 
-            videoservice: videoserviceobjectreference,
+            videoservice: videoserviceobjectreference,            
             videolocalid: '#chathubs-video-local-',
             videoremoteid: '#chathubs-video-remote-',
             canvaslocalid: '#chathubs-canvas-local-',
@@ -451,14 +451,8 @@
                 var blob = new Blob([arraybuffer], { type: self.__obj.videomimetypeobject.mimetype });
                 return blob;
             },
-        };
-    };
 
-    window.__draggablejs = function (draggableserviceobjectreference) {
-
-        __obj = {
-
-            draggableservice: draggableserviceobjectreference,
+            draggableservice: draggablejsdotnetobj,
             initeventlisteners: function () {
 
                 document.addEventListener('dragstart', function (event) {
@@ -513,17 +507,12 @@
                     });
                 });
             },
-        }
+        };
     };
 
-    window.__initvideojs = function (videojsdotnetobj) {
+    window.__init = function (videojsdotnetobj, draggablejsdotnetobj) {
 
-        return storeObjectRef(new window.__videojs(videojsdotnetobj));
-    };
-
-    window.__initdraggablejs = function (draggablejsdotnetobj) {
-
-        return storeObjectRef(new window.__draggablejs(draggablejsdotnetobj));
+        return storeObjectRef(new window.__initjs(videojsdotnetobj, draggablejsdotnetobj));
     };
 
     var jsObjectRefs = {};

@@ -2,9 +2,9 @@
 using Oqtane.ChatHubs.Client.Video;
 using Oqtane.Modules;
 using Oqtane.Services;
+using Oqtane.Shared.Models;
 using System;
 using System.Net.Http;
-using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 namespace Oqtane.ChatHubs
@@ -12,16 +12,10 @@ namespace Oqtane.ChatHubs
     public class VideoService : ServiceBase, IService, IVideoService
     {
 
-        private JsRuntimeObjectRef __jsRuntimeObjectRef { get; set; }
-
-        public class JsRuntimeObjectRef
-        {
-            [JsonPropertyName("__jsObjectRefId")]
-            public int JsObjectRefId { get; set; }
-        }
+        public JsRuntimeObjectRef __jsRuntimeObjectRef { get; set; }        
 
         public VideoServiceExtension VideoServiceExtension;
-        private DotNetObjectReference<VideoServiceExtension> dotNetObjectReference;
+        public DotNetObjectReference<VideoServiceExtension> dotNetObjectReference;
 
         private readonly HttpClient HttpClient;
         private readonly IJSRuntime JSRuntime;
@@ -34,12 +28,7 @@ namespace Oqtane.ChatHubs
             this.JSRuntime = JSRuntime;
 
             this.VideoServiceExtension = new VideoServiceExtension();
-        }
-
-        public async Task InitVideoJs()
-        {
             this.dotNetObjectReference = DotNetObjectReference.Create(this.VideoServiceExtension);
-            this.__jsRuntimeObjectRef = await this.JSRuntime.InvokeAsync<JsRuntimeObjectRef>("__initvideojs", this.dotNetObjectReference);
         }
 
         public async Task StartBroadcasting(int roomId)

@@ -1,6 +1,6 @@
 ﻿using Microsoft.JSInterop;
+using Oqtane.Shared.Models;
 using System;
-using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 namespace BlazorDraggableList
@@ -10,35 +10,25 @@ namespace BlazorDraggableList
 
         private readonly IJSRuntime JSRuntime;
 
-        private JsRuntimeObjectRef __jsRuntimeObjectRef { get; set; }
-
-        public class JsRuntimeObjectRef
-        {
-            [JsonPropertyName("__jsObjectRefId")]
-            public int JsObjectRefId { get; set; }
-        }
+        public JsRuntimeObjectRef __jsRuntimeObjectRef { get; set; }
 
         public BlazorDraggableListServiceExtension BlazorDraggableListServiceExtension;
 
-        private DotNetObjectReference<BlazorDraggableListServiceExtension> dotNetObjectReference;
+        public DotNetObjectReference<BlazorDraggableListServiceExtension> dotNetObjectReference;
 
         public BlazorDraggableListService(IJSRuntime jsRuntime)
         {
             this.JSRuntime = jsRuntime;
+
             this.BlazorDraggableListServiceExtension = new BlazorDraggableListServiceExtension();
-        }
-
-        public async Task InitDraggableJs()
-        {
             this.dotNetObjectReference = DotNetObjectReference.Create(this.BlazorDraggableListServiceExtension);
-            this.__jsRuntimeObjectRef = await this.JSRuntime.InvokeAsync<JsRuntimeObjectRef>("__initdraggablejs", this.__jsRuntimeObjectRef);
         }
 
-        public async Task InitWindowEventListeners()
+        public async Task InitEventListeners()
         {
             if (this.__jsRuntimeObjectRef != null)
             {
-                await this.JSRuntime.InvokeVoidAsync("__obj.initevents", __jsRuntimeObjectRef);
+                await this.JSRuntime.InvokeVoidAsync("__obj.initeventlisteners", __jsRuntimeObjectRef);
             }
         }
     }

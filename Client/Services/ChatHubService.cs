@@ -198,8 +198,11 @@ namespace Oqtane.ChatHubs.Services
                 {
                     this.HandleException(task);
 
-                    await this.VideoService.InitVideoJs();
-                    //await this.BlazorDraggableListService.InitDraggableJs();
+                    JsRuntimeObjectRef objref = await this.JSRuntime.InvokeAsync<JsRuntimeObjectRef>("__init", this.VideoService.dotNetObjectReference, this.BlazorDraggableListService.dotNetObjectReference);
+                    this.VideoService.__jsRuntimeObjectRef = objref;
+                    this.BlazorDraggableListService.__jsRuntimeObjectRef = objref;
+
+                    await this.BlazorDraggableListService.InitEventListeners();
 
                     await this.Connection.SendAsync("Init").ContinueWith((task) =>
                     {
