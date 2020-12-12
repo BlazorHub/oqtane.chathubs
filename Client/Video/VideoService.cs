@@ -4,7 +4,6 @@ using Oqtane.Modules;
 using Oqtane.Services;
 using System;
 using System.Net.Http;
-using System.Runtime.CompilerServices;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
@@ -34,7 +33,7 @@ namespace Oqtane.ChatHubs
             this.HttpClient = httpClient;
             this.JSRuntime = JSRuntime;
 
-            this.VideoServiceExtension = new VideoServiceExtension(this);
+            this.VideoServiceExtension = new VideoServiceExtension();
         }
 
         public async Task InitVideoJs()
@@ -108,15 +107,9 @@ namespace Oqtane.ChatHubs
 
     public class VideoServiceExtension
     {
-        private VideoService VideoService { get; set; }
 
         public event EventHandler<dynamic> OnDataAvailableEventHandler;
         public event EventHandler<int> OnPauseLivestreamTask;
-
-        public VideoServiceExtension(VideoService videoService)
-        {
-            this.VideoService = videoService;
-        }
 
         [JSInvokable("OnDataAvailable")]
         public object OnDataAvailable(string dataURI, int roomId, string dataType)
@@ -129,8 +122,7 @@ namespace Oqtane.ChatHubs
         public void PauseLivestreamTask(int roomId)
         {
             this.OnPauseLivestreamTask?.Invoke(typeof(VideoServiceExtension), roomId);
-        }        
+        }
 
     }
-
 }

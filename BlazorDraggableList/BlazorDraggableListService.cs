@@ -25,7 +25,7 @@ namespace BlazorDraggableList
         public BlazorDraggableListService(IJSRuntime jsRuntime)
         {
             this.JSRuntime = jsRuntime;
-            this.BlazorDraggableListServiceExtension = new BlazorDraggableListServiceExtension(this);
+            this.BlazorDraggableListServiceExtension = new BlazorDraggableListServiceExtension();
         }
 
         public async Task InitDraggableJs()
@@ -46,14 +46,7 @@ namespace BlazorDraggableList
     public class BlazorDraggableListServiceExtension
     {
 
-        private BlazorDraggableListService BlazorDraggableListService;
-
         public event EventHandler<BlazorDraggableListEvent> OnDropEvent;
-
-        public BlazorDraggableListServiceExtension(BlazorDraggableListService blazorDraggableListService)
-        {
-            this.BlazorDraggableListService = blazorDraggableListService;
-        }
 
         [JSInvokable("OnDrop")]
         public void OnDrop(int oldIndex, int newIndex)
@@ -66,5 +59,4 @@ namespace BlazorDraggableList
         }
 
     }
-
 }
