@@ -46,7 +46,7 @@
         resized: function () {
 
             DotNet.invokeMethodAsync("Oqtane.ChatHubs.Client.Oqtane", 'OnBrowserResize');
-        }
+        },
     };
 
     window.showchathubscontainer = function () {
@@ -85,25 +85,47 @@
 
         __obj = {
 
-            videoservice: videoserviceobjectreference,            
+            videoservice: videoserviceobjectreference,
             videolocalid: '#chathubs-video-local-',
             videoremoteid: '#chathubs-video-remote-',
             canvaslocalid: '#chathubs-canvas-local-',
             canvasremoteid: '#chathubs-canvas-remote-',
-            videomimetypeobject: { mimetype: 'video/webm;codecs=opus,vp9' },
+            videomimetypeobject: {
+
+                mimetype: '',
+                set setmimetype(userAgent) {
+
+                    if (userAgent.toLowerCase().indexOf('chrome') > -1 || userAgent.toLowerCase().indexOf('firefox') > -1 || userAgent.toLowerCase().indexOf('edge') > -1) {
+
+                        this.mimetype = 'video/webm;codecs=opus,vp8';
+                    }
+                    else if (userAgent.toLowerCase().indexOf('anywayscodereminder') > -1) {
+
+                        this.mimetype = 'video/webm;codecs=opus,vp9';
+                    }
+                    else {
+
+                        window.alert('Your current browser support is not implemented yet but you can try anyways. Supported browsers yet: Chrome, Firefox and Edge.');
+                    }
+                }
+            },
             constrains: {
-                audio: true,
+                audio: {
+                    volume: { exact: 0.5 },
+                },
                 video: {
-                    width: { min: 300, ideal: 300, max: 300 },
-                    height: { min: 150, ideal: 150, max: 150 },
-                    frameRate: 12,
-                    facingMode: "user"
+                    width: { min: 320, ideal: 320, max: 320 },
+                    height: { min: 240, ideal: 240, max: 240 },
+                    frameRate: { ideal: 12 },
+                    facingMode: { ideal: "user" },
                 }
             },
             livestreams: [],
             locallivestream: function (roomId, mediastream) {
 
                 var __selflocallivestream = this;
+
+                self.__obj.videomimetypeobject.setmimetype = navigator.userAgent;
 
                 this.videolocalid = self.__obj.videolocalid + roomId;
                 this.getvideolocaldomelement = function () {
@@ -238,6 +260,8 @@
 
                 var __selfremotelivestream = this;
 
+                self.__obj.videomimetypeobject.setmimetype = navigator.userAgent;
+
                 this.videoremoteid = self.__obj.videoremoteid + roomId;
                 this.getvideoremotedomelement = function () {
                     return document.querySelector(__selfremotelivestream.videoremoteid);
@@ -255,7 +279,7 @@
 
                 this.mediasource.addEventListener('sourceopen', function (event) {
 
-                    if (!('MediaSource' in window) || !(window.MediaSource.isTypeSupported(__obj.videomimetypeobject.mimetype))) {
+                    if (!('MediaSource' in window) || !(window.MediaSource.isTypeSupported(self.__obj.videomimetypeobject.mimetype))) {
 
                         console.error('Unsupported MIME type or codec: ', self.__obj.videomimetypeobject.mimetype);
                     }
@@ -359,10 +383,10 @@
             },
             startbroadcasting: function (roomId) {
 
-                window.navigator.mediaDevices.getUserMedia(self.__obj.constrains)
-                    .then(function (mediaStream) {
+                navigator.mediaDevices.getUserMedia(self.__obj.constrains)
+                    .then(function (mediastream) {
 
-                        var livestream = new self.__obj.locallivestream(roomId, mediaStream);
+                        var livestream = new self.__obj.locallivestream(roomId, mediastream);
                         var livestreamdicitem = {
                             id: roomId,
                             item: livestream,
@@ -371,7 +395,7 @@
                         self.__obj.addlivestream(livestreamdicitem);
                     })
                     .catch(function (ex) {
-                        console.log(ex.message);
+                        console.warn(ex.message);
                     });
             },
             startstreaming: function (roomId) {
