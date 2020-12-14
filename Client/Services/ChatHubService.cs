@@ -35,6 +35,7 @@ namespace Oqtane.ChatHubs.Services
         public ScrollService ScrollService { get; set; }
         public BlazorAlertsService BlazorAlertsService { get; set; }
         public BlazorDraggableListService BlazorDraggableListService { get; set; }
+        public BrowserResizeService BrowserResizeService { get; set; }
 
         public HubConnection Connection { get; set; }
         public ChatHubUser ConnectedUser { get; set; }
@@ -71,7 +72,7 @@ namespace Oqtane.ChatHubs.Services
         public event EventHandler<ChatHubUser> OnDisconnectEvent;
         public event EventHandler<dynamic> OnExceptionEvent;
 
-        public ChatHubService(HttpClient httpClient, SiteState siteState, NavigationManager navigationManager, IJSRuntime JSRuntime, VideoService videoService, ScrollService scrollService, BlazorAlertsService blazorAlertsService, BlazorDraggableListService blazorDraggableListService) : base (httpClient)
+        public ChatHubService(HttpClient httpClient, SiteState siteState, NavigationManager navigationManager, IJSRuntime JSRuntime, VideoService videoService, ScrollService scrollService, BlazorAlertsService blazorAlertsService, BlazorDraggableListService blazorDraggableListService, BrowserResizeService browserResizeService) : base (httpClient)
         {
             this.HttpClient = httpClient;
             this.SiteState = siteState;
@@ -81,6 +82,7 @@ namespace Oqtane.ChatHubs.Services
             this.ScrollService = scrollService;
             this.BlazorAlertsService = blazorAlertsService;
             this.BlazorDraggableListService = blazorDraggableListService;
+            this.BrowserResizeService = browserResizeService;
 
             this.VideoService.VideoServiceExtension.OnDataAvailableEventHandler += async (object sender, dynamic e) => await OnDataAvailableEventHandlerExecute(e.dataURI, e.roomId, e.dataType);
             this.VideoService.VideoServiceExtension.OnPauseLivestreamTask += (object sender, int e) => OnPauseLivestreamTaskExecute(sender, e);
@@ -197,12 +199,6 @@ namespace Oqtane.ChatHubs.Services
                 if (task.IsCompleted)
                 {
                     this.HandleException(task);
-
-                    JsRuntimeObjectRef objref = await this.JSRuntime.InvokeAsync<JsRuntimeObjectRef>("__init", this.VideoService.dotNetObjectReference, this.BlazorDraggableListService.dotNetObjectReference);
-                    this.VideoService.__jsRuntimeObjectRef = objref;
-                    this.BlazorDraggableListService.__jsRuntimeObjectRef = objref;
-
-                    await this.BlazorDraggableListService.InitEventListeners();
 
                     await this.Connection.SendAsync("Init").ContinueWith((task) =>
                     {

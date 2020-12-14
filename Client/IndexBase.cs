@@ -62,7 +62,7 @@ namespace Oqtane.ChatHubs
         protected override void OnInitialized()
         {
             this.BlazorDraggableListService.BlazorDraggableListServiceExtension.OnDropEvent += OnDropEventExecute;
-            BrowserResizeService.OnResize += BrowserHasResized;
+            this.BrowserResizeService.OnResize += BrowserHasResized;
             this.ChatHubService.OnUpdateUI += (object sender, EventArgs e) => UpdateUIStateHasChanged();
 
             base.OnInitialized();
@@ -91,9 +91,13 @@ namespace Oqtane.ChatHubs
                 string hostname = new Uri(NavigationManager.BaseUri).Host;
                 this.ChatHubService.IdentityCookie = new Cookie(".AspNetCore.Identity.Application", await this.CookieService.GetCookieAsync(".AspNetCore.Identity.Application"), "/", hostname);
 
-                await JSRuntime.InvokeAsync<object>("browserResize.registerResizeCallback");
+                JsRuntimeObjectRef objref = await this.JSRuntime.InvokeAsync<JsRuntimeObjectRef>("__init", this.VideoService.dotNetObjectReference, this.BlazorDraggableListService.dotNetObjectReference, this.BrowserResizeService.dotNetObjectReference);
+                this.VideoService.__jsRuntimeObjectRef = objref;
+                this.BlazorDraggableListService.__jsRuntimeObjectRef = objref;
+                this.BrowserResizeService.__jsRuntimeObjectRef = objref;
+                await this.BlazorDraggableListService.InitEventListeners();
+                await this.BrowserResizeService.RegisterWindowResizeCallback();
                 await BrowserHasResized();
-
                 await this.JSRuntime.InvokeVoidAsync("showchathubscontainer");
             }
 
@@ -212,10 +216,11 @@ namespace Oqtane.ChatHubs
             {
                 await InvokeAsync(async () =>
                 {
-                    InnerHeight = await this.BrowserResizeService.GetInnerHeight();
-                    InnerWidth = await this.BrowserResizeService.GetInnerWidth();
+                    this.InnerHeight = await this.BrowserResizeService.GetInnerHeight();
+                    this.InnerWidth = await this.BrowserResizeService.GetInnerWidth();
 
-                    SetChatTabElementsHeight();
+                    this.MessageWindowHeight = 520;
+                    this.UserlistWindowHeight = 570;
 
                     StateHasChanged();
                 });
@@ -225,12 +230,6 @@ namespace Oqtane.ChatHubs
                 await logger.LogError(ex, "Error On Browser Resize {Error}", ex.Message);
                 ModuleInstance.AddModuleMessage("Error On Browser Resize", MessageType.Error);
             }
-        }
-
-        private void SetChatTabElementsHeight()
-        {
-            MessageWindowHeight = 520;
-            UserlistWindowHeight = 570;
         }
 
         public void UserlistItem_Clicked(MouseEventArgs e, ChatHubRoom room, ChatHubUser user)
@@ -354,8 +353,8 @@ namespace Oqtane.ChatHubs
 
         public void Dispose()
         {
-            BlazorDraggableListService.BlazorDraggableListServiceExtension.OnDropEvent -= OnDropEventExecute;
-            BrowserResizeService.OnResize -= BrowserHasResized;
+            this.BlazorDraggableListService.BlazorDraggableListServiceExtension.OnDropEvent -= OnDropEventExecute;
+            this.BrowserResizeService.OnResize -= BrowserHasResized;
             this.ChatHubService.OnUpdateUI -= (object sender, EventArgs e) => UpdateUIStateHasChanged();
 
             //this.ChatHubService.DisposeStreamTasks();

@@ -12,7 +12,7 @@ namespace Oqtane.ChatHubs
     public class VideoService : ServiceBase, IService, IVideoService
     {
 
-        public JsRuntimeObjectRef __jsRuntimeObjectRef { get; set; }        
+        public JsRuntimeObjectRef __jsRuntimeObjectRef { get; set; }
 
         public VideoServiceExtension VideoServiceExtension;
         public DotNetObjectReference<VideoServiceExtension> dotNetObjectReference;

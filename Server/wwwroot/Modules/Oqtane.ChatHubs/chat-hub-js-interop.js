@@ -23,32 +23,6 @@
         }
     };
 
-    window.browserResize = {
-
-        getInnerHeight: function () {
-            return window.innerHeight;
-        },
-        getInnerWidth: function () {
-            return window.innerWidth;
-        },
-        registerResizeCallback: function () {
-
-            var resizeTimer;
-            window.addEventListener('resize', function (e) {
-
-                clearTimeout(resizeTimer);
-                resizeTimer = setTimeout(() => {
-
-                    window.browserResize.resized();
-                }, 200);
-            });
-        },
-        resized: function () {
-
-            DotNet.invokeMethodAsync("Oqtane.ChatHubs.Client.Oqtane", 'OnBrowserResize');
-        },
-    };
-
     window.showchathubscontainer = function () {
 
         var chathubscontainer = document.querySelector('.chathubs-container');
@@ -81,7 +55,7 @@
         },
     };
 
-    window.__initjs = function (videoserviceobjectreference, draggablejsdotnetobj) {
+    window.__initjs = function (videoserviceobjectreference, draggablejsdotnetobj, resizejsdotnetobj) {
 
         __obj = {
 
@@ -92,20 +66,23 @@
             canvasremoteid: '#chathubs-canvas-remote-',
             videomimetypeobject: {
 
-                mimetype: '',
-                set setmimetype(userAgent) {
+                get mimetype() {
 
-                    if (userAgent.toLowerCase().indexOf('chrome') > -1 || userAgent.toLowerCase().indexOf('firefox') > -1 || userAgent.toLowerCase().indexOf('edge') > -1) {
+                    var userAgent = navigator.userAgent.toLowerCase();
 
-                        this.mimetype = 'video/webm;codecs=opus,vp8';
-                    }
-                    else if (userAgent.toLowerCase().indexOf('anywayscodereminder') > -1) {
+                    if (userAgent.indexOf('chrome') > -1 ||
+                        userAgent.indexOf('firefox') > -1 ||
+                        userAgent.indexOf('opera') > -1 ||
+                        userAgent.indexOf('safari') > -1 ||
+                        userAgent.indexOf('msie') > -1 ||
+                        userAgent.indexOf('edge') > -1) {
 
-                        this.mimetype = 'video/webm;codecs=opus,vp9';
+                        return 'video/webm;codecs=opus,vp8';
                     }
                     else {
 
-                        window.alert('Your current browser support is not implemented yet but you can try anyways. Supported browsers yet: Chrome, Firefox and Edge.');
+                        window.alert('Your current browser support is not implemented.');
+                        return 'video/webm;codecs=opus,vp9';
                     }
                 }
             },
@@ -124,8 +101,6 @@
             locallivestream: function (roomId, mediastream) {
 
                 var __selflocallivestream = this;
-
-                self.__obj.videomimetypeobject.setmimetype = navigator.userAgent;
 
                 this.videolocalid = self.__obj.videolocalid + roomId;
                 this.getvideolocaldomelement = function () {
@@ -259,8 +234,6 @@
             remotelivestream: function (roomId) {
 
                 var __selfremotelivestream = this;
-
-                self.__obj.videomimetypeobject.setmimetype = navigator.userAgent;
 
                 this.videoremoteid = self.__obj.videoremoteid + roomId;
                 this.getvideoremotedomelement = function () {
@@ -531,12 +504,41 @@
                     });
                 });
             },
+
+            resizeservice: resizejsdotnetobj,
+            browserResize: {
+
+                getInnerHeight: function () {
+
+                    return window.innerHeight;
+                },
+                getInnerWidth: function () {
+
+                    return window.innerWidth;
+                },
+                registerResizeCallback: function () {
+
+                    var resizeTimer;
+                    window.addEventListener('resize', function (e) {
+
+                        clearTimeout(resizeTimer);
+                        resizeTimer = setTimeout(() => {
+
+                            self.__obj.browserResize.resized();
+                        }, 200);
+                    });
+                },
+                resized: function () {
+
+                    self.__obj.resizeservice.invokeMethodAsync('OnBrowserResize');
+                },
+            },
         };
     };
 
-    window.__init = function (videojsdotnetobj, draggablejsdotnetobj) {
+    window.__init = function (videojsdotnetobj, draggablejsdotnetobj, resizejsdotnetobj) {
 
-        return storeObjectRef(new window.__initjs(videojsdotnetobj, draggablejsdotnetobj));
+        return storeObjectRef(new window.__initjs(videojsdotnetobj, draggablejsdotnetobj, resizejsdotnetobj));
     };
 
     var jsObjectRefs = {};
