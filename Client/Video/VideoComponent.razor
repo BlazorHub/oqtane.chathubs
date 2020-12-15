@@ -5,11 +5,11 @@
 
 <style type="text/css">
 
-    .video-item-@ItemIndex {
+    .video-item-@ChatHubRoom.Id {
         line-height: 14px;
     }
 
-    .video-item-resize-container-@ItemIndex {
+    .video-item-resize-container-@ChatHubRoom.Id {
         width: 320px;
         height: 240px;
         resize: both;
@@ -39,12 +39,12 @@
 
 </style>
 
-<div class="bd-highlight video-item-@ItemIndex p-1">
+<div class="bd-highlight video-item-@ChatHubRoom.Id p-1">
 
     @if (ChatHubService.ConnectedUser.UserId == ChatHubRoom.CreatorId)
     {
         <div>
-            <div class="video-item-resize-container-@ItemIndex position-relative">
+            <div class="video-item-resize-container-@ChatHubRoom.Id position-relative">
 
                 <div class="align-items-center justify-content-center px-3 h-100 @(!ChatHubService.LocalStreamTasks.Any(item => item.Key == ChatHubRoom.Id) ? "d-flex" : "d-none")">
                     <button class="btn btn-lg btn-link text-white bg-dark p-sm-2" type="button" @onclick="async () => ChatHubService.StartVideoChat(ChatHubRoom.Id)">
@@ -75,7 +75,7 @@
     else
     {
         <div>
-            <div class="video-item-resize-container-@ItemIndex position-relative">
+            <div class="video-item-resize-container-@ChatHubRoom.Id position-relative">
 
                 <div class="align-items-center justify-content-center px-3 h-100 @(!ChatHubService.RemoteStreamTasks.Any(item => item == ChatHubRoom.Id) ? "d-flex" : "d-none")">
                     <button class="btn btn-lg btn-link text-white bg-dark p-sm-2" type="button" @onclick="async () => ChatHubService.StartVideoChat(ChatHubRoom.Id)">

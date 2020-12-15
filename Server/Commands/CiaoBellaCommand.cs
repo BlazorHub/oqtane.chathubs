@@ -4,7 +4,6 @@ using System.Threading.Tasks;
 using Oqtane.Shared;
 using Oqtane.Shared.Enums;
 using Microsoft.AspNetCore.SignalR;
-using System;
 
 namespace Oqtane.ChatHubs.Commands
 {

@@ -7,7 +7,6 @@ using System.Threading.Tasks;
 using Oqtane.Shared.Enums;
 using Oqtane.Shared.Models;
 using Oqtane.Models;
-using Microsoft.AspNetCore.Mvc.ViewFeatures;
 
 namespace Oqtane.ChatHubs.Repository
 {

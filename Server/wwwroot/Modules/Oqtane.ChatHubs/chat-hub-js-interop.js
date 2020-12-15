@@ -83,7 +83,7 @@
                     }
                     else {
 
-                        window.alert('Your current browser support is not implemented.');
+                        window.alert('Your current browser support is not implemented yet.');
                         return 'video/webm;codecs=opus,vp9';
                     }
                 }
@@ -116,7 +116,7 @@
                 this.audioselect = this.getaudiosourcelocaldomelement();
                 this.videoselect = this.getvideosourcelocaldomelement();
 
-                this.vElement = this.getvideolocaldomelement();                
+                this.vElement = this.getvideolocaldomelement();
                 this.vElement.onloadedmetadata = function (e) {
 
                     __selflocallivestream.vElement.play();
@@ -330,7 +330,7 @@
 
                             __selflocallivestream.vElement.srcObject = null;
 
-                            setTimeout(resolve, 420);
+                            setTimeout(resolve, 240);
                         }
                         catch (err) {
                             console.error(err);
