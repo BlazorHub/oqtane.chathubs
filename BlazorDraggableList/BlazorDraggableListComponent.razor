@@ -29,11 +29,10 @@
 
 </style>
 
-<section class="blazor-draggable-list @Class @(!Items.Any() ? "d-none" : "d-block")">
+<section class="blazor-draggable-list @Class">
 
     @for (int i = 0; i < Items.Count(); i++)
     {
-
         var temp = i;
 
         <div class="position-relative">

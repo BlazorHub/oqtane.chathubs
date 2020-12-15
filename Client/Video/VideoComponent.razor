@@ -39,26 +39,36 @@
 
 </style>
 
-<div class="bd-highlight video-item-@ItemIndex p-1 @(!ChatHubService.LocalStreamTasks.Any(item => item.Key == ChatHubRoom.Id) && !ChatHubService.RemoteStreamTasks.Any(item => item == ChatHubRoom.Id) ? "d-none" : "d-block")">
+<div class="bd-highlight video-item-@ItemIndex p-1">
 
     @if (ChatHubService.ConnectedUser.UserId == ChatHubRoom.CreatorId)
     {
         <div>
             <div class="video-item-resize-container-@ItemIndex position-relative">
-                <div class="text-white px-2 py-2 mb-0 position-absolute video-item-ellipsis">
-                    <small>[loc.] @ChatHubRoom.Title</small>
-                </div>
-                <video id="chathubs-video-local-@ChatHubRoom.Id" class="chathubs-video-local mb-0 w-100 h-100" controls></video>
-                <canvas id="chathubs-canvas-local-@ChatHubRoom.Id" class="chathubs-canvas-local bg-light d-none"></canvas>
 
-                <div class="position-absolute" style="right: 0px; top: 0px;">
-                    <div class="input-group my-1">
-                        <select id="chathubs-audio-source-local-@ChatHubRoom.Id" style="width: 120px;"></select>
+                <div class="align-items-center justify-content-center px-3 h-100 @(!ChatHubService.LocalStreamTasks.Any(item => item.Key == ChatHubRoom.Id) ? "d-flex" : "d-none")">
+                    <button type="button" @onclick="async () => ChatHubService.StartVideoChat(ChatHubRoom.Id)">                            
+                        Start Streaming
+                    </button>
+                </div>
+
+                <div class="w-100 h-100 @(!ChatHubService.LocalStreamTasks.Any(item => item.Key == ChatHubRoom.Id) ? "d-none" : "d-block")">
+                    <div class="text-white px-2 py-2 mb-0 position-absolute video-item-ellipsis">
+                        <small>[loc.] @ChatHubRoom.Title</small>
                     </div>
-                    <div class="input-group my-1">
-                        <select id="chathubs-video-source-local-@ChatHubRoom.Id" style="width: 120px;"></select>
+                    <video id="chathubs-video-local-@ChatHubRoom.Id" class="chathubs-video-local mb-0 w-100 h-100" controls></video>
+                    <canvas id="chathubs-canvas-local-@ChatHubRoom.Id" class="chathubs-canvas-local bg-light d-none"></canvas>
+
+                    <div class="position-absolute" style="right: 0px; top: 0px;">
+                        <div class="input-group my-1">
+                            <select id="chathubs-audio-source-local-@ChatHubRoom.Id" style="width: 120px;"></select>
+                        </div>
+                        <div class="input-group my-1">
+                            <select id="chathubs-video-source-local-@ChatHubRoom.Id" style="width: 120px;"></select>
+                        </div>
                     </div>
                 </div>
+
             </div>
         </div>
     }
@@ -66,11 +76,21 @@
     {
         <div>
             <div class="video-item-resize-container-@ItemIndex position-relative">
-                <div class="text-white px-2 py-2 mb-0 position-absolute video-item-ellipsis">
-                    <small>[rem.] @ChatHubRoom.Title</small>
+
+                <div class="align-items-center justify-content-center px-3 h-100 @(!ChatHubService.RemoteStreamTasks.Any(item => item == ChatHubRoom.Id) ? "d-flex" : "d-none")">
+                    <button type="button" @onclick="async () => ChatHubService.StartVideoChat(ChatHubRoom.Id)">                            
+                        Start Streaming
+                    </button>
                 </div>
-                <video id="chathubs-video-remote-@ChatHubRoom.Id" class="chathubs-video-remote mb-0 w-100 h-100" controls></video>
-                <canvas id="chathubs-canvas-remote-@ChatHubRoom.Id" class="chathubs-canvas-remote bg-light d-none"></canvas>
+
+                <div class="w-100 h-100 @(!ChatHubService.RemoteStreamTasks.Any(item => item == ChatHubRoom.Id) ? "d-none" : "d-block")">
+                    <div class="text-white px-2 py-2 mb-0 position-absolute video-item-ellipsis">
+                        <small>[rem.] @ChatHubRoom.Title</small>
+                    </div>
+                    <video id="chathubs-video-remote-@ChatHubRoom.Id" class="chathubs-video-remote mb-0 w-100 h-100" controls></video>
+                    <canvas id="chathubs-canvas-remote-@ChatHubRoom.Id" class="chathubs-canvas-remote bg-light d-none"></canvas>
+                </div>
+
             </div>
         </div>
     }
