@@ -9,10 +9,10 @@ using System;
 namespace Oqtane.ChatHubs.Commands
 {
     [Export("ICommand", typeof(ICommand))]
-    [Command("ciaobella", "[username]", new string[] { Constants.AdminRole }, "Usage: /ciaobella")]
-    public class CiaoBellaCommand : AdminCommand
+    [Command("ciaobella", "[username]", new string[] { Constants.AllUsersRole }, "Usage: /ciaobella")]
+    public class CiaoBellaCommand : BaseCommand
     {
-        public override async Task ExecuteAdminOperation(CommandServicesContext context, CommandCallerContext callerContext, string[] args, ChatHubUser caller)
+        public override async Task Execute(CommandServicesContext context, CommandCallerContext callerContext, string[] args, ChatHubUser caller)
         {
 
             if (args.Length == 0)
@@ -31,13 +31,15 @@ namespace Oqtane.ChatHubs.Commands
                 return;
             }
 
-            // TODO: delete user with all its relations
-            throw new HubException("somhow is this not implemented yet but how why??", new NotImplementedException("??"));
-
-            foreach(var connection in targetUser.Connections)
+            if(caller.UserId == targetUser.UserId)
             {
-                await context.ChatHub.Clients.Client(connection.ConnectionId).SendAsync("Disconnect", context.ChatHubService.CreateChatHubUserClientModel(targetUser));
+                // TODO: Delete the rest of the user data
+
+                // Free way for user identity to delete its own data
+                context.ChatHubRepository.DeleteChatHubUser(caller.UserId);
             }
+
+            throw new HubException(string.Format("Successfully deleted. System do not know an user named {0} anymore.", caller.DisplayName), new NotImplementedException("??"));
 
         }
     }

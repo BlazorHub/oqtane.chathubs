@@ -367,6 +367,20 @@ namespace Oqtane.ChatHubs.Repository
 
         #region DELETE
 
+        public void DeleteChatHubUser(int UserId)
+        {
+            try
+            {
+                ChatHubUser ChatHubUser = db.ChatHubUser.Where(item => item.UserId == UserId).FirstOrDefault();
+                db.ChatHubUser.Remove(ChatHubUser);
+                db.SaveChanges();
+            }
+            catch
+            {
+                throw;
+            }
+        }
+
         public void DeleteChatHubRoom(int ChatHubRoomId, int ModuleId)
         {
             try
