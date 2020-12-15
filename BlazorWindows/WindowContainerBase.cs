@@ -77,8 +77,13 @@ namespace BlazorWindows
         {
             if (!WindowItems.Any(item => item.Id == windowItem.Id))
             {
-                this.WindowItems.Add(windowItem);
-                this.WindowEvents.Add(AddedEvent);
+                InvokeAsync(() =>
+                {
+                    this.WindowItems.Add(windowItem);
+                    this.WindowEvents.Add(AddedEvent);
+
+                    StateHasChanged();
+                });
             }
         }
 
@@ -87,8 +92,13 @@ namespace BlazorWindows
             var windowItem = this.WindowItems.Where(item => item.Id == id).FirstOrDefault();
             if (windowItem != null)
             {
-                this.WindowItems.Remove(windowItem);
-                this.WindowEvents.Add(RemovedEvent);
+                InvokeAsync(() =>
+                {
+                    this.WindowItems.Remove(windowItem);
+                    this.WindowEvents.Add(RemovedEvent);
+
+                    StateHasChanged();
+                });
             }
         }
 

@@ -72,7 +72,7 @@ namespace Oqtane.ChatHubs.Services
 
         Task DisposeStreamTasksAsync();
 
-        Task RestartStreamTaskAsync(int roomIdNewIndex, int roomIdOldIndex = -1);
+        Task RestartStreamTaskIfExists(int roomId);
 
         Task EnterChatRoom(int roomId);
 

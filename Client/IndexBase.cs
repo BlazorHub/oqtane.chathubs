@@ -68,12 +68,15 @@ namespace Oqtane.ChatHubs
             base.OnInitialized();
         }
 
-        private void OnDropEventExecute(object sender, BlazorDraggableListEvent e)
+        private async void OnDropEventExecute(object sender, BlazorDraggableListEvent e)
         {
             try
             {
-                this.ChatHubService.Rooms = this.ChatHubService.Rooms.Swap(e.DraggableItemOldIndex, e.DraggableItemNewIndex).ToList<ChatHubRoom>();
-                this.ChatHubService.RestartStreamTaskAsync(this.ChatHubService.Rooms[e.DraggableItemOldIndex].Id, this.ChatHubService.Rooms[e.DraggableItemNewIndex].Id);
+                var items = this.ChatHubService.Rooms.Swap(e.DraggableItemOldIndex, e.DraggableItemNewIndex);
+                this.ChatHubService.Rooms = items.ToList<ChatHubRoom>();
+
+                await this.ChatHubService.RestartStreamTaskIfExists(this.ChatHubService.Rooms[e.DraggableItemOldIndex].Id);
+                await this.ChatHubService.RestartStreamTaskIfExists(this.ChatHubService.Rooms[e.DraggableItemNewIndex].Id);
 
                 this.UpdateUIStateHasChanged();
             }
@@ -347,7 +350,7 @@ namespace Oqtane.ChatHubs
         {
             foreach (var item in this.ChatHubService.Rooms)
             {
-                await this.ChatHubService.RestartStreamTaskAsync(item.Id);
+                await this.ChatHubService.RestartStreamTaskIfExists(item.Id);
             }
         }
 

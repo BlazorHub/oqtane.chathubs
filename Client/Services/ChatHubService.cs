@@ -250,21 +250,16 @@ namespace Oqtane.ChatHubs.Services
             }
             else
             {
+                this.RemoveRemoteStreamTask(roomId);
                 await this.VideoService.CloseLivestream(roomId);
             }
         }
 
-        public async Task RestartStreamTaskAsync(int roomIdNewIndex, int roomIdOldIndex = -1)
+        public async Task RestartStreamTaskIfExists(int roomId)
         {
-            if (this.LocalStreamTasks.Any(item => item.Key == roomIdOldIndex) || this.RemoteStreamTasks.Any(item => item == roomIdOldIndex))
+            if (this.LocalStreamTasks.Any(item => item.Key == roomId) || this.RemoteStreamTasks.Any(item => item == roomId))
             {
-                await this.StopVideoChat(roomIdOldIndex);
-                await this.StartVideoChat(roomIdOldIndex);
-            }
-            if (this.LocalStreamTasks.Any(item => item.Key == roomIdNewIndex) || this.RemoteStreamTasks.Any(item => item == roomIdNewIndex))
-            {
-                await this.StopVideoChat(roomIdNewIndex);
-                await this.StartVideoChat(roomIdNewIndex);
+                await this.StartVideoChat(roomId);
             }
 
             this.RunUpdateUI();
@@ -276,6 +271,7 @@ namespace Oqtane.ChatHubs.Services
 
             dynamic obj = new { task = task, tokenSource = tokenSource };
             this.LocalStreamTasks.Add(roomId, obj);
+            this.RunUpdateUI();
         }
 
         public void RemoveLocalStreamTask(int roomId)
@@ -299,6 +295,7 @@ namespace Oqtane.ChatHubs.Services
             if(!items.Any())
             {
                 this.RemoteStreamTasks.Add(roomId);
+                this.RunUpdateUI();
             }
         }
 

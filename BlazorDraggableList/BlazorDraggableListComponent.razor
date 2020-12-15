@@ -29,27 +29,23 @@
 
 </style>
 
-<section class="blazor-draggable-list">
+<section class="blazor-draggable-list @Class @(!Items.Any() ? "d-none" : "d-block")">
 
-    <div class="@Class">
+    @for (int i = 0; i < Items.Count(); i++)
+    {
 
-        @for (int i = 0; i < Items.Count(); i++)
-        {
+        var temp = i;
 
-            var temp = i;
+        <div class="position-relative">
 
-            <div class="position-relative">
-
-                <div id="blazor-draggable-list-item-@temp" class="draggable-item" draggable="true">
-                    @BlazorDraggableListItem(Items[temp])
-                </div>
-
-                <div id="blazor-draggable-list-item-dropzone-@temp" class="dropzone dropzone-@temp" />
-
+            <div id="blazor-draggable-list-item-@temp" class="draggable-item" draggable="true">
+                @BlazorDraggableListItem(Items[temp])
             </div>
-        }
 
-    </div>
+            <div id="blazor-draggable-list-item-dropzone-@temp" class="dropzone dropzone-@temp" />
+
+        </div>
+    }
 
 </section>
 

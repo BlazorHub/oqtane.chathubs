@@ -62,6 +62,8 @@
             videoservice: videoserviceobjectreference,
             videolocalid: '#chathubs-video-local-',
             videoremoteid: '#chathubs-video-remote-',
+            audiosourcelocalid: '#chathubs-audio-source-local-',
+            videosourcelocalid: '#chathubs-video-source-local-',
             canvaslocalid: '#chathubs-canvas-local-',
             canvasremoteid: '#chathubs-canvas-remote-',
             videomimetypeobject: {
@@ -85,20 +87,9 @@
                         return 'video/webm;codecs=opus,vp9';
                     }
                 }
-            },
-            constrains: {
-                audio: {
-                    volume: { exact: 0.5 },
-                },
-                video: {
-                    width: { min: 320, ideal: 320, max: 320 },
-                    height: { min: 240, ideal: 240, max: 240 },
-                    frameRate: { ideal: 12 },
-                    facingMode: { ideal: "user" },
-                }
-            },
+            },            
             livestreams: [],
-            locallivestream: function (roomId, mediastream) {
+            locallivestream: function (roomId) {
 
                 var __selflocallivestream = this;
 
@@ -107,13 +98,25 @@
                     return document.querySelector(__selflocallivestream.videolocalid);
                 };
 
+                this.audiosourcelocalid = self.__obj.audiosourcelocalid + roomId;
+                this.getaudiosourcelocaldomelement = function () {
+                    return document.querySelector(__selflocallivestream.audiosourcelocalid);
+                };
+
+                this.videosourcelocalid = self.__obj.videosourcelocalid + roomId;
+                this.getvideosourcelocaldomelement = function () {
+                    return document.querySelector(__selflocallivestream.videosourcelocalid);
+                };
+
                 this.canvaslocalid = self.__obj.canvaslocalid + roomId;
                 this.getcanvaslocaldomelement = function () {
                     return document.querySelector(__selflocallivestream.canvaslocalid);
                 };
 
-                this.vElement = this.getvideolocaldomelement();
-                this.vElement.srcObject = mediastream;
+                this.audioselect = this.getaudiosourcelocaldomelement();
+                this.videoselect = this.getvideosourcelocaldomelement();
+
+                this.vElement = this.getvideolocaldomelement();                
                 this.vElement.onloadedmetadata = function (e) {
 
                     __selflocallivestream.vElement.play();
@@ -126,44 +129,134 @@
                     __selflocallivestream.pauselivestreamtask();
                 });
 
-                this.options = { mimeType: __obj.videomimetypeobject.mimetype, videoBitsPerSecond: 1000, audioBitsPerSecond: 1000, ignoreMutedMedia: true };
-                this.recorder = new MediaRecorder(mediastream, this.options);
-                this.recorder.start();
+                this.currentgotdevices = null;
+                this.gotDevices = function(mediadeviceinfos) {
+
+                    var audioselectchild = __selflocallivestream.audioselect.firstElementChild;
+                    while (audioselectchild) {
+                        __selflocallivestream.audioselect.removeChild(audioselectchild);
+                        audioselectchild = __selflocallivestream.audioselect.firstElementChild;
+                    }
+
+                    var videoselectchild = __selflocallivestream.videoselect.firstElementChild;
+                    while (videoselectchild) {
+                        __selflocallivestream.videoselect.removeChild(videoselectchild);
+                        videoselectchild = __selflocallivestream.videoselect.firstElementChild;
+                    }
+
+                    for (var i = 0; i < mediadeviceinfos.length; i++) {
+
+                        var temp = i;
+                        const deviceInfo = mediadeviceinfos[temp];
+                        const option = document.createElement("option");
+                        option.value = deviceInfo.deviceId;
+                        if (deviceInfo.kind === "audioinput") {
+                            option.text = deviceInfo.label || "microphone " + (__selflocallivestream.audioselect.length + 1);
+                            __selflocallivestream.audioselect.appendChild(option);
+                        } else if (deviceInfo.kind === "videoinput") {
+                            option.text = deviceInfo.label || "camera " + (__selflocallivestream.videoselect.length + 1);
+                            __selflocallivestream.videoselect.appendChild(option);
+                        } else {
+                            console.log("Found another kind of device: ", deviceInfo);
+                        }
+                    }
+                };
+
+                this.currentgetstream = null;
+                this.getStream = function () {
+
+                    var __selfgetstream = this;
+
+                    this.constrains = {
+                        audio: {
+                            volume: { exact: 0.5 },
+                        },
+                        video: {
+                            width: { min: 320, ideal: 320, max: 320 },
+                            height: { min: 240, ideal: 240, max: 240 },
+                            frameRate: { ideal: 12 },
+                            facingMode: { ideal: "user" },
+                        }
+                    };
+
+                    this.constrains.audio['deviceId'] = { exact: __selflocallivestream.audioselect.value };
+                    this.constrains.video['deviceId'] = { exact: __selflocallivestream.videoselect.value };
+
+                    window.navigator.mediaDevices
+                        .getUserMedia(this.constrains)
+                        .then(function (mediastream) {
+
+                            __selflocallivestream.vElement.srcObject = mediastream;
+
+                            __selfgetstream.options = { mimeType: self.__obj.videomimetypeobject.mimetype, videoBitsPerSecond: 1000, audioBitsPerSecond: 1000, ignoreMutedMedia: true };
+                            __selfgetstream.recorder = new MediaRecorder(mediastream, __selfgetstream.options);
+
+                            __selfgetstream.recorder.start();
+                            __selfgetstream.recorder.ondataavailable = (event) => {
+
+                                if (event.data.size > 0) {
+
+                                    console.log(event.data);
+                                    __selflocallivestream.broadcastvideodata(event.data);
+                                }
+                            };
+
+                        })
+                        .catch(function (ex) {
+                            console.warn(ex);
+                        });
+                };
+
+                window.navigator.mediaDevices.enumerateDevices()
+                    .then(function (mediadeviceinfos) {
+                        __selflocallivestream.currentgotdevices = new __selflocallivestream.gotDevices(mediadeviceinfos);
+                    })
+                    .then(function () {
+                        __selflocallivestream.currentgetstream = new __selflocallivestream.getStream();
+                    })
+                    .catch(function (ex) {
+                        console.warn(ex.message);
+                    });
+
+                this.handleonchangeevent = function () {
+
+                    __selflocallivestream.cancel();
+                    __selflocallivestream.currentgetstream = new __selflocallivestream.getStream();
+                };
+
+                this.audioselect.removeEventListener("change", __selflocallivestream.handleonchangeevent);
+                this.audioselect.addEventListener("change", __selflocallivestream.handleonchangeevent);
+
+                this.videoselect.removeEventListener("change", __selflocallivestream.handleonchangeevent);
+                this.videoselect.addEventListener("change", __selflocallivestream.handleonchangeevent);
 
                 this.startsequence = function () {
 
                     try {
 
-                        if (__selflocallivestream.recorder.state === 'inactive' || __selflocallivestream.recorder.state === 'paused') {
+                        if (__selflocallivestream.currentgetstream !== null && __selflocallivestream.currentgetstream.recorder.state === 'inactive' || __selflocallivestream.currentgetstream.recorder.state === 'paused') {
 
-                            __selflocallivestream.recorder.start();
+                            __selflocallivestream.currentgetstream.recorder.start();
                         }
                     }
                     catch (ex) {
                         console.warn(ex);
                     }
-                },
+                };
                 this.stopsequence = function () {
 
                     try {
 
-                        if (__selflocallivestream.recorder.state === 'recording' || __selflocallivestream.recorder.state === 'paused') {
+                        if (__selflocallivestream.currentgetstream !== null && __selflocallivestream.currentgetstream.recorder.state === 'recording' || __selflocallivestream.currentgetstream.recorder.state === 'paused') {
 
-                            __selflocallivestream.recorder.stop();
+                            __selflocallivestream.currentgetstream.recorder.stop();
                         }
                     }
                     catch (ex) {
                         console.warn(ex);
                     }
                 };
-                this.recorder.ondataavailable = (event) => {
 
-                    if (event.data.size > 0) {
-
-                        console.log(event.data);
-                        __selflocallivestream.broadcastvideodata(event.data);
-                    }
-                };
                 this.broadcastvideodata = function (sequence) {
 
                     var reader = new FileReader();
@@ -220,16 +313,25 @@
                 this.cancel = function () {
 
                     try {
-                        if (__selflocallivestream.recorder.state === 'recording' || __selflocallivestream.recorder.state === 'paused') {
 
-                            __selflocallivestream.recorder.stop();
+                        if (__selflocallivestream.currentgetstream !== null) {
+
+                            if (__selflocallivestream.currentgetstream.recorder !== undefined) {
+
+                                __selflocallivestream.currentgetstream.recorder.stream.getTracks().forEach(track => track.stop());
+                                __selflocallivestream.currentgetstream.recorder.stop();
+                            }
+
+                            __selflocallivestream.currentgetstream = null;
                         }
-                        mediastream.getTracks().forEach(track => track.stop());
+                        
+                        __selflocallivestream.vElement.srcObject = null;                        
                     }
                     catch (err) {
                         console.error(err);
                     }
                 };
+
             },
             remotelivestream: function (roomId) {
 
@@ -356,20 +458,13 @@
             },
             startbroadcasting: function (roomId) {
 
-                navigator.mediaDevices.getUserMedia(self.__obj.constrains)
-                    .then(function (mediastream) {
+                var livestream = new self.__obj.locallivestream(roomId);
+                var livestreamdicitem = {
+                    id: roomId,
+                    item: livestream,
+                };
 
-                        var livestream = new self.__obj.locallivestream(roomId, mediastream);
-                        var livestreamdicitem = {
-                            id: roomId,
-                            item: livestream,
-                        };
-
-                        self.__obj.addlivestream(livestreamdicitem);
-                    })
-                    .catch(function (ex) {
-                        console.warn(ex.message);
-                    });
+                self.__obj.addlivestream(livestreamdicitem);
             },
             startstreaming: function (roomId) {
 
@@ -448,7 +543,6 @@
                 var blob = new Blob([arraybuffer], { type: self.__obj.videomimetypeobject.mimetype });
                 return blob;
             },
-
             draggableservice: draggablejsdotnetobj,
             initeventlisteners: function () {
 
@@ -504,7 +598,6 @@
                     });
                 });
             },
-
             resizeservice: resizejsdotnetobj,
             browserResize: {
 
