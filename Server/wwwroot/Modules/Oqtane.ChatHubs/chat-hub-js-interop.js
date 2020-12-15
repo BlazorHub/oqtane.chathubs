@@ -218,9 +218,9 @@
                         console.warn(ex.message);
                     });
 
-                this.handleonchangeevent = function () {
+                this.handleonchangeevent = async function () {
 
-                    __selflocallivestream.cancel();
+                    await __selflocallivestream.cancel();
                     __selflocallivestream.currentgetstream = new __selflocallivestream.getStream();
                 };
 
@@ -312,24 +312,31 @@
                 },
                 this.cancel = function () {
 
-                    try {
+                    var promise = new Promise(function (resolve) {
 
-                        if (__selflocallivestream.currentgetstream !== null) {
+                        try {
 
-                            if (__selflocallivestream.currentgetstream.recorder !== undefined) {
+                            if (__selflocallivestream.currentgetstream !== null) {
 
-                                __selflocallivestream.currentgetstream.recorder.stream.getTracks().forEach(track => track.stop());
-                                __selflocallivestream.currentgetstream.recorder.stop();
+                                if (__selflocallivestream.currentgetstream.recorder !== undefined) {
+
+                                    __selflocallivestream.currentgetstream.recorder.stream.getTracks().forEach(track => track.stop());
+                                    __selflocallivestream.currentgetstream.recorder.stop();
+                                }
+
+                                __selflocallivestream.currentgetstream = null;
                             }
 
-                            __selflocallivestream.currentgetstream = null;
+                            __selflocallivestream.vElement.srcObject = null;
+
+                            setTimeout(resolve, 420);
                         }
-                        
-                        __selflocallivestream.vElement.srcObject = null;                        
-                    }
-                    catch (err) {
-                        console.error(err);
-                    }
+                        catch (err) {
+                            console.error(err);
+                        }
+                    });
+
+                    return promise;
                 };
 
             },
