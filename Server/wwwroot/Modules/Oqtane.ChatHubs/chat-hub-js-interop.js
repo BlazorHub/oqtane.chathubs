@@ -325,6 +325,7 @@
                                 }
 
                                 __selflocallivestream.currentgetstream = null;
+                                delete __selflocallivestream.currentgetstream;
                             }
 
                             __selflocallivestream.vElement.srcObject = null;
