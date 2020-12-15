@@ -47,8 +47,8 @@
             <div class="video-item-resize-container-@ItemIndex position-relative">
 
                 <div class="align-items-center justify-content-center px-3 h-100 @(!ChatHubService.LocalStreamTasks.Any(item => item.Key == ChatHubRoom.Id) ? "d-flex" : "d-none")">
-                    <button type="button" @onclick="async () => ChatHubService.StartVideoChat(ChatHubRoom.Id)">                            
-                        Start Streaming
+                    <button class="btn btn-lg btn-link text-white bg-dark p-sm-2" type="button" @onclick="async () => ChatHubService.StartVideoChat(ChatHubRoom.Id)">
+                        ▷ @ChatHubRoom.Title
                     </button>
                 </div>
 
@@ -78,8 +78,8 @@
             <div class="video-item-resize-container-@ItemIndex position-relative">
 
                 <div class="align-items-center justify-content-center px-3 h-100 @(!ChatHubService.RemoteStreamTasks.Any(item => item == ChatHubRoom.Id) ? "d-flex" : "d-none")">
-                    <button type="button" @onclick="async () => ChatHubService.StartVideoChat(ChatHubRoom.Id)">                            
-                        Start Streaming
+                    <button class="btn btn-lg btn-link text-white bg-dark p-sm-2" type="button" @onclick="async () => ChatHubService.StartVideoChat(ChatHubRoom.Id)">
+                        ▷ @ChatHubRoom.Title
                     </button>
                 </div>
 
