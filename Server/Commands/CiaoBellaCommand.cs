@@ -36,6 +36,7 @@ namespace Oqtane.ChatHubs.Commands
                 // TODO: Delete the rest of the user data
                 context.ChatHubRepository.DeleteChatHubMessages(caller.UserId);
                 context.ChatHubRepository.DeleteChatHubConnections(caller.UserId);
+                context.ChatHubRepository.DeleteChatHubRooms(caller.UserId, context.ChatHubRepository.GetChatHubRoom(callerContext.RoomId).ModuleId);
 
                 // Free way for user identity to delete its own data
                 context.ChatHubRepository.DeleteChatHubUser(caller.UserId);

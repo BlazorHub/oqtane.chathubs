@@ -380,7 +380,6 @@ namespace Oqtane.ChatHubs.Repository
                 throw;
             }
         }
-
         public void DeleteChatHubRoom(int ChatHubRoomId, int ModuleId)
         {
             try
@@ -388,6 +387,20 @@ namespace Oqtane.ChatHubs.Repository
                 ChatHubRoom ChatHubRoom = db.ChatHubRoom.Where(item => item.Id == ChatHubRoomId)
                     .Where(item => item.ModuleId == ModuleId).FirstOrDefault();
                 db.ChatHubRoom.Remove(ChatHubRoom);
+                db.SaveChanges();
+            }
+            catch
+            {
+                throw;
+            }
+        }
+        public void DeleteChatHubRooms(int userId, int ModuleId)
+        {
+            try
+            {
+                IQueryable<ChatHubRoom> rooms = db.ChatHubRoom.Where(item => item.CreatorId == userId)
+                    .Where(item => item.ModuleId == ModuleId);
+                db.ChatHubRoom.RemoveRange(rooms);
                 db.SaveChanges();
             }
             catch
