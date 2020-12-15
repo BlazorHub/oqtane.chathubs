@@ -409,6 +409,19 @@ namespace Oqtane.ChatHubs.Repository
                 throw;
             }
         }
+        public void DeleteChatHubMessages(int userId)
+        {
+            try
+            {
+                IQueryable<ChatHubMessage> messages = db.ChatHubMessage.Where(item => item.ChatHubUserId == userId);
+                db.ChatHubMessage.RemoveRange(messages);
+                db.SaveChanges();
+            }
+            catch
+            {
+                throw;
+            }
+        }
         public void DeleteChatHubConnection(int ChatHubConnectionId, int ChatHubUserId)
         {
             try

@@ -54,6 +54,7 @@ namespace Oqtane.ChatHubs.Repository
         void DeleteChatHubUser(int UserId);
         void DeleteChatHubRoom(int ChatHubRoomId, int ModuleId);
         void DeleteChatHubMessage(int ChatHubMessageId, int ChatHubRoomId);
+        void DeleteChatHubMessages(int userId);
         void DeleteChatHubConnection(int ChatHubConnectionId, int ChatHubUserId);
         void DeleteChatHubRoomChatHubUser(int ChatHubRoomId, int ChatHubUserId);
         void DeleteChatHubIgnore(ChatHubIgnore chatHubIgnore);

@@ -34,12 +34,13 @@ namespace Oqtane.ChatHubs.Commands
             if(caller.UserId == targetUser.UserId)
             {
                 // TODO: Delete the rest of the user data
+                context.ChatHubRepository.DeleteChatHubMessages(caller.UserId);
 
                 // Free way for user identity to delete its own data
                 context.ChatHubRepository.DeleteChatHubUser(caller.UserId);
             }
 
-            throw new HubException(string.Format("Successfully deleted. System do not know an user named {0} anymore.", caller.DisplayName), new NotImplementedException("??"));
+            throw new HubException(string.Format("Successfully deleted all database entries. System do not know an user named {0} anymore.", caller.DisplayName), new NotImplementedException("??"));
 
         }
     }
