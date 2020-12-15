@@ -31,19 +31,16 @@ namespace Oqtane.ChatHubs.Commands
                 return;
             }
 
-            if(caller.UserId == targetUser.UserId)
+            if (caller.UserId == targetUser.UserId)
             {
                 // TODO: Delete the rest of the user data
                 context.ChatHubRepository.DeleteChatHubMessages(caller.UserId);
                 context.ChatHubRepository.DeleteChatHubConnections(caller.UserId);
                 context.ChatHubRepository.DeleteChatHubRooms(caller.UserId, context.ChatHubRepository.GetChatHubRoom(callerContext.RoomId).ModuleId);
-
-                // Free way for user identity to delete its own data
                 context.ChatHubRepository.DeleteChatHubUser(caller.UserId);
+
+                throw new HubException(string.Format("Successfully deleted all database entries. System do not know an user named {0} anymore.", caller.DisplayName));
             }
-
-            throw new HubException(string.Format("Successfully deleted all database entries. System do not know an user named {0} anymore.", caller.DisplayName), new NotImplementedException("??"));
-
         }
     }
 }
