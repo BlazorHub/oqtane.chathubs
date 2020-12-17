@@ -329,8 +329,7 @@
                             }
 
                             __selflocallivestream.vElement.srcObject = null;
-
-                            setTimeout(resolve, 240);
+                            resolve();                            
                         }
                         catch (err) {
                             console.error(err);
@@ -425,6 +424,10 @@
                         reader.onloadend = function (event) {
 
                             __selfremotelivestream.remotemediasequences.push(reader.result);
+                            if (__selfremotelivestream.remotemediasequences >= 10) {
+
+                                __selfremotelivestream.remotemediasequences.shift();
+                            }
 
                             if (!__selfremotelivestream.sourcebuffer.updating && __selfremotelivestream.mediasource.readyState === 'open') {
 
