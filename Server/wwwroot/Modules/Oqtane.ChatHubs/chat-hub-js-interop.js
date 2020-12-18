@@ -555,7 +555,7 @@
                 return blob;
             },
             draggableservice: draggablejsdotnetobj,
-            initdraggable: function (elementId) {
+            initdraggable: function (elementId, type) {
 
                 document.getElementById(elementId).addEventListener('dragstart', function (event) {
 
@@ -597,7 +597,7 @@
                     var arr = id.split('-');
                     var dropindex = arr[arr.length - 1];
 
-                    self.__obj.draggableservice.invokeMethodAsync('OnDrop', parseInt(dragindex), parseInt(dropindex), elementId);
+                    self.__obj.draggableservice.invokeMethodAsync('OnDrop', parseInt(dragindex), parseInt(dropindex), type);
                 });
                 document.getElementById(elementId).addEventListener('dragend', function (event) {
 

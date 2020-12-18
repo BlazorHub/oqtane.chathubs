@@ -23,11 +23,11 @@ namespace BlazorDraggableList
             this.dotNetObjectReference = DotNetObjectReference.Create(this.BlazorDraggableListServiceExtension);
         }
 
-        public void InitDraggable(string elementId)
+        public void InitDraggable(string elementId, string type)
         {
             if (this.__jsRuntimeObjectRef != null)
             {
-                this.JSRuntime.InvokeVoidAsync("__obj.initdraggable", elementId, __jsRuntimeObjectRef);
+                this.JSRuntime.InvokeVoidAsync("__obj.initdraggable", elementId, type, __jsRuntimeObjectRef);
             }
         }
 
@@ -46,11 +46,11 @@ namespace BlazorDraggableList
         }
 
         [JSInvokable("OnDrop")]
-        public void OnDrop(int oldIndex, int newIndex, string elementId)
+        public void OnDrop(int oldIndex, int newIndex, string type)
         {
             if (oldIndex >= 0 && newIndex >= 0)
             {
-                BlazorDraggableListEvent eventParameters = new BlazorDraggableListEvent() { DraggableItemOldIndex = oldIndex, DraggableItemNewIndex = newIndex, ElementId = elementId };
+                BlazorDraggableListEvent eventParameters = new BlazorDraggableListEvent() { DraggableItemOldIndex = oldIndex, DraggableItemNewIndex = newIndex, TItemGenericType = type };
                 OnDropEvent?.Invoke(this, eventParameters);
             }
         }
