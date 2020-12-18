@@ -1,7 +1,6 @@
 ﻿using Microsoft.JSInterop;
 using Oqtane.Shared.Models;
 using System;
-using System.Threading.Tasks;
 
 namespace BlazorDraggableList
 {
@@ -16,8 +15,6 @@ namespace BlazorDraggableList
 
         public DotNetObjectReference<BlazorDraggableListServiceExtension> dotNetObjectReference;
 
-        public Type TItemGenericType { get; set; }
-
         public BlazorDraggableListService(IJSRuntime jsRuntime)
         {
             this.JSRuntime = jsRuntime;
@@ -26,13 +23,14 @@ namespace BlazorDraggableList
             this.dotNetObjectReference = DotNetObjectReference.Create(this.BlazorDraggableListServiceExtension);
         }
 
-        public async Task InitEventListeners()
+        public void InitDraggable(string elementId, string type)
         {
             if (this.__jsRuntimeObjectRef != null)
             {
-                await this.JSRuntime.InvokeVoidAsync("__obj.initeventlisteners", __jsRuntimeObjectRef);
+                this.JSRuntime.InvokeVoidAsync("__obj.initdraggable", elementId, type, __jsRuntimeObjectRef);
             }
         }
+
     }
 
     public class BlazorDraggableListServiceExtension
@@ -48,11 +46,11 @@ namespace BlazorDraggableList
         }
 
         [JSInvokable("OnDrop")]
-        public void OnDrop(int oldIndex, int newIndex)
+        public void OnDrop(int oldIndex, int newIndex, string type)
         {
             if (oldIndex >= 0 && newIndex >= 0)
             {
-                BlazorDraggableListEvent eventParameters = new BlazorDraggableListEvent() { DraggableItemOldIndex = oldIndex, DraggableItemNewIndex = newIndex, TItemGenericType = this.BlazorDraggableListService.TItemGenericType };
+                BlazorDraggableListEvent eventParameters = new BlazorDraggableListEvent() { DraggableItemOldIndex = oldIndex, DraggableItemNewIndex = newIndex, TItemGenericType = type };
                 OnDropEvent?.Invoke(this, eventParameters);
             }
         }

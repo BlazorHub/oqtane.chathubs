@@ -72,7 +72,7 @@ namespace Oqtane.ChatHubs
         {
             try
             {
-                if(typeof(ChatHubRoom) == e.TItemGenericType)
+                if (typeof(IWindowItem).ToString().Equals(e.TItemGenericType))
                 {
                     var items = this.ChatHubService.Rooms.Swap(e.DraggableItemOldIndex, e.DraggableItemNewIndex);
                     this.ChatHubService.Rooms = items.ToList<ChatHubRoom>();
@@ -100,8 +100,7 @@ namespace Oqtane.ChatHubs
                 JsRuntimeObjectRef objref = await this.JSRuntime.InvokeAsync<JsRuntimeObjectRef>("__init", this.VideoService.dotNetObjectReference, this.BlazorDraggableListService.dotNetObjectReference, this.BrowserResizeService.dotNetObjectReference);
                 this.VideoService.__jsRuntimeObjectRef = objref;
                 this.BlazorDraggableListService.__jsRuntimeObjectRef = objref;
-                this.BrowserResizeService.__jsRuntimeObjectRef = objref;
-                await this.BlazorDraggableListService.InitEventListeners();
+                this.BrowserResizeService.__jsRuntimeObjectRef = objref;                
                 await this.BrowserResizeService.RegisterWindowResizeCallback();
                 await BrowserHasResized();
                 await this.JSRuntime.InvokeVoidAsync("showchathubscontainer");

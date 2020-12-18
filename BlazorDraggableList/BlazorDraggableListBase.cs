@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Components;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Threading.Tasks;
 
 namespace BlazorDraggableList
@@ -10,24 +9,40 @@ namespace BlazorDraggableList
     {
 
         [Inject] BlazorDraggableListService BlazorDraggableListService { get; set; }
-
         [Parameter] public IList<TItemGeneric> Items { get; set; }
-
+        [Parameter] public Type Type { get; set; }
+        [Parameter] public string Id { get; set; }
         [Parameter] public string Class { get; set; }
-
         [Parameter] public RenderFragment<TItemGeneric> BlazorDraggableListItem { get; set; }
 
         protected override Task OnInitializedAsync()
         {
-            this.BlazorDraggableListService.TItemGenericType = typeof(TItemGeneric);
             this.BlazorDraggableListService.BlazorDraggableListServiceExtension.OnDropEvent += OnDropEventExecute;
             return base.OnInitializedAsync();
         }
 
+        protected override Task OnParametersSetAsync()
+        {
+            return base.OnParametersSetAsync();
+        }
+
+        protected override Task OnAfterRenderAsync(bool firstRender)
+        {
+            if(firstRender)
+            {
+                this.BlazorDraggableListService.InitDraggable(this.Id, this.Type.ToString());
+            }
+            
+            return base.OnAfterRenderAsync(firstRender);
+        }
+
         private void OnDropEventExecute(object sender, BlazorDraggableListEvent e)
         {
-            this.Items = this.Items.Swap(e.DraggableItemOldIndex, e.DraggableItemNewIndex);
-            StateHasChanged();
+            if(e.TItemGenericType == this.Type.ToString())
+            {
+                this.Items = this.Items.Swap(e.DraggableItemOldIndex, e.DraggableItemNewIndex);
+                StateHasChanged();
+            }
         }
 
         public void Dispose()

@@ -555,9 +555,9 @@
                 return blob;
             },
             draggableservice: draggablejsdotnetobj,
-            initeventlisteners: function () {
+            initdraggable: function (elementId, type) {
 
-                document.addEventListener('dragstart', function (event) {
+                document.getElementById(elementId).addEventListener('dragstart', function (event) {
 
                     event.dataTransfer.effectAllowed = "move";
 
@@ -574,20 +574,20 @@
 
                     event.dataTransfer.setData("index", dragstartindex);
                 });
-                document.addEventListener('dragenter', function (event) {
+                document.getElementById(elementId).addEventListener('dragenter', function (event) {
 
                     event.target.classList.add('active-dropzone');
                 });
-                document.addEventListener('dragleave', function (event) {
+                document.getElementById(elementId).addEventListener('dragleave', function (event) {
 
                     event.target.classList.remove('active-dropzone');
                 });
-                document.addEventListener('dragover', function (event) {
+                document.getElementById(elementId).addEventListener('dragover', function (event) {
 
                     event.preventDefault();
                     event.dataTransfer.dropEffect = 'move';
                 });
-                document.addEventListener('drop', function (event) {
+                document.getElementById(elementId).addEventListener('drop', function (event) {
 
                     event.preventDefault();
 
@@ -597,9 +597,9 @@
                     var arr = id.split('-');
                     var dropindex = arr[arr.length - 1];
 
-                    self.__obj.draggableservice.invokeMethodAsync('OnDrop', parseInt(dragindex), parseInt(dropindex));
+                    self.__obj.draggableservice.invokeMethodAsync('OnDrop', parseInt(dragindex), parseInt(dropindex), type);
                 });
-                document.addEventListener('dragend', function (event) {
+                document.getElementById(elementId).addEventListener('dragend', function (event) {
 
                     var dropzones = document.getElementsByClassName('dropzone');
                     Array.prototype.forEach.call(dropzones, function (item) {

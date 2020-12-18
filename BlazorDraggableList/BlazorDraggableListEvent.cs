@@ -9,7 +9,7 @@ namespace BlazorDraggableList
 
         public int DraggableItemOldIndex { get; set; }
 
-        public Type TItemGenericType { get; set; }
+        public string TItemGenericType { get; set; }
 
         public BlazorDraggableListEvent() { }
 

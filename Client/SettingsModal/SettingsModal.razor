@@ -4,6 +4,7 @@
 
 @using Microsoft.AspNetCore.Components.Web
 @using BlazorDraggableList
+@using Oqtane.Shared.Models
 
 <MatDialog @ref="SettingsDialog" @bind-IsOpen="DialogIsOpen">
 
@@ -26,15 +27,17 @@
                             <input class="form-control" type="text" id="displayname" placeholder="@ChatHubService.ConnectedUser?.DisplayName" readonly>
                         </div>
 
-                        <BlazorDraggableListComponent Items="ChatHubService.ConnectedUser?.Connections" Class="d-flex flex-column form-group">
-                            <BlazorDraggableListItem>
+                        @if(ChatHubService.ConnectedUser != null && ChatHubService.ConnectedUser.Connections != null) {
 
-                                <div class="form-group">
-                                    <label for="displayname">Connected since @context.CreatedOn.ToLongDateString() @context.CreatedOn.ToLongTimeString()</label>
-                                    <input class="form-control" type="text" placeholder="@context.ConnectionId" readonly>
-                                </div>
-                            </BlazorDraggableListItem>
-                        </BlazorDraggableListComponent>
+                            <BlazorDraggableListComponent Items="ChatHubService.ConnectedUser.Connections" Type="@(typeof(ChatHubConnection))" Id="DraggableConnections" Class="d-flex flex-column form-group">
+                                <BlazorDraggableListItem>
+                                    <div class="form-group">
+                                        <label for="displayname">Connected since @context.CreatedOn.ToLongDateString() @context.CreatedOn.ToLongTimeString()</label>
+                                        <input class="form-control" type="text" placeholder="@context.ConnectionId" readonly>
+                                    </div>
+                                </BlazorDraggableListItem>
+                            </BlazorDraggableListComponent>
+                        }
 
                     </div>
 
