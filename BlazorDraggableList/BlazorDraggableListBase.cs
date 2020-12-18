@@ -10,7 +10,6 @@ namespace BlazorDraggableList
 
         [Inject] BlazorDraggableListService BlazorDraggableListService { get; set; }
         [Parameter] public IList<TItemGeneric> Items { get; set; }
-        [Parameter] public Type Type { get; set; }
         [Parameter] public string Id { get; set; }
         [Parameter] public string Class { get; set; }
         [Parameter] public RenderFragment<TItemGeneric> BlazorDraggableListItem { get; set; }
@@ -30,7 +29,7 @@ namespace BlazorDraggableList
         {
             if(firstRender)
             {
-                this.BlazorDraggableListService.InitDraggable(this.Id, this.Type.ToString());
+                this.BlazorDraggableListService.InitDraggable(this.Id);
             }
             
             return base.OnAfterRenderAsync(firstRender);
@@ -38,7 +37,7 @@ namespace BlazorDraggableList
 
         private void OnDropEventExecute(object sender, BlazorDraggableListEvent e)
         {
-            if(e.TItemGenericType == this.Type.ToString())
+            if(e.ElementId == this.Id.ToString())
             {
                 this.Items = this.Items.Swap(e.DraggableItemOldIndex, e.DraggableItemNewIndex);
                 StateHasChanged();

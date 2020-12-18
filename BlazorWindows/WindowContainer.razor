@@ -19,7 +19,7 @@
 
 @if (WindowItems.Count() >= 1 && RenderLivestreams)
 {
-    <BlazorDraggableListComponent Items="WindowItems" Type="@(typeof(IWindowItem))" Id="DraggableWindows" Class="video-items d-flex flex-wrap align-items-center justify-content-center overflow-auto my-4 p-2 bg-light border border-light blazor-window-nav">
+    <BlazorDraggableListComponent Items="WindowItems" Id="DraggableWindows" Class="video-items d-flex flex-wrap align-items-center justify-content-center overflow-auto my-4 p-2 bg-light border border-light blazor-window-nav">
 
         <BlazorDraggableListItem>
             @context.WindowLivestream

@@ -72,7 +72,7 @@ namespace Oqtane.ChatHubs
         {
             try
             {
-                if (typeof(IWindowItem).ToString().Equals(e.TItemGenericType))
+                if (typeof(IWindowItem).ToString().Equals(e.ElementId))
                 {
                     var items = this.ChatHubService.Rooms.Swap(e.DraggableItemOldIndex, e.DraggableItemNewIndex);
                     this.ChatHubService.Rooms = items.ToList<ChatHubRoom>();
