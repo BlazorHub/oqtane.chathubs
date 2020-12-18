@@ -72,13 +72,16 @@ namespace Oqtane.ChatHubs
         {
             try
             {
-                var items = this.ChatHubService.Rooms.Swap(e.DraggableItemOldIndex, e.DraggableItemNewIndex);
-                this.ChatHubService.Rooms = items.ToList<ChatHubRoom>();
+                if(typeof(ChatHubRoom) == e.TItemGenericType)
+                {
+                    var items = this.ChatHubService.Rooms.Swap(e.DraggableItemOldIndex, e.DraggableItemNewIndex);
+                    this.ChatHubService.Rooms = items.ToList<ChatHubRoom>();
 
-                await this.ChatHubService.RestartStreamTaskIfExists(this.ChatHubService.Rooms[e.DraggableItemOldIndex].Id);
-                await this.ChatHubService.RestartStreamTaskIfExists(this.ChatHubService.Rooms[e.DraggableItemNewIndex].Id);
+                    await this.ChatHubService.RestartStreamTaskIfExists(this.ChatHubService.Rooms[e.DraggableItemOldIndex].Id);
+                    await this.ChatHubService.RestartStreamTaskIfExists(this.ChatHubService.Rooms[e.DraggableItemNewIndex].Id);
 
-                this.UpdateUIStateHasChanged();
+                    this.UpdateUIStateHasChanged();
+                }
             }
             catch (Exception ex)
             {

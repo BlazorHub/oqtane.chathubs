@@ -12,10 +12,10 @@ namespace Oqtane.Shared.Models
         public bool UserlistItemCollapsed { get; set; }
 
         [NotMapped]
-        public virtual ICollection<ChatHubRoomChatHubUser> UserRooms { get; set; }
+        public virtual IList<ChatHubRoomChatHubUser> UserRooms { get; set; }
 
         [NotMapped]
-        public virtual ICollection<ChatHubConnection> Connections { get; set; }
+        public virtual IList<ChatHubConnection> Connections { get; set; }
 
         [NotMapped]
         public virtual ChatHubSetting Settings { get; set; }

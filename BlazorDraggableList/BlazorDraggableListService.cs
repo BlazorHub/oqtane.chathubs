@@ -16,11 +16,13 @@ namespace BlazorDraggableList
 
         public DotNetObjectReference<BlazorDraggableListServiceExtension> dotNetObjectReference;
 
+        public Type TItemGenericType { get; set; }
+
         public BlazorDraggableListService(IJSRuntime jsRuntime)
         {
             this.JSRuntime = jsRuntime;
 
-            this.BlazorDraggableListServiceExtension = new BlazorDraggableListServiceExtension();
+            this.BlazorDraggableListServiceExtension = new BlazorDraggableListServiceExtension(this);
             this.dotNetObjectReference = DotNetObjectReference.Create(this.BlazorDraggableListServiceExtension);
         }
 
@@ -36,14 +38,21 @@ namespace BlazorDraggableList
     public class BlazorDraggableListServiceExtension
     {
 
+        private BlazorDraggableListService BlazorDraggableListService { get; set; }
+
         public event EventHandler<BlazorDraggableListEvent> OnDropEvent;
+
+        public BlazorDraggableListServiceExtension(BlazorDraggableListService blazorDraggableListService)
+        {
+            this.BlazorDraggableListService = blazorDraggableListService;
+        }
 
         [JSInvokable("OnDrop")]
         public void OnDrop(int oldIndex, int newIndex)
         {
             if (oldIndex >= 0 && newIndex >= 0)
             {
-                BlazorDraggableListEvent eventParameters = new BlazorDraggableListEvent() { DraggableItemOldIndex = oldIndex, DraggableItemNewIndex = newIndex };
+                BlazorDraggableListEvent eventParameters = new BlazorDraggableListEvent() { DraggableItemOldIndex = oldIndex, DraggableItemNewIndex = newIndex, TItemGenericType = this.BlazorDraggableListService.TItemGenericType };
                 OnDropEvent?.Invoke(this, eventParameters);
             }
         }

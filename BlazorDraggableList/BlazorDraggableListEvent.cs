@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace BlazorDraggableList
 {
@@ -12,6 +8,8 @@ namespace BlazorDraggableList
         public int DraggableItemNewIndex { get; set; }
 
         public int DraggableItemOldIndex { get; set; }
+
+        public Type TItemGenericType { get; set; }
 
         public BlazorDraggableListEvent() { }
 

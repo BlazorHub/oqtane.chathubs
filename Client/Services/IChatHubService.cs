@@ -42,7 +42,7 @@ namespace Oqtane.ChatHubs.Services
         System.Timers.Timer GetLobbyRoomsTimer { get; set; }
 
         public event EventHandler OnUpdateUI;
-        public event EventHandler<ChatHubUser> OnConnectedEvent;
+        public event EventHandler<ChatHubUser> OnUpdateConnectedUserEvent;
         public event EventHandler<ChatHubRoom> OnAddChatHubRoomEvent;
         public event EventHandler<ChatHubRoom> OnRemoveChatHubRoomEvent;
         public event EventHandler<dynamic> OnAddChatHubUserEvent;

@@ -2,6 +2,9 @@
 
 @inherits SettingsModalBase
 
+@using Microsoft.AspNetCore.Components.Web
+@using BlazorDraggableList
+
 <MatDialog @ref="SettingsDialog" @bind-IsOpen="DialogIsOpen">
 
     <MatDialogTitle>Account/Settings</MatDialogTitle>
@@ -15,7 +18,24 @@
                 <ChildContent>
 
                     <div class="p-sm-3">
-                        Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.
+
+                        <p class="lead">Here a little overview of all current related userdata activities for guests and registered users.</p>
+
+                        <div class="form-group">
+                            <label for="displayname">Username</label>
+                            <input class="form-control" type="text" id="displayname" placeholder="@ChatHubService.ConnectedUser?.DisplayName" readonly>
+                        </div>
+
+                        <BlazorDraggableListComponent Items="ChatHubService.ConnectedUser?.Connections" Class="d-flex flex-column form-group">
+                            <BlazorDraggableListItem>
+
+                                <div class="form-group">
+                                    <label for="displayname">Connected since @context.CreatedOn.ToLongDateString() @context.CreatedOn.ToLongTimeString()</label>
+                                    <input class="form-control" type="text" placeholder="@context.ConnectionId" readonly>
+                                </div>
+                            </BlazorDraggableListItem>
+                        </BlazorDraggableListComponent>
+
                     </div>
 
                 </ChildContent>

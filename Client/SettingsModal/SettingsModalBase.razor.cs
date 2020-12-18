@@ -8,8 +8,7 @@ namespace Oqtane.ChatHubs
     public class SettingsModalBase : ModuleBase
     {
 
-        [Inject]
-        public IChatHubService ChatHubService { get; set; }
+        [Inject] public IChatHubService ChatHubService { get; set; }
 
         public MatDialog SettingsDialog;
 

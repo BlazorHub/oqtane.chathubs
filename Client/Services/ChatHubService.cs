@@ -39,7 +39,7 @@ namespace Oqtane.ChatHubs.Services
 
         public HubConnection Connection { get; set; }
         public ChatHubUser ConnectedUser { get; set; }
-
+        
         public Cookie IdentityCookie { get; set; }
         public string ContextRoomId { get; set; }
         public int ModuleId { get; set; }
@@ -55,7 +55,7 @@ namespace Oqtane.ChatHubs.Services
         public System.Timers.Timer GetLobbyRoomsTimer { get; set; } = new System.Timers.Timer();
 
         public event EventHandler OnUpdateUI;
-        public event EventHandler<ChatHubUser> OnConnectedEvent;
+        public event EventHandler<ChatHubUser> OnUpdateConnectedUserEvent;
         public event EventHandler<ChatHubRoom> OnAddChatHubRoomEvent;
         public event EventHandler<ChatHubRoom> OnRemoveChatHubRoomEvent;
         public event EventHandler<dynamic> OnAddChatHubUserEvent;
@@ -88,7 +88,7 @@ namespace Oqtane.ChatHubs.Services
             this.VideoService.VideoServiceExtension.OnPauseLivestreamTask += (object sender, int e) => OnPauseLivestreamTaskExecute(sender, e);
             this.VideoService.OnContinueLivestreamTask += (object sender, int e) => OnContinueLivestreamTaskExecute(sender, e);
 
-            this.OnConnectedEvent += OnConnectedExecute;
+            this.OnUpdateConnectedUserEvent += OnUpdateConnectedUserExecute;
             this.OnAddChatHubRoomEvent += OnAddChatHubRoomExecute;
             this.OnRemoveChatHubRoomEvent += OnRemoveChatHubRoomExecute;
             this.OnAddChatHubUserEvent += OnAddChatHubUserExecute;
@@ -114,7 +114,7 @@ namespace Oqtane.ChatHubs.Services
             this.OnUpdateUI.Invoke(this, EventArgs.Empty);
         }
 
-        public void OnConnectedExecute(object sender, ChatHubUser user)
+        public void OnUpdateConnectedUserExecute(object sender, ChatHubUser user)
         {
             this.ConnectedUser = user;
             this.RunUpdateUI();
@@ -175,7 +175,7 @@ namespace Oqtane.ChatHubs.Services
                 return Task.CompletedTask;
             };
 
-            this.Connection.On("OnConnected", (ChatHubUser user) => OnConnectedEvent(this, user));
+            this.Connection.On("OnUpdateConnectedUser", (ChatHubUser user) => OnUpdateConnectedUserEvent(this, user));
             this.Connection.On("AddRoom", (ChatHubRoom room) => OnAddChatHubRoomEvent(this, room));
             this.Connection.On("RemoveRoom", (ChatHubRoom room) => OnRemoveChatHubRoomEvent(this, room));
             this.Connection.On("AddUser", (ChatHubUser user, string roomId) => OnAddChatHubUserEvent(this, new { userModel = user, roomId = roomId }));
@@ -747,7 +747,7 @@ namespace Oqtane.ChatHubs.Services
             this.VideoService.OnContinueLivestreamTask -= (object sender, int e) => OnContinueLivestreamTaskExecute(sender, e);
             this.DisposeStreamTasksAsync();
 
-            this.OnConnectedEvent -= OnConnectedExecute;
+            this.OnUpdateConnectedUserEvent -= OnUpdateConnectedUserExecute;
             this.OnAddChatHubRoomEvent -= OnAddChatHubRoomExecute;
             this.OnRemoveChatHubRoomEvent -= OnRemoveChatHubRoomExecute;
             this.OnAddChatHubUserEvent -= OnAddChatHubUserExecute;

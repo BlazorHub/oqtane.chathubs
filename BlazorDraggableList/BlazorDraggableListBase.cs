@@ -19,7 +19,8 @@ namespace BlazorDraggableList
 
         protected override Task OnInitializedAsync()
         {
-            BlazorDraggableListService.BlazorDraggableListServiceExtension.OnDropEvent += OnDropEventExecute;
+            this.BlazorDraggableListService.TItemGenericType = typeof(TItemGeneric);
+            this.BlazorDraggableListService.BlazorDraggableListServiceExtension.OnDropEvent += OnDropEventExecute;
             return base.OnInitializedAsync();
         }
 
