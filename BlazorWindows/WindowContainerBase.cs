@@ -11,6 +11,7 @@ namespace BlazorWindows
     {
         [Parameter] public RenderFragment ChildContent { get; set; }
         [Parameter] public bool RenderLivestreams { get; set; }
+        [Parameter] public string DraggableLivestreamContainerElementId { get; set; }
 
         [Parameter] public EventCallback<WindowEvent> ShowEvent { get; set; }
         [Parameter] public EventCallback<WindowEvent> ShownEvent { get; set; }

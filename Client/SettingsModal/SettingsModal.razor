@@ -29,7 +29,7 @@
 
                         @if(ChatHubService.ConnectedUser != null && ChatHubService.ConnectedUser.Connections != null) {
 
-                            <BlazorDraggableListComponent Items="ChatHubService.ConnectedUser.Connections" Type="@(typeof(ChatHubConnection))" Id="DraggableConnections" Class="d-flex flex-column form-group">
+                            <BlazorDraggableListComponent Items="ChatHubService.ConnectedUser.Connections" Id="DraggableConnectionsElementId" Class="d-flex flex-column form-group">
                                 <BlazorDraggableListItem>
                                     <div class="form-group">
                                         <label for="displayname">Connected since @context.CreatedOn.ToLongDateString() @context.CreatedOn.ToLongTimeString()</label>

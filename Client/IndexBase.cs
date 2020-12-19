@@ -54,6 +54,8 @@ namespace Oqtane.ChatHubs
         protected ImageModal ImageModalRef;
         protected SettingsModal SettingsModalRef;
 
+        protected readonly string DraggableLivestreamsContainerElementId = "DraggableLivestreamsContainer";
+
         public IndexBase()
         {
             
@@ -72,7 +74,7 @@ namespace Oqtane.ChatHubs
         {
             try
             {
-                if (typeof(IWindowItem).ToString().Equals(e.TItemGenericType))
+                if (this.DraggableLivestreamsContainerElementId == e.DraggableContainerElementId)
                 {
                     var items = this.ChatHubService.Rooms.Swap(e.DraggableItemOldIndex, e.DraggableItemNewIndex);
                     this.ChatHubService.Rooms = items.ToList<ChatHubRoom>();
