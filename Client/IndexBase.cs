@@ -102,7 +102,7 @@ namespace Oqtane.ChatHubs
                 JsRuntimeObjectRef objref = await this.JSRuntime.InvokeAsync<JsRuntimeObjectRef>("__init", this.VideoService.dotNetObjectReference, this.BlazorDraggableListService.dotNetObjectReference, this.BrowserResizeService.dotNetObjectReference);
                 this.VideoService.__jsRuntimeObjectRef = objref;
                 this.BlazorDraggableListService.__jsRuntimeObjectRef = objref;
-                this.BrowserResizeService.__jsRuntimeObjectRef = objref;                
+                this.BrowserResizeService.__jsRuntimeObjectRef = objref;
                 await this.BrowserResizeService.RegisterWindowResizeCallback();
                 await BrowserHasResized();
                 await this.JSRuntime.InvokeVoidAsync("showchathubscontainer");

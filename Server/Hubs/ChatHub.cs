@@ -231,12 +231,12 @@ namespace Oqtane.ChatHubs.Hubs
                 await Groups.RemoveFromGroupAsync(Context.ConnectionId, room.Id.ToString());
             }
 
-            ChatHubUser chatHubUserClientModel = this.chatHubService.CreateChatHubUserClientModel(user);
-            await Clients.Clients(user.Connections.Select(item => item.ConnectionId).ToArray<string>()).SendAsync("OnUpdatedConnectedUser", chatHubUserClientModel);
-
             var connection = await this.chatHubRepository.GetConnectionByConnectionId(Context.ConnectionId);
             connection.Status = Enum.GetName(typeof(ChatHubConnectionStatus), ChatHubConnectionStatus.Inactive);
             chatHubRepository.UpdateChatHubConnection(connection);
+
+            ChatHubUser chatHubUserClientModel = this.chatHubService.CreateChatHubUserClientModel(user);
+            await Clients.Clients(user.Connections.Select(item => item.ConnectionId).ToArray<string>()).SendAsync("OnUpdatedConnectedUser", chatHubUserClientModel);
 
             await base.OnDisconnectedAsync(exception);
         }
