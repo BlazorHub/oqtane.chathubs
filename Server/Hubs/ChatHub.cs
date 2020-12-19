@@ -236,7 +236,7 @@ namespace Oqtane.ChatHubs.Hubs
             chatHubRepository.UpdateChatHubConnection(connection);
 
             ChatHubUser chatHubUserClientModel = this.chatHubService.CreateChatHubUserClientModel(user);
-            await Clients.Clients(user.Connections.Select(item => item.ConnectionId).ToArray<string>()).SendAsync("OnUpdatedConnectedUser", chatHubUserClientModel);
+            await Clients.Clients(user.Connections.Select(item => item.ConnectionId)).SendAsync("OnUpdateConnectedUser", chatHubUserClientModel);
 
             await base.OnDisconnectedAsync(exception);
         }
