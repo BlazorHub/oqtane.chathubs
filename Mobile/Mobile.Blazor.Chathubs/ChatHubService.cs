@@ -34,7 +34,7 @@ namespace Mobile.Blazor.Chathubs
         public List<ChatHubUser> IgnoredByUsers { get; set; } = new List<ChatHubUser>();
 
         public event Action UpdateUI;
-        public event EventHandler<ChatHubUser> OnConnectedEvent;
+        public event EventHandler<ChatHubUser> OnUpdateConnectedUserEvent;
         public event EventHandler<ChatHubRoom> OnAddChatHubRoomEvent;
         public event EventHandler<ChatHubRoom> OnRemoveChatHubRoomEvent;
         public event EventHandler<dynamic> OnAddChatHubUserEvent;
@@ -56,7 +56,7 @@ namespace Mobile.Blazor.Chathubs
         {
             this.HttpClientFactory = httpClientFactory;
 
-            this.OnConnectedEvent += OnConnectedExecute;
+            this.OnUpdateConnectedUserEvent += OnUpdateConnectedUserExecute;
             this.OnAddChatHubRoomEvent += OnAddChatHubRoomExecute;
             this.OnRemoveChatHubRoomEvent += OnRemoveChatHubRoomExecute;
             this.OnAddChatHubUserEvent += OnAddChatHubUserExecute;
@@ -74,13 +74,6 @@ namespace Mobile.Blazor.Chathubs
             GetLobbyRoomsTimer.Elapsed += new ElapsedEventHandler(OnGetLobbyRoomsTimerElapsed);
             GetLobbyRoomsTimer.Interval = 10000;
             GetLobbyRoomsTimer.Enabled = true;
-        }
-        
-
-        public void OnConnectedExecute(object sender, ChatHubUser user)
-        {
-            this.ConnectedUser = user;
-            this.UpdateUI();
         }
 
         public void BuildGuestConnection(string username)
@@ -117,7 +110,7 @@ namespace Mobile.Blazor.Chathubs
                 return Task.CompletedTask;
             };
 
-            this.Connection.On("OnConnected", (ChatHubUser user) => OnConnectedEvent(this, user));
+            this.Connection.On("OnUpdateConnectedUser", (ChatHubUser user) => OnUpdateConnectedUserEvent(this, user));
             this.Connection.On("AddRoom", (ChatHubRoom room) => OnAddChatHubRoomEvent(this, room));
             this.Connection.On("RemoveRoom", (ChatHubRoom room) => OnRemoveChatHubRoomEvent(this, room));
             this.Connection.On("AddUser", (ChatHubUser user, string roomId) => OnAddChatHubUserEvent(this, new { userModel = user, roomId = roomId }));
@@ -142,6 +135,12 @@ namespace Mobile.Blazor.Chathubs
                     this.HandleException(task);
                 }
             });
+        }
+
+        public void OnUpdateConnectedUserExecute(object sender, ChatHubUser user)
+        {
+            this.ConnectedUser = user;
+            this.UpdateUI();
         }
 
         public async Task EnterChatRoom(int roomId)

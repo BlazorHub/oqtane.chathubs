@@ -88,65 +88,9 @@
         </StackLayout>
     </ConnectDisconnectTemplate>
     <ImageTemplate>
-        @if (item.Photos != null)
-        {
 
-            /*
-            <div>
-                <button type="button" class="btn btn-link" @onclick="() => ImageModalRef.OpenDialog(item)">
-
-                    Open Image(s)
-
-                    @if (item.Photos != null)
-                    {
-                        @foreach (var photo in item.Photos)
-                        {
-                            <span>@photo.Caption</span>
-
-                            @if (!photo.Equals(item.Photos.Last()))
-                            {
-                                <strong> | </strong>
-                            }
-                        }
-                    }
-                </button>
-            </div>
-            */
-
-        }
     </ImageTemplate>
     <CommandsTemplate>
-
-        @*
-        <div>
-            @if (item.CommandMetaDatas != null && item.CommandMetaDatas.Any())
-            {
-                <div class="table-responsive-sm">
-                    <table class="table table-sm chathub-font-size-075rem">
-                        <thead>
-                            <tr>
-                                <th scope="col">Name</th>
-                                <th scope="col">Roles</th>
-                                <th scope="col">Usage</th>
-                                <th scope="col">Arguments</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach (var command in item.CommandMetaDatas)
-                            {
-                                <tr>
-                                    <td>/@command.ResourceName</td>
-                                    <td>@string.Join(" | ", command.Roles)</td>
-                                    <td>@command.Usage</td>
-                                    <td>@command.Arguments</td>
-                                </tr>
-                            }
-                        </tbody>
-                    </table>
-                </div>
-            }
-        </div>
-        *@
 
     </CommandsTemplate>
 </MessageTemplate>

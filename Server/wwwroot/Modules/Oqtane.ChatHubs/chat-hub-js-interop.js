@@ -172,9 +172,9 @@
                             volume: { exact: 0.5 },
                         },
                         video: {
-                            width: { min: 320, ideal: 320, max: 320 },
-                            height: { min: 240, ideal: 240, max: 240 },
-                            frameRate: { ideal: 12 },
+                            width: { min: 160, ideal: 160, max: 160 },
+                            height: { min: 120, ideal: 120, max: 120 },
+                            frameRate: { ideal: 20 },
                             facingMode: { ideal: "user" },
                         }
                     };
@@ -188,7 +188,7 @@
 
                             __selflocallivestream.vElement.srcObject = mediastream;
 
-                            __selfgetstream.options = { mimeType: self.__obj.videomimetypeobject.mimetype, videoBitsPerSecond: 1000, audioBitsPerSecond: 1000, ignoreMutedMedia: true };
+                            __selfgetstream.options = { mimeType: self.__obj.videomimetypeobject.mimetype, audioBitsPerSecond: 18000, videoBitsPerSecond: 30000, ignoreMutedMedia: true };
                             __selfgetstream.recorder = new MediaRecorder(mediastream, __selfgetstream.options);
 
                             __selfgetstream.recorder.start();
@@ -424,7 +424,7 @@
                         reader.onloadend = function (event) {
 
                             __selfremotelivestream.remotemediasequences.push(reader.result);
-                            if (__selfremotelivestream.remotemediasequences >= 10) {
+                            if (__selfremotelivestream.remotemediasequences >= 2) {
 
                                 __selfremotelivestream.remotemediasequences.shift();
                             }
