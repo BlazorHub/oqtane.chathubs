@@ -188,7 +188,7 @@
 
                             __selflocallivestream.vElement.srcObject = mediastream;
 
-                            __selfgetstream.options = { mimeType: self.__obj.videomimetypeobject.mimetype, audioBitsPerSecond: 18000, videoBitsPerSecond: 30000, ignoreMutedMedia: true };
+                            __selfgetstream.options = { mimeType: self.__obj.videomimetypeobject.mimetype, audioBitsPerSecond: 9000, videoBitsPerSecond: 15000, ignoreMutedMedia: true };
                             __selfgetstream.recorder = new MediaRecorder(mediastream, __selfgetstream.options);
 
                             __selfgetstream.recorder.start();

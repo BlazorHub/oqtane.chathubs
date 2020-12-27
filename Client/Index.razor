@@ -87,8 +87,11 @@
 
                     <div class="jumbotron jumbotron-fluid bg-white py-1 mb-0">
                         <div class="container">
+
                             <h1 class="display-4">Video chat app</h1>
+
                             <p class="lead">This is a base video chat implementation in its beta version but free to use and have fun.</p>
+
                         </div>
                     </div>
 
@@ -531,7 +534,7 @@
 
                     @if (UserSecurity.IsAuthorized(PageState.User, PermissionNames.Edit, PageState.Page.Permissions))
                     {
-                        <section class="my-1 p-sm-3">
+                        <section class="my-1 p-sm-2">
 
                             <div class="form-group">
                                 <button type="button" class="btn btn-sm btn-link bg-white border border-light" @onclick="@(async() => await FixCorruptConnections_ClickedAsync())">Clear all active user connections.</button>
@@ -540,7 +543,7 @@
                         </section>
                     }
 
-                    <section class="my-1 p-sm-3">
+                    <section class="my-1 p-sm-2">
 
                         <div>
 
@@ -573,7 +576,7 @@
 
                     </section>
 
-                    <section class="my-1 p-sm-3">
+                    <section class="my-1 p-sm-2">
 
                         <div>
 
@@ -596,7 +599,7 @@
 
                     </section>
 
-                    <section class="my-1 p-sm-3">
+                    <section class="my-1 p-sm-2">
 
                         <div>
 
@@ -629,6 +632,28 @@
 
                     </section>
 
+                </div>
+
+            </WindowContent>
+
+        </WindowItem>
+
+        <WindowItem>
+
+            <WindowTitle>Rules</WindowTitle>
+            <WindowContent>
+
+                <div class="jumbotron jumbotron-fluid bg-white py-1 mt-3 mb-0">
+                    <div class="container">
+
+                        <h4>Videostream chat rules so far</h4>
+                        <ul>
+                            <li>Be respectful to each other and do not harass anybody</li>
+                            <li>Do not broadcast or video play any obscene and not appropriate content</li>
+                            <li>Dont do any other not already mentioned illegal or very stupid things</li>
+                        </ul>
+
+                    </div>
                 </div>
 
             </WindowContent>
