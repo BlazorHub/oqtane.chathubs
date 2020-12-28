@@ -83,8 +83,7 @@
                     }
                     else {
 
-                        window.alert('Your current browser support is not implemented yet.');
-                        return 'video/webm;codecs=opus,vp9';
+                        console.warn('using unknown browser'); return 'video/webm;codecs=opus,vp8';
                     }
                 }
             },            
@@ -172,8 +171,8 @@
                             volume: { exact: 0.5 },
                         },
                         video: {
-                            width: { min: 160, ideal: 160, max: 160 },
-                            height: { min: 120, ideal: 120, max: 120 },
+                            width: { min: 240, ideal: 240, max: 240 },
+                            height: { min: 180, ideal: 180, max: 180 },
                             frameRate: { ideal: 20 },
                             facingMode: { ideal: "user" },
                         }
@@ -188,7 +187,7 @@
 
                             __selflocallivestream.vElement.srcObject = mediastream;
 
-                            __selfgetstream.options = { mimeType: self.__obj.videomimetypeobject.mimetype, audioBitsPerSecond: 9000, videoBitsPerSecond: 15000, ignoreMutedMedia: true };
+                            __selfgetstream.options = { mimeType: self.__obj.videomimetypeobject.mimetype, audioBitsPerSecond: 240000, videoBitsPerSecond: 400000, ignoreMutedMedia: true };
                             __selfgetstream.recorder = new MediaRecorder(mediastream, __selfgetstream.options);
 
                             __selfgetstream.recorder.start();
