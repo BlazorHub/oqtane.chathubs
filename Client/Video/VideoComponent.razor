@@ -9,6 +9,14 @@
         line-height: 14px;
     }
 
+    .video-item-@ChatHubRoom.Id .video-item-devices {
+        display: none;
+    }
+
+    .video-item-@ChatHubRoom.Id:hover .video-item-devices {
+        display: block;
+    }
+
     .video-item-resize-container-@ChatHubRoom.Id {
         width: 240px;
         height: 180px;
@@ -59,12 +67,12 @@
                     <video id="chathubs-video-local-@ChatHubRoom.Id" class="chathubs-video-local mb-0 w-100 h-100" controls></video>
                     <canvas id="chathubs-canvas-local-@ChatHubRoom.Id" class="chathubs-canvas-local bg-light d-none"></canvas>
 
-                    <div class="position-absolute" style="right: 0px; top: 0px;">
-                        <div class="input-group my-1">
-                            <select id="chathubs-audio-source-local-@ChatHubRoom.Id" style="width: 120px;"></select>
+                    <div class="position-absolute video-item-devices" style="right: 0px; top: 0px;">
+                        <div class="input-group p-1">
+                            <select id="chathubs-audio-source-local-@ChatHubRoom.Id" class="custom-select custom-select-sm" style="width: 120px !important;"></select>
                         </div>
-                        <div class="input-group my-1">
-                            <select id="chathubs-video-source-local-@ChatHubRoom.Id" style="width: 120px;"></select>
+                        <div class="input-group p-1">
+                            <select id="chathubs-video-source-local-@ChatHubRoom.Id" class="custom-select custom-select-sm" style="width: 120px !important;"></select>
                         </div>
                     </div>
                 </div>
