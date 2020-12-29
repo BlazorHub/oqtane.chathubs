@@ -26,6 +26,16 @@
 
         @@media (max-width: 767px) {
 
+            body main nav.navbar {
+                padding: 0.25rem 0rem !important;
+            }
+
+            body main div.content.container
+            {
+                position: relative;
+                top: 15px !important;
+            }
+
             body app main .content.container .row
             {
                 padding-left: 0px !important;
@@ -99,7 +109,7 @@
 
                         <BlazorPagerItem>
 
-                            <div class="d-flex flex-nowrap align-items-center w-100">
+                            <div class="d-flex flex-wrap flex-sm-nowrap align-items-center w-100">
 
                                 <div style="max-width: 140px">
                                     <img src="@string.Format("{0}/modules/oqtane.chathubs/images/rooms/{1}", NavigationManager.BaseUri, context.ImageUrl)" class="@(string.IsNullOrEmpty(context.ImageUrl) ? "d-none" : "img-fuid bg-light")" />
@@ -121,10 +131,8 @@
                                     </div>
                                 </div>
 
-                                <div class="ml-auto px-1">
-
+                                <div class="ml-none ml-sm-auto px-1">
                                     <button type="button" class="btn btn-link bg-light" @onclick="@(async () => await EnterRoom_Clicked(context.Id, context.ModuleId))">Enter Room</button>
-
                                     <ActionLink Action="Edit" Security="SecurityAccessLevel.Edit" Parameters="@($"moduleid=" + context.ModuleId.ToString() + "&" + "roomid=" + context.Id.ToString())" />
                                     <ActionDialog Header="Delete Room" Message="@("Are You Sure You Wish To Delete This Room?")" Action="Delete" Security="SecurityAccessLevel.Edit" Class="btn btn-danger" OnClick="@(async () => await DeleteRoom(context.Id))" />
                                 </div>
@@ -224,7 +232,7 @@
 
                                         <div class="d-flex">
                                             <div class="flex-fill @(room.ShowUserlist ? "d-none" : "d-flex")">
-                                                <div class="w-100 bg-white p-sm-3">
+                                                <div class="w-100 bg-white p-1 p-sm-3">
 
                                                     <div id="message-window-@ModuleState.ModuleId-@room.Id" style="height: @(string.Format("{0}px", MessageWindowHeight)); overflow: auto;">
 
@@ -530,7 +538,7 @@
             </WindowTitle>
             <WindowContent>
 
-                <div class="d-flex flex-column bg-white py-3 w-100">
+                <div class="d-flex flex-column bg-white px-1 py-3 w-100">
 
                     @if (UserSecurity.IsAuthorized(PageState.User, PermissionNames.Edit, PageState.Page.Permissions))
                     {
@@ -547,7 +555,7 @@
 
                         <div>
 
-                            <h5><span class="oi oi-shield"></span> (@ChatHubService.IgnoredUsers?.Count()) Ignoliste <span class="badge badge-success">Featured</span></h5>
+                            <h5><span class="oi oi-shield"></span> (@ChatHubService.IgnoredUsers?.Count()) Ignoliste <span class="badge badge-success">RECOMMENDED</span></h5>
 
                             @if (ChatHubService.IgnoredUsers == null || !ChatHubService.IgnoredUsers.Any())
                             {
@@ -580,7 +588,7 @@
 
                         <div>
 
-                            <h5><span class="oi oi-bug"></span> (@ChatHubService.IgnoredByUsers?.Count()) Ignored by users list <span class="badge badge-success">Featured</span></h5>
+                            <h5><span class="oi oi-bug"></span> (@ChatHubService.IgnoredByUsers?.Count()) Ignored by users list <span class="badge badge-success">RECOMMENDED</span></h5>
 
                             @if (ChatHubService.IgnoredByUsers == null || !ChatHubService.IgnoredByUsers.Any())
                             {
@@ -603,7 +611,7 @@
 
                         <div>
 
-                            <h5><span class="oi oi-list"></span> (@ChatHubService.Invitations.Count()) All your Invitations <span class="badge badge-success">NEW</span></h5>
+                            <h5><span class="oi oi-list"></span> (@ChatHubService.Invitations.Count()) All Invitations <span class="badge badge-success">NEW</span></h5>
 
                             <div>
                                 @foreach (var item in ChatHubService.Invitations)
@@ -662,7 +670,7 @@
 
     </WindowContainer>
 
-    <div class="d-flex flex-column my-2">
+    <div class="d-flex flex-column my-2 px-2">
 
         <div class="ml-auto bg-yellow">
             <small>
