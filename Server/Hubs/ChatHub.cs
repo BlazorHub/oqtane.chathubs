@@ -601,6 +601,12 @@ namespace Oqtane.ChatHubs.Hubs
             
                 if (user != null && targetUser != null)
                 {
+                    var room = this.chatHubRepository.GetChatHubRoom(roomId);
+                    if (user.UserId != room.CreatorId && !Context.User.HasClaim(ClaimTypes.Role, Shared.Constants.AdminRole))
+                    {
+                        throw new HubException("Only room ownder and administrators can add moderations.");
+                    }
+
                     var moderator = this.chatHubRepository.GetChatHubModerator(targetUser.UserId);
                     this.chatHubRepository.DeleteChatHubRoomChatHubModerator(roomId, moderator.Id);
 
