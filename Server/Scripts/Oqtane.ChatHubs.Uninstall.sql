@@ -20,6 +20,12 @@ GO
 DROP TABLE [dbo].[ChatHubConnection]
 GO
 
+DROP TABLE [dbo].[ChatHubRoomChatHubModerator]
+GO
+
+DROP TABLE [dbo].[ChatHubModerator]
+GO
+
 DROP TABLE [dbo].[ChatHubRoomChatHubUser]
 GO
 

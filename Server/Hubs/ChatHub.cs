@@ -548,6 +548,72 @@ namespace Oqtane.ChatHubs.Hubs
             }
         }
 
+        [AllowAnonymous]
+        public async Task AddModerator(int userId, int roomId)
+        {
+            try
+            {
+                ChatHubUser user = await this.GetChatHubUserAsync();
+                ChatHubUser targetUser = await this.chatHubRepository.GetUserByIdAsync(userId);
+            
+                if (user != null && targetUser != null)
+                {
+                    var room = this.chatHubRepository.GetChatHubRoom(roomId);
+                    if (user.UserId != room.CreatorId && !Context.User.HasClaim(ClaimTypes.Role, Shared.Constants.AdminRole))
+                    {
+                        throw new HubException("Only room ownder and administrators can add moderations.");
+                    }
+
+                    ChatHubModerator moderator = this.chatHubRepository.GetChatHubModerator(targetUser.UserId);
+                    if(moderator == null)
+                    {
+                        moderator = new ChatHubModerator()
+                        {
+                            ChatHubUserId = targetUser.UserId,
+                            ModeratorDisplayName = targetUser.DisplayName
+                        };
+                        moderator = this.chatHubRepository.AddChatHubModerator(moderator);
+                    }
+
+                    ChatHubRoomChatHubModerator room_moderator = new ChatHubRoomChatHubModerator()
+                    {
+                        ChatHubRoomId = roomId,
+                        ChatHubModeratorId = moderator.Id,
+                    };
+                    this.chatHubRepository.AddChatHubRoomChatHubModerator(room_moderator);
+
+                    var targetModeratorClientModel = this.chatHubService.CreateChatHubModeratorClientModel(moderator);
+                    await Clients.Group(roomId.ToString()).SendAsync("AddModerator", targetModeratorClientModel, roomId);
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new HubException(ex.Message);
+            }
+        }
+        [AllowAnonymous]
+        public async Task RemoveModerator(int userId, int roomId)
+        {
+            try
+            {
+                ChatHubUser user = await this.GetChatHubUserAsync();
+                ChatHubUser targetUser = await this.chatHubRepository.GetUserByIdAsync(userId);
+            
+                if (user != null && targetUser != null)
+                {
+                    var moderator = this.chatHubRepository.GetChatHubModerator(targetUser.UserId);
+                    this.chatHubRepository.DeleteChatHubRoomChatHubModerator(roomId, moderator.Id);
+
+                    var targetModeratorClientModel = this.chatHubService.CreateChatHubModeratorClientModel(moderator);
+                    await Clients.Group(roomId.ToString()).SendAsync("RemoveModerator", targetModeratorClientModel, roomId);
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new HubException(ex.Message);
+            }
+        }
+
         private string CreateUsername(string guestname)
         {
             string base64Guid = Convert.ToBase64String(Guid.NewGuid().ToByteArray());

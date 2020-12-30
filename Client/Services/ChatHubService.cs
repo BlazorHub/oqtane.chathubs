@@ -67,6 +67,8 @@ namespace Oqtane.ChatHubs.Services
         public event EventHandler<ChatHubUser> OnRemoveIgnoredUserEvent;
         public event EventHandler<ChatHubUser> OnAddIgnoredByUserEvent;
         public event EventHandler<ChatHubUser> OnRemoveIgnoredByUserEvent;
+        public event EventHandler<dynamic> OnAddModeratorEvent;
+        public event EventHandler<dynamic> OnRemoveModeratorEvent;
         public event EventHandler<dynamic> OnDownloadBytes;
         public event EventHandler<int> OnClearHistoryEvent;
         public event EventHandler<ChatHubUser> OnDisconnectEvent;
@@ -99,6 +101,8 @@ namespace Oqtane.ChatHubs.Services
             this.OnAddIgnoredUserEvent += OnAddIngoredUserExexute;
             this.OnRemoveIgnoredUserEvent += OnRemoveIgnoredUserExecute;
             this.OnAddIgnoredByUserEvent += OnAddIgnoredByUserExecute;
+            this.OnAddModeratorEvent += OnAddModeratorExecute;
+            this.OnRemoveModeratorEvent += OnRemoveModeratorExecute;
             this.OnDownloadBytes += OnDownloadBytesExecuteAsync;
             this.OnRemoveIgnoredByUserEvent += OnRemoveIgnoredByUserExecute;
             this.OnClearHistoryEvent += OnClearHistoryExecute;
@@ -188,6 +192,8 @@ namespace Oqtane.ChatHubs.Services
             this.Connection.On("AddIgnoredByUser", (ChatHubUser ignoredUser) => OnAddIgnoredByUserExecute(this, ignoredUser));
             this.Connection.On("DownloadBytes", (string dataURI, int roomId, string dataType) => OnDownloadBytesExecuteAsync(this, new { dataURI = dataURI, roomId = roomId, dataType = dataType }));
             this.Connection.On("RemoveIgnoredByUser", (ChatHubUser ignoredUser) => OnRemoveIgnoredByUserExecute(this, ignoredUser));
+            this.Connection.On("AddModerator", (ChatHubModerator moderator, int roomId) => OnAddModeratorExecute(this, new { moderator = moderator, roomId = roomId }));
+            this.Connection.On("RemoveModerator", (ChatHubModerator moderator, int roomId) => OnRemoveModeratorExecute(this, new { moderator = moderator, roomId = roomId }));
             this.Connection.On("ClearHistory", (int roomId) => OnClearHistoryEvent(this, roomId));
             this.Connection.On("Disconnect", (ChatHubUser user) => OnDisconnectEvent(this, user));
         }
@@ -505,18 +511,38 @@ namespace Oqtane.ChatHubs.Services
             {
                 if (task.IsCompleted)
                 {
-
+                    this.HandleException(task);
                 }
             });
         }
-
         public void UnignoreUser_Clicked(string username)
         {
             this.Connection.InvokeAsync("UnignoreUser", username).ContinueWith((task) =>
             {
                 if (task.IsCompleted)
                 {
+                    this.HandleException(task);
+                }
+            });
+        }
 
+        public void AddModerator_Clicked(int userId, int roomId)
+        {
+            this.Connection.InvokeAsync("AddModerator", userId, roomId).ContinueWith((task) =>
+            {
+                if (task.IsCompleted)
+                {
+                    this.HandleException(task);
+                }
+            });
+        }
+        public void RemoveModerator_Clicked(int userId, int roomId)
+        {
+            this.Connection.InvokeAsync("RemoveModerator", userId, roomId).ContinueWith((task) =>
+            {
+                if (task.IsCompleted)
+                {
+                    this.HandleException(task);
                 }
             });
         }
@@ -606,6 +632,14 @@ namespace Oqtane.ChatHubs.Services
         {
             this.RemoveIgnoredByUser(user);
             this.RunUpdateUI();
+        }
+        private void OnAddModeratorExecute(object sender, dynamic e)
+        {
+            this.AddModerator(e.moderator, e.roomId);
+        }
+        private void OnRemoveModeratorExecute(object sender, dynamic e)
+        {
+            this.RemoveModerator(e.moderator, e.roomId);
         }
         private void OnClearHistoryExecute(object sender, int roomId)
         {
@@ -703,6 +737,26 @@ namespace Oqtane.ChatHubs.Services
                 this.IgnoredByUsers.Remove(item);
             }
         }
+        public void AddModerator(ChatHubModerator moderator, int roomId)
+        {
+            var room = this.Rooms.FirstOrDefault(item => item.Id == roomId);
+            if (room != null && !room.Moderators.Any(item => item.Id == moderator.Id))
+            {
+                room.Moderators.Add(moderator);
+            }
+        }
+        public void RemoveModerator(ChatHubModerator moderator, int roomId)
+        {
+            var room = this.Rooms.FirstOrDefault(item => item.Id == roomId);
+            if(room != null)
+            {
+                var modi = room.Moderators.FirstOrDefault(item => item.Id == moderator.Id);
+                if (modi != null)
+                {
+                    room.Moderators.Remove(modi);
+                }
+            }
+        }
 
         private async void OnGetLobbyRoomsTimerElapsed(object source, ElapsedEventArgs e)
         {
@@ -758,6 +812,8 @@ namespace Oqtane.ChatHubs.Services
             this.OnAddIgnoredUserEvent -= OnAddIngoredUserExexute;
             this.OnRemoveIgnoredUserEvent -= OnRemoveIgnoredUserExecute;
             this.OnAddIgnoredByUserEvent -= OnAddIgnoredByUserExecute;
+            this.OnAddModeratorEvent -= OnAddModeratorExecute;
+            this.OnRemoveModeratorEvent -= OnRemoveModeratorExecute;
             this.OnDownloadBytes -= OnDownloadBytesExecuteAsync;
             this.OnRemoveIgnoredByUserEvent -= OnRemoveIgnoredByUserExecute;
             this.OnClearHistoryEvent -= OnClearHistoryExecute;

@@ -453,7 +453,7 @@
                                                                                     {
                                                                                         <BSCard CardType="CardType.Body">
                                                                                             <BSCard CardType="CardType.Text">
-                                                                                                <button type="button" class="btn btn-sm btn-link" @onclick="() => OpenProfile_Clicked(user.UserId, room.Id)">Profil/Einstellungen</button>
+                                                                                                <button type="button" class="btn btn-sm btn-link" @onclick="() => OpenProfile_Clicked(user.UserId, room.Id)">Profile/Settings</button>
                                                                                             </BSCard>
                                                                                         </BSCard>
                                                                                     }
@@ -470,9 +470,27 @@
                                                                                     @if (user.UserlistItemCollapsed)
                                                                                     {
                                                                                         <BSCard CardType="CardType.Body">
-                                                                                            <BSCard CardType="CardType.Text">
-                                                                                                <button type="button" class="btn btn-sm btn-link" @onclick="() => ChatHubService.IgnoreUser_Clicked(user.UserId, room.Id, user.Username)">Benutzer Ignorieren</button>
-                                                                                            </BSCard>
+
+                                                                                            @if (!ChatHubService.IgnoredUsers.Any(item => item.UserId == user.UserId))
+                                                                                            {
+                                                                                                <BSCard CardType="CardType.Text">
+                                                                                                    <button type="button" class="btn btn-sm btn-link" @onclick="() => ChatHubService.IgnoreUser_Clicked(user.UserId, room.Id, user.Username)">Ignore User</button>
+                                                                                                </BSCard>
+                                                                                            }
+
+                                                                                            @if (!room.Moderators.Any(item => item.ChatHubUserId == user.UserId))
+                                                                                            {
+                                                                                                <BSCard CardType="CardType.Text">
+                                                                                                    <button type="button" class="btn btn-sm btn-link" @onclick="() => ChatHubService.AddModerator_Clicked(user.UserId, room.Id)">Add Modi</button>
+                                                                                                </BSCard>
+                                                                                            }
+                                                                                            else
+                                                                                            {
+                                                                                                <BSCard CardType="CardType.Text">
+                                                                                                    <button type="button" class="btn btn-sm btn-link" @onclick="() => ChatHubService.RemoveModerator_Clicked(user.UserId, room.Id)">Delete Modi</button>
+                                                                                                </BSCard>
+                                                                                            }
+
                                                                                         </BSCard>
                                                                                     }
                                                                                 </BSCard>
@@ -507,6 +525,41 @@
 
                                                                     <button type="button" @onclick="async () => ChatHubService.StartVideoChat(room.Id)">Start Streaming</button>
                                                                     <button type="button" @onclick="async () => ChatHubService.StopVideoChat(room.Id)">Stop Streaming</button>
+
+                                                                </div>
+
+                                                            </WindowContent>
+                                                        </WindowItem>
+                                                        <WindowItem>
+                                                            <WindowTitle><div>Moderators <span class="oi oi-warning"></span></div></WindowTitle>
+                                                            <WindowContent>
+
+                                                                <div class="px-sm-1 py-3">
+
+                                                                    <h5>Moderators <span class="badge badge-success">NEW</span></h5>
+
+                                                                    <table class="table table-sm">
+                                                                        <tbody>
+                                                                            @foreach(var modi in room.Moderators)
+                                                                            {
+                                                                                <tr>
+                                                                                    <td>@modi.ModeratorDisplayName</td>
+                                                                                    <td>
+                                                                                        <button type="button" class="btn btn-sm btn-link"  @onclick="() => ChatHubService.RemoveModerator_Clicked(modi.ChatHubUserId, room.Id)">
+                                                                                            <span class="oi oi-x"></span>
+                                                                                        </button>
+                                                                                    </td>
+                                                                                </tr>
+                                                                            }
+                                                                        </tbody>
+                                                                    </table>
+
+                                                                    @if (!room.Moderators.Any())
+                                                                    {
+                                                                    <div class="alert alert-warning" role="alert">
+                                                                        No moderators found yet.
+                                                                    </div>
+                                                                    }
 
                                                                 </div>
 

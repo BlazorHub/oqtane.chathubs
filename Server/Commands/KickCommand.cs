@@ -8,10 +8,10 @@ using Microsoft.AspNetCore.SignalR;
 namespace Oqtane.ChatHubs.Commands
 {
     [Export("ICommand", typeof(ICommand))]
-    [Command("kick", "[username]", new string[] { Constants.AdminRole }, "Usage: /kick | /throw | fly")]
-    public class KickCommand : AdminCommand
+    [Command("kick", "[username]", new string[] { Constants.AllUsersRole, Constants.AdminRole }, "Usage: /kick | /throw | fly")]
+    public class KickCommand : ModeratorCommand
     {
-        public override async Task ExecuteAdminOperation(CommandServicesContext context, CommandCallerContext callerContext, string[] args, ChatHubUser caller)
+        public override async Task ExecuteModeratorOperation(CommandServicesContext context, CommandCallerContext callerContext, string[] args, ChatHubUser caller)
         {
 
             if (args.Length == 0)

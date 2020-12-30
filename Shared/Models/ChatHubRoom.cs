@@ -23,11 +23,15 @@ namespace Oqtane.Shared.Models
         public bool ShowUserlist { get; set; }
 
         [NotMapped]
-        public virtual ICollection<ChatHubRoomChatHubUser> RoomUsers { get; set; }
-        [NotMapped]
         public virtual ICollection<ChatHubMessage> Messages { get; set; }
         [NotMapped]
+        public virtual ICollection<ChatHubRoomChatHubUser> RoomUsers { get; set; }
+        [NotMapped]
         public virtual ICollection<ChatHubUser> Users { get; set; }
+        [NotMapped]
+        public virtual ICollection<ChatHubRoomChatHubModerator> RoomModerators { get; set; }
+        [NotMapped]
+        public virtual ICollection<ChatHubModerator> Moderators { get; set; }
         [NotMapped]
         public virtual ChatHubUser Creator { get; set; }
 

@@ -1,5 +1,4 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using System.Threading.Tasks;
 using Oqtane.Models;
 using Oqtane.Shared.Models;
@@ -33,6 +32,9 @@ namespace Oqtane.ChatHubs.Repository
         Task<ChatHubUser> GetUserByIdAsync(int id);
         Task<ChatHubUser> GetUserByUserNameAsync(string username);
         Task<ChatHubUser> GetUserByDisplayName(string displayName);
+        ChatHubModerator GetChatHubModerator(int ChatHubUserId);
+        Task<IQueryable<ChatHubModerator>> GetChatHubModerators(ChatHubRoom ChatHubRoom);
+        ChatHubRoomChatHubModerator GetChatHubRoomChatHubModerator(int chatHubRoomId, int chatHubModeratorId);
 
         #endregion
 
@@ -46,6 +48,8 @@ namespace Oqtane.ChatHubs.Repository
         ChatHubPhoto AddChatHubPhoto(ChatHubPhoto ChatHubPhoto);
         ChatHubIgnore AddChatHubIgnore(ChatHubIgnore chatHubIgnore);
         ChatHubSetting AddChatHubSetting(ChatHubSetting ChatHubSetting);
+        ChatHubModerator AddChatHubModerator(ChatHubModerator ChatHubModerator);
+        ChatHubRoomChatHubModerator AddChatHubRoomChatHubModerator(ChatHubRoomChatHubModerator ChatHubRoomChatHubModerator);
 
         #endregion
 
@@ -60,6 +64,8 @@ namespace Oqtane.ChatHubs.Repository
         void DeleteChatHubConnections(int userId);
         void DeleteChatHubRoomChatHubUser(int ChatHubRoomId, int ChatHubUserId);
         void DeleteChatHubIgnore(ChatHubIgnore chatHubIgnore);
+        void DeleteChatHubModerator(int ModeratorId);
+        void DeleteChatHubRoomChatHubModerator(int ChatHubRoomId, int ChatHubModeratorId);
 
         #endregion
 

@@ -34,7 +34,10 @@ namespace Oqtane.ChatHubs.Services
             List<ChatHubUser> onlineUsers = await this.chatHubRepository.GetChatHubUsersByRoom(room).Online().ToListAsync();
             onlineUsers = onlineUsers != null && onlineUsers.Any() ? onlineUsers = onlineUsers.Select(item => this.CreateChatHubUserClientModel(item)).ToList() : new List<ChatHubUser>();
 
-            var creator = await this.chatHubRepository.GetUserByIdAsync(room.CreatorId);
+            IQueryable<ChatHubModerator> moderatorsQuery = await this.chatHubRepository.GetChatHubModerators(room);
+            IList<ChatHubModerator> moderatorsList = moderatorsQuery.ToList();
+
+            ChatHubUser creator = await this.chatHubRepository.GetUserByIdAsync(room.CreatorId);
 
             return new ChatHubRoom()
             {
@@ -50,6 +53,7 @@ namespace Oqtane.ChatHubs.Services
                 Creator = creator,
                 Messages = lastMessages,
                 Users = onlineUsers,
+                Moderators = moderatorsList,
                 CreatedOn = room.CreatedOn,
                 CreatedBy = room.CreatedBy,
                 ModifiedBy = room.ModifiedBy,
@@ -148,6 +152,16 @@ namespace Oqtane.ChatHubs.Services
             };
         }
 
+        public ChatHubModerator CreateChatHubModeratorClientModel(ChatHubModerator moderator)
+        {
+            return new ChatHubModerator()
+            {
+                Id = moderator.Id,
+                ModeratorDisplayName = moderator.ModeratorDisplayName,
+                ChatHubUserId = moderator.ChatHubUserId,
+            };
+        }
+
         public void IgnoreUser(ChatHubUser callerUser, ChatHubUser targetUser)
         {
             ChatHubIgnore chatHubIgnore = null;
@@ -235,7 +249,6 @@ namespace Oqtane.ChatHubs.Services
         {
             return room.OneVsOneId.Split('|').OrderBy(item => item).Any(item => item == caller.UserId.ToString());
         }
-
         public string MakeStringAnonymous(string value, int tolerance, char symbol = '*')
         {
             if (tolerance >= value.Length)

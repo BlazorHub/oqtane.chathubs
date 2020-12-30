@@ -94,8 +94,10 @@ namespace Oqtane.ChatHubs.Services
         void RemoveInvitation(Guid guid);
 
         void IgnoreUser_Clicked(int userId, int roomId, string username);
-
         void UnignoreUser_Clicked(string username);
+
+        void AddModerator_Clicked(int userId, int roomId);
+        void RemoveModerator_Clicked(int userId, int roomId);
 
         void ClearHistory(int roomId);
 

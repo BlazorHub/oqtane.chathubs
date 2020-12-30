@@ -18,6 +18,8 @@ namespace Oqtane.ChatHubs.Services
 
         ChatHubPhoto CreateChatHubPhotoClientModel(ChatHubPhoto photo);
 
+        ChatHubModerator CreateChatHubModeratorClientModel(ChatHubModerator moderator);
+
         void IgnoreUser(ChatHubUser guest, ChatHubUser targetUser);
 
         List<string> GetAllExceptConnectionIds(ChatHubUser user);

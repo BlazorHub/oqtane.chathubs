@@ -19,6 +19,8 @@ namespace Oqtane.ChatHubs.Repository
         public virtual DbSet<ChatHubSetting> ChatHubSetting { get; set; }
         public virtual DbSet<ChatHubCam> ChatHubCam { get; set; }
         public virtual DbSet<ChatHubIgnore> ChatHubIgnore { get; set; }
+        public virtual DbSet<ChatHubModerator> ChatHubModerator { get; set; }
+        public virtual DbSet<ChatHubRoomChatHubModerator> ChatHubRoomChatHubModerator { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -29,7 +31,7 @@ namespace Oqtane.ChatHubs.Repository
             // Many-to-many
             // ChatHubRoom / ChatHubUser
             modelBuilder.Entity<ChatHubRoomChatHubUser>()
-                .HasKey(t => new { t.ChatHubRoomId, t.ChatHubUserId });
+                .HasKey(item => new { item.ChatHubRoomId, item.ChatHubUserId });
 
             modelBuilder.Entity<ChatHubRoomChatHubUser>()
                 .HasOne(room_user => room_user.Room)
@@ -90,6 +92,22 @@ namespace Oqtane.ChatHubs.Repository
                 .HasForeignKey<ChatHubCam>(c => c.ChatHubUserId);
 
             base.OnModelCreating(modelBuilder);
+
+            // Relations
+            // Many-to-many
+            // ChatHubRoom / ChatHubModerator
+            modelBuilder.Entity<ChatHubRoomChatHubModerator>()
+                .HasKey(item => new { item.ChatHubRoomId, item.ChatHubModeratorId });
+
+            modelBuilder.Entity<ChatHubRoomChatHubModerator>()
+                .HasOne(room_moderator => room_moderator.Room)
+                .WithMany(room => room.RoomModerators)
+                .HasForeignKey(room_moderator => room_moderator.ChatHubRoomId);
+
+            modelBuilder.Entity<ChatHubRoomChatHubModerator>()
+                .HasOne(room_moderator => room_moderator.Moderator)
+                .WithMany(moderator => moderator.ModeratorRooms)
+                .HasForeignKey(room_moderator => room_moderator.ChatHubModeratorId);
 
         }
 
