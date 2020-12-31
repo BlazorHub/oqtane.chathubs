@@ -12,6 +12,7 @@
 @using BlazorAlerts
 @using BlazorWindows
 @using BlazorPager
+@using BlazorFileUpload
 @using Microsoft.AspNetCore.Components.Authorization
 
 <style type="text/css">
@@ -441,59 +442,59 @@
                                                                     <div>
                                                                         @foreach (ChatHubUser user in room.Users)
                                                                         {
-                                                                            @if (user.UserId == ChatHubService.ConnectedUser.UserId)
+                                                                        @if (user.UserId == ChatHubService.ConnectedUser.UserId)
                                                                             {
-                                                                                <BSCard CardType="CardType.Card" @key="user">
-                                                                                    <BSCard CardType="CardType.Header">
-                                                                                        <BSButton ButtonType="ButtonType.Button" OnClick="(e) => UserlistItem_Clicked(e, room, user)" Color="Color.None" Class="btn-link">
-                                                                                            <strong class="align-middle" style="height: 16px;">@user.DisplayName</strong>
-                                                                                        </BSButton>
-                                                                                    </BSCard>
-                                                                                    @if (user.UserlistItemCollapsed)
+                                                                        <BSCard CardType="CardType.Card" @key="user">
+                                                                            <BSCard CardType="CardType.Header">
+                                                                                <BSButton ButtonType="ButtonType.Button" OnClick="(e) => UserlistItem_Clicked(e, room, user)" Color="Color.None" Class="btn-link">
+                                                                                    <strong class="align-middle" style="height: 16px;">@user.DisplayName</strong>
+                                                                                </BSButton>
+                                                                            </BSCard>
+                                                                            @if (user.UserlistItemCollapsed)
                                                                                     {
-                                                                                        <BSCard CardType="CardType.Body">
-                                                                                            <BSCard CardType="CardType.Text">
-                                                                                                <button type="button" class="btn btn-sm btn-link" @onclick="() => OpenProfile_Clicked(user.UserId, room.Id)">Profile/Settings</button>
-                                                                                            </BSCard>
-                                                                                        </BSCard>
-                                                                                    }
+                                                                            <BSCard CardType="CardType.Body">
+                                                                                <BSCard CardType="CardType.Text">
+                                                                                    <button type="button" class="btn btn-sm btn-link" @onclick="() => OpenProfile_Clicked(user.UserId, room.Id)">Profile/Settings</button>
                                                                                 </BSCard>
+                                                                            </BSCard>
+                                                                                    }
+                                                                        </BSCard>
                                                                             }
                                                                             else
                                                                             {
-                                                                                <BSCard CardType="CardType.Card" @key="user">
-                                                                                    <BSCard CardType="CardType.Header">
-                                                                                        <BSButton ButtonType="ButtonType.Button" OnClick="(e) => UserlistItem_Clicked(e, room, user)" Color="Color.None" Class="btn-link">
-                                                                                            <span class="align-middle" style="height: 16px;">@user.DisplayName</span>
-                                                                                        </BSButton>
-                                                                                    </BSCard>
-                                                                                    @if (user.UserlistItemCollapsed)
+                                                                        <BSCard CardType="CardType.Card" @key="user">
+                                                                            <BSCard CardType="CardType.Header">
+                                                                                <BSButton ButtonType="ButtonType.Button" OnClick="(e) => UserlistItem_Clicked(e, room, user)" Color="Color.None" Class="btn-link">
+                                                                                    <span class="align-middle" style="height: 16px;">@user.DisplayName</span>
+                                                                                </BSButton>
+                                                                            </BSCard>
+                                                                            @if (user.UserlistItemCollapsed)
                                                                                     {
-                                                                                        <BSCard CardType="CardType.Body">
+                                                                            <BSCard CardType="CardType.Body">
 
-                                                                                            @if (!ChatHubService.IgnoredUsers.Any(item => item.UserId == user.UserId))
+                                                                                @if (!ChatHubService.IgnoredUsers.Any(item => item.UserId == user.UserId))
                                                                                             {
-                                                                                                <BSCard CardType="CardType.Text">
-                                                                                                    <button type="button" class="btn btn-sm btn-link" @onclick="() => ChatHubService.IgnoreUser_Clicked(user.UserId, room.Id, user.Username)">Ignore User</button>
-                                                                                                </BSCard>
+                                                                                <BSCard CardType="CardType.Text">
+                                                                                    <button type="button" class="btn btn-sm btn-link" @onclick="() => ChatHubService.IgnoreUser_Clicked(user.UserId, room.Id, user.Username)">Ignore User</button>
+                                                                                </BSCard>
                                                                                             }
 
-                                                                                            @if (!room.Moderators.Any(item => item.ChatHubUserId == user.UserId))
+                                                                                @if (!room.Moderators.Any(item => item.ChatHubUserId == user.UserId))
                                                                                             {
-                                                                                                <BSCard CardType="CardType.Text">
-                                                                                                    <button type="button" class="btn btn-sm btn-link" @onclick="() => ChatHubService.AddModerator_Clicked(user.UserId, room.Id)">Add Modi</button>
-                                                                                                </BSCard>
+                                                                                <BSCard CardType="CardType.Text">
+                                                                                    <button type="button" class="btn btn-sm btn-link" @onclick="() => ChatHubService.AddModerator_Clicked(user.UserId, room.Id)">Add Modi</button>
+                                                                                </BSCard>
                                                                                             }
                                                                                             else
                                                                                             {
-                                                                                                <BSCard CardType="CardType.Text">
-                                                                                                    <button type="button" class="btn btn-sm btn-link" @onclick="() => ChatHubService.RemoveModerator_Clicked(user.UserId, room.Id)">Delete Modi</button>
-                                                                                                </BSCard>
+                                                                                <BSCard CardType="CardType.Text">
+                                                                                    <button type="button" class="btn btn-sm btn-link" @onclick="() => ChatHubService.RemoveModerator_Clicked(user.UserId, room.Id)">Delete Modi</button>
+                                                                                </BSCard>
                                                                                             }
 
-                                                                                        </BSCard>
+                                                                            </BSCard>
                                                                                     }
-                                                                                </BSCard>
+                                                                        </BSCard>
                                                                             }
                                                                         }
                                                                     </div>
@@ -502,6 +503,7 @@
 
                                                             </WindowContent>
                                                         </WindowItem>
+                                                        @*
                                                         <WindowItem>
                                                             <WindowTitle><div><span class="oi oi-image"></span></div></WindowTitle>
                                                             <WindowContent>
@@ -510,6 +512,31 @@
 
                                                                     <h5>Share your pics <span class="badge badge-success">FREE</span></h5>
                                                                     <FileReaderComponent ModuleId="@ModuleState.ModuleId.ToString()" ChatHubRoomId="@room.Id.ToString()" />
+
+                                                                </div>
+
+                                                            </WindowContent>
+                                                        </WindowItem>
+                                                        *@
+                                                        <WindowItem>
+                                                            <WindowTitle><div><span class="oi oi-image"></span></div></WindowTitle>
+                                                            <WindowContent>
+
+                                                                <div class="px-sm-1 py-3">
+
+                                                                    <h5>Share your pics <span class="badge badge-success">FREE</span></h5>
+
+                                                                    @{
+                                                                        var url = string.Concat(NavigationManager.BaseUri.Substring(0, NavigationManager.BaseUri.LastIndexOf('/')), this.ChatHubService.apiurl, "/PostImageUpload");
+
+                                                                        Dictionary<string, string> headers = new Dictionary<string, string>();
+                                                                        headers.Add("connectionId", ChatHubService.Connection?.ConnectionId);
+                                                                        headers.Add("displayName", ChatHubService.ConnectedUser?.DisplayName);
+                                                                        headers.Add("roomId", room.Id.ToString());
+                                                                        headers.Add("moduleId", ModuleState.ModuleId.ToString());
+                                                                    }
+
+                                                                    <BlazorFileUploadComponent ApiUrl="@url" FileUploadHeaders="@headers"></BlazorFileUploadComponent>
 
                                                                 </div>
 
@@ -540,16 +567,16 @@
 
                                                                     <table class="table table-sm">
                                                                         <tbody>
-                                                                            @foreach(var modi in room.Moderators)
+                                                                            @foreach (var modi in room.Moderators)
                                                                             {
-                                                                                <tr>
-                                                                                    <td>@modi.ModeratorDisplayName</td>
-                                                                                    <td>
-                                                                                        <button type="button" class="btn btn-sm btn-link"  @onclick="() => ChatHubService.RemoveModerator_Clicked(modi.ChatHubUserId, room.Id)">
-                                                                                            <span class="oi oi-x"></span>
-                                                                                        </button>
-                                                                                    </td>
-                                                                                </tr>
+                                                                            <tr>
+                                                                                <td>@modi.ModeratorDisplayName</td>
+                                                                                <td>
+                                                                                    <button type="button" class="btn btn-sm btn-link" @onclick="() => ChatHubService.RemoveModerator_Clicked(modi.ChatHubUserId, room.Id)">
+                                                                                        <span class="oi oi-x"></span>
+                                                                                    </button>
+                                                                                </td>
+                                                                            </tr>
                                                                             }
                                                                         </tbody>
                                                                     </table>

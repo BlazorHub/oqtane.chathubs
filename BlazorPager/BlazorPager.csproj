@@ -6,6 +6,11 @@
     <RazorLangVersion>3.0</RazorLangVersion>
     <AssemblyName>BlazorPager</AssemblyName>
     <OutputType>Library</OutputType>
+    <Version>1.0.0</Version>
+    <Product>BlazorPager</Product>
+    <Authors>Benjamin Strohmann</Authors>
+    <Company>Benjamin Strohmann</Company>
+    <Copyright>Benjamin Strohmann</Copyright>
   </PropertyGroup>
 
   <ItemGroup>

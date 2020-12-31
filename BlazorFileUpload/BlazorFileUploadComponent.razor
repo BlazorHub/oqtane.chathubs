@@ -1,0 +1,43 @@
+﻿@namespace BlazorFileUpload
+
+@inherits BlazorFileUploadBase
+
+@using Microsoft.AspNetCore.Components
+@using Microsoft.AspNetCore.Components.Web
+@using Microsoft.AspNetCore.Components.Forms
+
+<div style="overflow: hidden;">
+    <InputFile OnChange="@OnBlazorFileUploadChange" multiple />
+</div>
+
+@if (Base64ImageUrls.Count > 0)
+{
+    <h4>Preview</h4>
+    <div class="d-flex w-100">
+
+        @foreach (var dicitem in Base64ImageUrls)
+        {
+            var kilobytes = dicitem.Key.Length * 8 / 6 / 1024;
+
+            <div class="position-relative">
+                <img class="rounded m-1" src="@dicitem.Key" height="72" />
+                <button type="button" class="btn btn-sm btn-link bg-dark text-white position-absolute" style="top: 5px; right: 5px; text-shadow: 1px 1px #000;" @onclick="() => RemoveThumbnail_Clicked(dicitem.Key)">
+                    <span class="oi oi-x"></span>
+                </button>
+            </div>
+        }
+
+    </div>
+
+    <button type="button" class="btn btn-sm btn-link bg-light text-dark" @onclick="async () => UploadImages_Clicked()">
+        Upload Images
+    </button>
+}
+
+<div class="alert alert-info my-2">
+    Max. 3 Images / Upload.
+</div>
+
+@code {
+
+}

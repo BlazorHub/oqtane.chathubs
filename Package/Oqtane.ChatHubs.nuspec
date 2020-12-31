@@ -47,6 +47,8 @@
     <file src="..\BlazorPager\bin\Release\net5.0\BlazorPager.pdb" target="lib\net5.0" />
     <file src="..\BlazorDraggableList\bin\Release\net5.0\BlazorDraggableList.dll" target="lib\net5.0" />
     <file src="..\BlazorDraggableList\bin\Release\net5.0\BlazorDraggableList.pdb" target="lib\net5.0" />
+    <file src="..\BlazorFileUpload\bin\Release\net5.0\BlazorFileUpload.dll" target="lib\net5.0" />
+    <file src="..\BlazorFileUpload\bin\Release\net5.0\BlazorFileUpload.pdb" target="lib\net5.0" />
     <file src="..\Server\wwwroot\**\*.*" target="wwwroot" />
   </files>
 </package>
