@@ -1,12 +1,7 @@
-﻿using Microsoft.AspNetCore.SignalR;
-using Oqtane.Shared.Models;
+﻿using Oqtane.Shared.Models;
 using System.Composition;
 using System.Threading.Tasks;
 using Oqtane.Shared;
-using System.Collections.Generic;
-using System.Linq;
-using System;
-using Oqtane.Shared.Enums;
 
 namespace Oqtane.ChatHubs.Commands
 {

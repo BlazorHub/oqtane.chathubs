@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.SignalR;
-using Oqtane.Shared.Models;
+﻿using Oqtane.Shared.Models;
 using System.Composition;
 using System.Threading.Tasks;
 using Oqtane.Shared;

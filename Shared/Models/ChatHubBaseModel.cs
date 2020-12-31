@@ -5,7 +5,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Oqtane.Shared.Models
 {
-    public class ChatHubBaseModel : IAuditable, IChatHubBaseModel
+    public class ChatHubBaseModel : IChatHubBaseModel, IAuditable
     {
 
         [Key]

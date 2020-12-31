@@ -1,6 +1,4 @@
-﻿using Oqtane.Models;
-using System;
-using System.ComponentModel.DataAnnotations.Schema;
+﻿using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Oqtane.Shared.Models
 {

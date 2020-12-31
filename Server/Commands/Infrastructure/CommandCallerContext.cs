@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-
-namespace Oqtane.ChatHubs.Commands
+﻿namespace Oqtane.ChatHubs.Commands
 {
     public class CommandCallerContext
     {

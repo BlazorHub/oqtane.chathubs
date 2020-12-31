@@ -561,7 +561,7 @@ namespace Oqtane.ChatHubs.Hubs
                     var room = this.chatHubRepository.GetChatHubRoom(roomId);
                     if (user.UserId != room.CreatorId && !Context.User.HasClaim(ClaimTypes.Role, Shared.Constants.AdminRole))
                     {
-                        throw new HubException("Only room ownder and administrators can add moderations.");
+                        throw new HubException("Only room creators and administrators can add moderations.");
                     }
 
                     ChatHubModerator moderator = this.chatHubRepository.GetChatHubModerator(targetUser.UserId);
@@ -604,7 +604,7 @@ namespace Oqtane.ChatHubs.Hubs
                     var room = this.chatHubRepository.GetChatHubRoom(roomId);
                     if (user.UserId != room.CreatorId && !Context.User.HasClaim(ClaimTypes.Role, Shared.Constants.AdminRole))
                     {
-                        throw new HubException("Only room ownder and administrators can add moderations.");
+                        throw new HubException("Only room creators and administrators can add moderations.");
                     }
 
                     var moderator = this.chatHubRepository.GetChatHubModerator(targetUser.UserId);

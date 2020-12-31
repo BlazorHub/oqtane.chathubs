@@ -1,7 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.SignalR;
-using Oqtane.Modules;
-using Oqtane.Shared.Models;
+﻿using Oqtane.Shared.Models;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 

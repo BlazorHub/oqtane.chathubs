@@ -9,11 +9,8 @@ namespace BlazorPager
     {
 
         [Parameter] public List<TItemGeneric> Items { get; set; } = new List<TItemGeneric>();
-
-        [Parameter] public RenderFragment<TItemGeneric> BlazorPagerItem { get; set; }
-        
+        [Parameter] public RenderFragment<TItemGeneric> BlazorPagerItem { get; set; }        
         [Parameter] public int ItemsPerPage { get; set; }
-
         [Parameter] public string Class { get; set; }
 
         public List<TItemGeneric> ContextPageItems { get; set; }

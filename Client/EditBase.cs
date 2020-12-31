@@ -15,7 +15,7 @@ using BlazorAlerts;
 
 namespace Oqtane.ChatHubs
 {
-    public class EditBase : ModuleBase
+    public class EditBase : ModuleBase, IDisposable
     {
 
         [Inject] public IJSRuntime JsRuntime { get; set; }
@@ -38,21 +38,11 @@ namespace Oqtane.ChatHubs
         public string modifiedby;
         public DateTime modifiedon;
 
-        private void UpdateUIStateHasChanged()
-        {
-            InvokeAsync(() =>
-            {
-                StateHasChanged();
-            });
-        }
-
         protected override async Task OnInitializedAsync()
         {
             try
             {
-                //this.ChatHubService = new ChatHubService(HttpClient, SiteState, NavigationManager, JsRuntime, ModuleState.ModuleId);
                 this.ChatHubService.OnUpdateUI += (object sender, EventArgs e) => UpdateUIStateHasChanged();
-
                 await this.InitContextRoomAsync();
             }
             catch (Exception ex)
@@ -66,9 +56,6 @@ namespace Oqtane.ChatHubs
         {
             try
             {
-                //this.ChatHubService = new ChatHubService(HttpClient, SiteState, NavigationManager, JsRuntime, ModuleState.ModuleId);
-                this.ChatHubService.OnUpdateUI += (object sender, EventArgs e) => UpdateUIStateHasChanged();
-
                 if (PageState.QueryString.ContainsKey("roomid"))
                 {
                     this.roomId = Int32.Parse(PageState.QueryString["roomid"]);
@@ -210,6 +197,19 @@ namespace Oqtane.ChatHubs
                 await this.InitContextRoomAsync();
                 this.UpdateUIStateHasChanged();
             }
+        }
+
+        private void UpdateUIStateHasChanged()
+        {
+            InvokeAsync(() =>
+            {
+                StateHasChanged();
+            });
+        }
+
+        public void Dispose()
+        {
+            this.ChatHubService.OnUpdateUI -= (object sender, EventArgs e) => UpdateUIStateHasChanged();
         }
 
     }

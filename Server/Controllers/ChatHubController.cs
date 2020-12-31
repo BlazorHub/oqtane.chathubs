@@ -27,7 +27,7 @@ namespace Oqtane.ChatHubs.Controllers
     {
 
         IWebHostEnvironment webHostEnvironment;
-        private readonly IHubContext<Hubs.ChatHub> chatHubContext;
+        private readonly IHubContext<ChatHub> chatHubContext;
         private readonly ChatHub chatHub;
         private readonly UserManager<IdentityUser> userManager;
         private readonly IChatHubRepository chatHubRepository;

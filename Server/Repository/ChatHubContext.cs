@@ -91,8 +91,6 @@ namespace Oqtane.ChatHubs.Repository
                 .WithOne(u => u.Cam)
                 .HasForeignKey<ChatHubCam>(c => c.ChatHubUserId);
 
-            base.OnModelCreating(modelBuilder);
-
             // Relations
             // Many-to-many
             // ChatHubRoom / ChatHubModerator
@@ -109,6 +107,8 @@ namespace Oqtane.ChatHubs.Repository
                 .WithMany(moderator => moderator.ModeratorRooms)
                 .HasForeignKey(room_moderator => room_moderator.ChatHubModeratorId);
 
+
+            base.OnModelCreating(modelBuilder);
         }
 
         public ChatHubContext(ITenantResolver tenantResolver, IHttpContextAccessor accessor) : base(tenantResolver, accessor)
