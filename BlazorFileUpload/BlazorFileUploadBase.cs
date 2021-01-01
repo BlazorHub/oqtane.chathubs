@@ -101,7 +101,7 @@ namespace BlazorFileUpload
                         await stream.WriteAsync(buffer, 0, read);
                         await InvokeAsync(() =>
                         {
-                            this.Output += $"Read {progressnow} {progresswidth} {progresstotal} {read} bytes. {readstream.Position} / {readstream.Length}{newline}";
+                            this.Output += $"Read {read} bytes. {readstream.Position} / {readstream.Length}{newline}";
                             this.progressnow += buffer.Length;
                             this.progresswidth = this.progressnow / this.progresstotal * 100;
                             this.StateHasChanged();
