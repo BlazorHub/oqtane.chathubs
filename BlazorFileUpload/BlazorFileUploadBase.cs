@@ -75,7 +75,7 @@ namespace BlazorFileUpload
 
                 foreach (var file in files)
                 {
-                    var readstream = file.Value.BrowserFile.OpenReadStream();                    
+                    var readstream = file.Value.BrowserFile.OpenReadStream(5120000);                    
                     var newline = Environment.NewLine;
                     var bufferSize = 4096;
                     var buffer = new byte[bufferSize];
@@ -94,7 +94,8 @@ namespace BlazorFileUpload
                         stream.Position = 0;
                     }
 
-                    content.Add(new StreamContent(stream), "file", file.Value.BrowserFile.Name);
+                    var filename = string.Concat(file.Value.BrowserFile.Name.Split(Path.GetInvalidFileNameChars()));
+                    content.Add(new StreamContent(stream), "file", filename);
                 }
                 using (var httpClient = new HttpClient())
                 {
