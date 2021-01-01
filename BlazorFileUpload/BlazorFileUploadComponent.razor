@@ -30,7 +30,7 @@
     <div id="@DropzoneElementId" class="blazor-file-upload-dropzone d-flex align-items-center justify-content-center px-3">
 
         <span class="text-white bg-primary p-sm-2">
-            <span class="oi oi-data-transfer-download"></span> drag and drop here
+            <small class="oi oi-data-transfer-download"></small> <small>drag and drop files here</small>
         </span>
 
     </div>
@@ -54,11 +54,11 @@
 
     </div>
 
-    <div class="progress" style="height: 2px;">
-      <div class="progress-bar bg-primary" role="progressbar" style="width: @(progresswidth)%" aria-valuenow="@(progresswidth)" aria-valuemin="0" aria-valuemax="100"></div>
+    <div class="progress my-2" style="height: 3px;">
+      <div class="progress-bar bg-success" role="progressbar" style="width: @(progresswidth)%" aria-valuenow="@(progresswidth)" aria-valuemin="0" aria-valuemax="100"></div>
     </div>
 
-    <button type="button" class="btn btn-sm btn-link bg-light text-dark" @onclick="async () => UploadImages_Clicked()">
+    <button type="button" class="btn btn-sm btn-primary" @onclick="async () => UploadImages_Clicked()">
         Upload Images
     </button>
 }
