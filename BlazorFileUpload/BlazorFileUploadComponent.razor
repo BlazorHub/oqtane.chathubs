@@ -10,7 +10,7 @@
     <InputFile OnChange="@OnBlazorFileUploadChange" multiple />
 </div>
 
-@if (FileUploadModels.Count() > 0)
+@if (FileUploadModels.Count > 0)
 {
     <div class="d-flex w-100">
 
@@ -28,6 +28,10 @@
 
     </div>
 
+    <div class="progress" style="height: 2px;">
+      <div class="progress-bar bg-primary" role="progressbar" style="width: @(progresswidth)%" aria-valuenow="@(progresswidth)" aria-valuemin="0" aria-valuemax="100"></div>
+    </div>
+
     <button type="button" class="btn btn-sm btn-link bg-light text-dark" @onclick="async () => UploadImages_Clicked()">
         Upload Images
     </button>
@@ -36,6 +40,8 @@
 <div class="alert alert-info my-2">
     Max. 3 Images / Upload.
 </div>
+
+<textarea class="my-2" style="max-width: 100%;" cols="50" rows="5">@Output</textarea>
 
 @code {
 

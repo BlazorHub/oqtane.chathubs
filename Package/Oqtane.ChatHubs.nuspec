@@ -21,7 +21,6 @@
       
 		    <dependency id="System.Drawing.Common" version="4.7.0" />
 		    <dependency id="MatBlazor" version="2.3.0" />
-		    <dependency id="BlazorTable" version="1.11.1" />
 		    <dependency id="Microsoft.CSharp" version="4.7.0" />
 		    <dependency id="BlazorStrap" version="1.3.3" />
 		    <dependency id="Tewr.Blazor.FileReader" version="1.4.0.20072" />

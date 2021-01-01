@@ -18,6 +18,11 @@ namespace BlazorFileUpload
         public event EventHandler<Dictionary<Guid, BlazorFileUploadModel>> OnUploadImagesEvent;
         public Dictionary<Guid, BlazorFileUploadModel> FileUploadModels = new Dictionary<Guid, BlazorFileUploadModel>();
 
+        public string Output { get; set; }
+        public float progresswidth { get; set; }
+        public float progressnow { get; set; }
+        public float progresstotal { get; set; }
+
         protected override Task OnInitializedAsync()
         {
             this.OnUploadImagesEvent += OnUploadImagesExecute;
@@ -55,7 +60,6 @@ namespace BlazorFileUpload
         {
             this.OnUploadImagesEvent.Invoke(this, this.FileUploadModels);
             await this.UploadFiles(this.FileUploadModels);
-
             this.FileUploadModels.Clear();
             this.StateHasChanged();
         }
@@ -66,27 +70,42 @@ namespace BlazorFileUpload
             this.StateHasChanged();
         }
 
-        private async Task UploadFiles(Dictionary<Guid, BlazorFileUploadModel> files)
+        private async Task UploadFiles(Dictionary<Guid, BlazorFileUploadModel> models)
         {
             try
-            {
-                string Output = string.Empty;
+            {                
+                var maxAllowedSize = 5120000;
                 MultipartFormDataContent content = new MultipartFormDataContent();
 
-                foreach (var file in files)
+                this.Output = string.Empty;
+                this.progresswidth = 0;
+                this.progressnow = 0;
+                this.progresstotal = 0;
+
+                foreach(var model in models)
                 {
-                    var readstream = file.Value.BrowserFile.OpenReadStream(5120000);                    
+                    this.progresstotal += model.Value.BrowserFile.Size;
+                }
+
+                foreach (var model in models)
+                {
+                    var readstream = model.Value.BrowserFile.OpenReadStream(maxAllowedSize);                    
                     var newline = Environment.NewLine;
-                    var bufferSize = 4096;
-                    var buffer = new byte[bufferSize];
+                    var buffersize = 4096;
+                    var buffer = new byte[buffersize];
                     int read;
 
                     MemoryStream stream = new MemoryStream(100);
                     while ((read = await readstream.ReadAsync(buffer, 0, buffer.Length)) != 0)
                     {
                         await stream.WriteAsync(buffer, 0, read);
-                        Output += $"Read {read} bytes. {readstream.Position} / {readstream.Length}{newline}";
-                        this.StateHasChanged();
+                        await InvokeAsync(() =>
+                        {
+                            this.Output += $"Read {progressnow} {progresswidth} {progresstotal} {read} bytes. {readstream.Position} / {readstream.Length}{newline}";
+                            this.progressnow += buffer.Length;
+                            this.progresswidth = this.progressnow / this.progresstotal * 100;
+                            this.StateHasChanged();
+                        });
                     }
 
                     if (stream.Length == stream.Position)
@@ -94,7 +113,7 @@ namespace BlazorFileUpload
                         stream.Position = 0;
                     }
 
-                    var filename = string.Concat(file.Value.BrowserFile.Name.Split(Path.GetInvalidFileNameChars()));
+                    var filename = string.Concat(model.Value.BrowserFile.Name.Split(Path.GetInvalidFileNameChars()));
                     content.Add(new StreamContent(stream), "file", filename);
                 }
                 using (var httpClient = new HttpClient())
