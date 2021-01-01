@@ -10,17 +10,16 @@
     <InputFile OnChange="@OnBlazorFileUploadChange" multiple />
 </div>
 
-@if (Base64ImageUrls.Count > 0)
+@if (FileUploadModels.Count() > 0)
 {
-    <h4>Preview</h4>
     <div class="d-flex w-100">
 
-        @foreach (var dicitem in Base64ImageUrls)
+        @foreach (var dicitem in FileUploadModels)
         {
-            var kilobytes = dicitem.Key.Length * 8 / 6 / 1024;
+            var kilobytes = dicitem.Value.Base64ImageUrl.Length * 8 / 6 / 1024;
 
             <div class="position-relative">
-                <img class="rounded m-1" src="@dicitem.Key" height="72" />
+                <img class="rounded m-1" src="@dicitem.Value.Base64ImageUrl" height="72" />
                 <button type="button" class="btn btn-sm btn-link bg-dark text-white position-absolute" style="top: 5px; right: 5px; text-shadow: 1px 1px #000;" @onclick="() => RemoveThumbnail_Clicked(dicitem.Key)">
                     <span class="oi oi-x"></span>
                 </button>

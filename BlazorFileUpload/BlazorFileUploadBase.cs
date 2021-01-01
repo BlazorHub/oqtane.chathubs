@@ -15,8 +15,8 @@ namespace BlazorFileUpload
         [Parameter] public Dictionary<string, string> FileUploadHeaders { get; set; }
         [Parameter] public string ApiUrl { get; set; }
 
-        public event EventHandler<Dictionary<string, IBrowserFile>> OnUploadImagesEvent;
-        public Dictionary<string, IBrowserFile> Base64ImageUrls = new Dictionary<string, IBrowserFile>();
+        public event EventHandler<Dictionary<Guid, BlazorFileUploadModel>> OnUploadImagesEvent;
+        public Dictionary<Guid, BlazorFileUploadModel> FileUploadModels = new Dictionary<Guid, BlazorFileUploadModel>();
 
         protected override Task OnInitializedAsync()
         {
@@ -35,31 +35,38 @@ namespace BlazorFileUpload
                 var bytes = new byte[previewImage.Size];
                 await previewImage.OpenReadStream().ReadAsync(bytes);
                 var imageDataUrl = $"data:{imageFormat};base64,{Convert.ToBase64String(bytes)}";
-                this.Base64ImageUrls.Add(imageDataUrl, iBrowserFile);
+
+                var model = new BlazorFileUploadModel()
+                {
+                    Base64ImageUrl = imageDataUrl,
+                    BrowserFile = iBrowserFile,
+                };
+
+                this.FileUploadModels.Add(Guid.NewGuid(), model);
             }
         }
 
-        private void OnUploadImagesExecute(object sender, Dictionary<string, IBrowserFile> e)
+        private void OnUploadImagesExecute(object sender, Dictionary<Guid, BlazorFileUploadModel> e)
         {
             Console.WriteLine("on upload images execute..");
         }
 
         public async void UploadImages_Clicked()
         {
-            this.OnUploadImagesEvent.Invoke(this, this.Base64ImageUrls);
-            await this.UploadFiles(this.Base64ImageUrls);
+            this.OnUploadImagesEvent.Invoke(this, this.FileUploadModels);
+            await this.UploadFiles(this.FileUploadModels);
 
-            this.Base64ImageUrls.Clear();
+            this.FileUploadModels.Clear();
             this.StateHasChanged();
         }
 
-        public void RemoveThumbnail_Clicked(string key)
+        public void RemoveThumbnail_Clicked(Guid key)
         {
-            this.Base64ImageUrls.Remove(key);
+            this.FileUploadModels.Remove(key);
             this.StateHasChanged();
         }
 
-        private async Task UploadFiles(Dictionary<string, IBrowserFile> files)
+        private async Task UploadFiles(Dictionary<Guid, BlazorFileUploadModel> files)
         {
             try
             {
@@ -68,7 +75,7 @@ namespace BlazorFileUpload
 
                 foreach (var file in files)
                 {
-                    var readstream = file.Value.OpenReadStream();                    
+                    var readstream = file.Value.BrowserFile.OpenReadStream();                    
                     var newline = Environment.NewLine;
                     var bufferSize = 4096;
                     var buffer = new byte[bufferSize];
@@ -87,7 +94,7 @@ namespace BlazorFileUpload
                         stream.Position = 0;
                     }
 
-                    content.Add(new StreamContent(stream), "file", file.Value.Name);
+                    content.Add(new StreamContent(stream), "file", file.Value.BrowserFile.Name);
                 }
                 using (var httpClient = new HttpClient())
                 {
