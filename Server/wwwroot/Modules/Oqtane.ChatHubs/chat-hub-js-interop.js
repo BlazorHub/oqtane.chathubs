@@ -55,7 +55,7 @@
         },
     };
 
-    window.__initjs = function (videoserviceobjectreference, draggablejsdotnetobj, resizejsdotnetobj) {
+    window.__initjs = function (videoserviceobjectreference, draggablejsdotnetobj, resizejsdotnetobj, fileuploadjsdotnetobj) {
 
         __obj = {
 
@@ -636,12 +636,38 @@
                     self.__obj.resizeservice.invokeMethodAsync('OnBrowserResize');
                 },
             },
+            fileuploadservice: fileuploadjsdotnetobj,
+            initfileuploaddropzone: function (inputFileId, elementId) {
+
+                document.getElementById(elementId).addEventListener('dragover', function (event) {
+
+                    event.stopPropagation();
+                    event.preventDefault();
+                    event.dataTransfer.dropEffect = 'copy';
+                });
+                document.getElementById(elementId).addEventListener('drop', function (event) {
+
+                    event.stopPropagation();
+                    event.preventDefault();
+
+                    var files = event.dataTransfer.files;
+                    var inputFileElement = document.getElementById(inputFileId);
+                    inputFileElement.files = files;
+
+                    var event = document.createEvent("UIEvents");
+                    event.initUIEvent("change", true, true);
+                    inputFileElement.dispatchEvent(event);
+
+                    self.__obj.fileuploadservice.invokeMethodAsync('OnDrop', elementId);
+                });
+            },
+
         };
     };
 
-    window.__init = function (videojsdotnetobj, draggablejsdotnetobj, resizejsdotnetobj) {
+    window.__init = function (videojsdotnetobj, draggablejsdotnetobj, resizejsdotnetobj, fileuploadjsdotnetobj) {
 
-        return storeObjectRef(new window.__initjs(videojsdotnetobj, draggablejsdotnetobj, resizejsdotnetobj));
+        return storeObjectRef(new window.__initjs(videojsdotnetobj, draggablejsdotnetobj, resizejsdotnetobj, fileuploadjsdotnetobj));
     };
 
     var jsObjectRefs = {};

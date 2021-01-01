@@ -17,6 +17,7 @@ using BlazorAlerts;
 using BlazorWindows;
 using System.Net;
 using BlazorDraggableList;
+using BlazorFileUpload;
 
 namespace Oqtane.ChatHubs
 {
@@ -35,6 +36,7 @@ namespace Oqtane.ChatHubs
         [Inject] protected ScrollService ScrollService { get; set; }
         [Inject] protected CookieService CookieService { get; set; }
         [Inject] protected BlazorDraggableListService BlazorDraggableListService { get; set; }
+        [Inject] protected BlazorFileUploadService BlazorFileUploadService { get; set; }
 
         public int MessageWindowHeight { get; set; }
         public int UserlistWindowHeight { get; set; }
@@ -55,6 +57,8 @@ namespace Oqtane.ChatHubs
         protected SettingsModal SettingsModalRef;
 
         protected readonly string DraggableLivestreamsContainerElementId = "DraggableLivestreamsContainer";
+        protected readonly string FileUploadDropzoneContainerElementId = "FileUploadDropzoneContainer";
+        protected readonly string FileUploadInputFileElementId = "FileUploadInputFileContainer";
 
         public IndexBase()
         {
@@ -63,14 +67,14 @@ namespace Oqtane.ChatHubs
 
         protected override void OnInitialized()
         {
-            this.BlazorDraggableListService.BlazorDraggableListServiceExtension.OnDropEvent += OnDropEventExecute;
+            this.BlazorDraggableListService.BlazorDraggableListServiceExtension.OnDropEvent += OnDraggableListDropEventExecute;
             this.BrowserResizeService.OnResize += BrowserHasResized;
             this.ChatHubService.OnUpdateUI += (object sender, EventArgs e) => UpdateUIStateHasChanged();
 
             base.OnInitialized();
         }
 
-        private async void OnDropEventExecute(object sender, BlazorDraggableListEvent e)
+        private async void OnDraggableListDropEventExecute(object sender, BlazorDraggableListEvent e)
         {
             try
             {
@@ -99,10 +103,12 @@ namespace Oqtane.ChatHubs
                 string hostname = new Uri(NavigationManager.BaseUri).Host;
                 this.ChatHubService.IdentityCookie = new Cookie(".AspNetCore.Identity.Application", await this.CookieService.GetCookieAsync(".AspNetCore.Identity.Application"), "/", hostname);
 
-                JsRuntimeObjectRef objref = await this.JSRuntime.InvokeAsync<JsRuntimeObjectRef>("__init", this.VideoService.dotNetObjectReference, this.BlazorDraggableListService.dotNetObjectReference, this.BrowserResizeService.dotNetObjectReference);
+                JsRuntimeObjectRef objref = await this.JSRuntime.InvokeAsync<JsRuntimeObjectRef>("__init", this.VideoService.dotNetObjectReference, this.BlazorDraggableListService.dotNetObjectReference, this.BrowserResizeService.dotNetObjectReference, this.BlazorFileUploadService.dotNetObjectReference);
                 this.VideoService.__jsRuntimeObjectRef = objref;
                 this.BlazorDraggableListService.__jsRuntimeObjectRef = objref;
                 this.BrowserResizeService.__jsRuntimeObjectRef = objref;
+                this.BlazorFileUploadService.__jsRuntimeObjectRef = objref;
+
                 await this.BrowserResizeService.RegisterWindowResizeCallback();
                 await BrowserHasResized();
                 await this.JSRuntime.InvokeVoidAsync("showchathubscontainer");
@@ -360,7 +366,7 @@ namespace Oqtane.ChatHubs
 
         public void Dispose()
         {
-            this.BlazorDraggableListService.BlazorDraggableListServiceExtension.OnDropEvent -= OnDropEventExecute;
+            this.BlazorDraggableListService.BlazorDraggableListServiceExtension.OnDropEvent -= OnDraggableListDropEventExecute;
             this.BrowserResizeService.OnResize -= BrowserHasResized;
             this.ChatHubService.OnUpdateUI -= (object sender, EventArgs e) => UpdateUIStateHasChanged();
 

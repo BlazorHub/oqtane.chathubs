@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Net.Http;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace BlazorFileUpload
@@ -14,6 +15,10 @@ namespace BlazorFileUpload
 
         [Parameter] public Dictionary<string, string> FileUploadHeaders { get; set; }
         [Parameter] public string ApiUrl { get; set; }
+        [Parameter] public string InputFileId { get; set; }
+        [Parameter] public string DropzoneElementId { get; set; }
+
+        [Inject] protected BlazorFileUploadService BlazorFileUploadService { get; set; }        
 
         public event EventHandler<Dictionary<Guid, BlazorFileUploadModel>> OnUploadImagesEvent;
         public Dictionary<Guid, BlazorFileUploadModel> FileUploadModels = new Dictionary<Guid, BlazorFileUploadModel>();
@@ -25,12 +30,25 @@ namespace BlazorFileUpload
 
         protected override Task OnInitializedAsync()
         {
+            this.BlazorFileUploadService.BlazorFileUploadServiceExtension.OnDropEvent += OnFileUploadDropEventExecute;
             this.OnUploadImagesEvent += OnUploadImagesExecute;
             return base.OnInitializedAsync();
         }
 
+        protected override Task OnAfterRenderAsync(bool firstRender)
+        {
+            if (firstRender)
+            {
+                this.BlazorFileUploadService.InitFileUploadDropzone(this.InputFileId, this.DropzoneElementId);
+            }
+
+            return base.OnAfterRenderAsync(firstRender);
+        }
+
         public async Task OnBlazorFileUploadChange(InputFileChangeEventArgs e)
         {
+            Console.WriteLine("on input file change event");
+
             var maxFiles = 3;
             var imageFormat = "image/png";
 
@@ -130,6 +148,14 @@ namespace BlazorFileUpload
             catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
+            }
+        }
+
+        private async void OnFileUploadDropEventExecute(object sender, BlazorFileUploadEvent e)
+        {
+            if (this.DropzoneElementId == e.FileUploadDropzoneId)
+            {
+
             }
         }
 
