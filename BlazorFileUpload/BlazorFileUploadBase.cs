@@ -13,12 +13,12 @@ namespace BlazorFileUpload
     public class BlazorFileUploadBase : ComponentBase, IDisposable
     {
 
+        [Inject] protected BlazorFileUploadService BlazorFileUploadService { get; set; }
+
         [Parameter] public Dictionary<string, string> FileUploadHeaders { get; set; }
         [Parameter] public string ApiUrl { get; set; }
         [Parameter] public string InputFileId { get; set; }
         [Parameter] public string DropzoneElementId { get; set; }
-
-        [Inject] protected BlazorFileUploadService BlazorFileUploadService { get; set; }        
 
         public event EventHandler<Dictionary<Guid, BlazorFileUploadModel>> OnUploadImagesEvent;
         public Dictionary<Guid, BlazorFileUploadModel> FileUploadModels = new Dictionary<Guid, BlazorFileUploadModel>();
@@ -47,8 +47,6 @@ namespace BlazorFileUpload
 
         public async Task OnBlazorFileUploadChange(InputFileChangeEventArgs e)
         {
-            Console.WriteLine("on input file change event");
-
             var maxFiles = 3;
             var imageFormat = "image/png";
 
@@ -151,7 +149,7 @@ namespace BlazorFileUpload
             }
         }
 
-        private async void OnFileUploadDropEventExecute(object sender, BlazorFileUploadEvent e)
+        private void OnFileUploadDropEventExecute(object sender, BlazorFileUploadEvent e)
         {
             if (this.DropzoneElementId == e.FileUploadDropzoneId)
             {

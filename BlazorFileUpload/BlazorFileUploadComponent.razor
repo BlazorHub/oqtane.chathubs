@@ -8,25 +8,20 @@
 
 <style>
 
-    .blazor-file-upload-dropzone {        
+    .blazor-file-upload-dropzone {
         width: 100%;
         height: 100px;
         background-color: rgba(255,216,0,0.3);
         border: 3px dashed #ff006e;
     }
 
-    .blazor-file-upload-active-dropzone {
-        background-color: rgba(76, 255, 0, 0.3);
-        border: 3px dashed rgb(0, 255, 144);
-    }
-
 </style>
 
-<div style="overflow: hidden;">
+<div class="my-1" style="overflow: hidden;">
     <InputFile OnChange="@OnBlazorFileUploadChange" id="@InputFileId" multiple />
 </div>
 
-<div class="w-100 my-2">
+<div class="w-100 my-1">
     <div id="@DropzoneElementId" class="blazor-file-upload-dropzone d-flex align-items-center justify-content-center px-3">
 
         <span class="text-white bg-primary p-sm-2">
@@ -38,7 +33,11 @@
 
 @if (FileUploadModels.Count > 0)
 {
-    <div class="d-flex w-100">
+    <div class="progress my-1" style="height: 3px;">
+        <div class="progress-bar bg-success" role="progressbar" style="width: @(progresswidth)%" aria-valuenow="@(progresswidth)" aria-valuemin="0" aria-valuemax="100"></div>
+    </div>
+
+    <div class="d-flex w-100 my-1">
 
         @foreach (var dicitem in FileUploadModels)
         {
@@ -54,16 +53,12 @@
 
     </div>
 
-    <div class="progress my-2" style="height: 3px;">
-      <div class="progress-bar bg-success" role="progressbar" style="width: @(progresswidth)%" aria-valuenow="@(progresswidth)" aria-valuemin="0" aria-valuemax="100"></div>
-    </div>
-
     <button type="button" class="btn btn-sm btn-primary" @onclick="async () => UploadImages_Clicked()">
         Upload Images
     </button>
 }
 
-<div class="alert alert-info my-2">
+<div class="alert alert-info my-1">
     Max. 3 Images / Upload.
 </div>
 
