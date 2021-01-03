@@ -1,6 +1,6 @@
 ![Module](https://github.com/boredanyway/oqtane.chathubs/blob/master/anyways-logo.png?raw=true "Module")
 
-# Asp .Net Core Blazor SingalR Entity Framework Core Chat Hub Template
+# Asp .Net Core Blazor SignalR Entity Framework Core Chat Hub Template
 
 The oqtane chathubs module allows developers to code and run realtime chat. Post issues anytime you want it is okay and appreciated i will reply as soon as im ready and fixed it anyhow. 
 
@@ -9,15 +9,15 @@ The oqtane chathubs module allows developers to code and run realtime chat. Post
 - [x] Get familiar with the [Oqtane Framework](https://github.com/oqtane/oqtane.framework).
 - [x] Clone the Oqtane Github Repository in Visual Studio Team Explorer.
 - [x] Clone the Oqtane ChatHub Module in VS Team Explorer and build in debug and release mode.
-- [ ] get it work somehow good luck anyway
+- [ ] get it work somehow good luck anyways
 
-Edit _Host.cshtml end of head tag:
+# Edit _Host.cshtml end of head tag:
 ```HTML
 <script src="_content/MatBlazor/dist/matBlazor.js"></script>
 <link href="_content/MatBlazor/dist/matBlazor.css" rel="stylesheet" />
 ```
 
-Edit _Host.cshtml end of body tag:
+# Edit _Host.cshtml end of body tag:
 ```HTML
 <script async defer src="https://buttons.github.io/buttons.js"></script>
 <script src="_content/BlazorStrap/blazorStrap.js"></script>
@@ -26,7 +26,7 @@ Edit _Host.cshtml end of body tag:
 <script src="modules/oqtane.chathubs/chat-hub-js-interop.js"></script>
 ```
 
-Edit startup.cs configure services methode:
+# Edit startup.cs configure services methode:
 ```C#
 services.AddScoped<VideoService, VideoService>();
 services.AddScoped<BlazorAlertsService, BlazorAlertsService>();
@@ -54,7 +54,7 @@ services.AddSignalR()
     });
 ```
 
-Edit startup.cs configure runtime pipeline:
+# Edit startup.cs configure runtime pipeline:
 ```C#	
 endpoints.MapHub<ChatHub>("/chathub", options =>
 {
@@ -66,7 +66,7 @@ endpoints.MapHub<ChatHub>("/chathub", options =>
 });
 ```
 
-Edit TenantResolver.cs (workarround for signalr hub http context multiple tenant resolving):
+# Edit TenantResolver.cs (workarround for signalr hub http context multiple tenant resolving):
 ```C#
 if (segments.Length > 1 && (segments[1] == "api" || segments[1] == "pages") && segments[0] != "~")
 {
@@ -78,7 +78,7 @@ else if (segments[0] == "chathub")
 }
 ```
 
-Module Dependencies so far
+# Module Dependencies so far
 ```C#
 <dependency id="Oqtane.Framework" version="1.0.0" />      
 <dependency id="System.Drawing.Common" version="5.0.0" />
