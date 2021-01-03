@@ -33,7 +33,7 @@ namespace Oqtane.ChatHubs.Repository
         Task<ChatHubUser> GetUserByUserNameAsync(string username);
         Task<ChatHubUser> GetUserByDisplayName(string displayName);
         ChatHubModerator GetChatHubModerator(int ChatHubUserId);
-        Task<IQueryable<ChatHubModerator>> GetChatHubModerators(ChatHubRoom ChatHubRoom);
+        IQueryable<ChatHubModerator> GetChatHubModerators(ChatHubRoom ChatHubRoom);
         ChatHubRoomChatHubModerator GetChatHubRoomChatHubModerator(int chatHubRoomId, int chatHubModeratorId);
 
         #endregion

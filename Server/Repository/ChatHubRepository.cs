@@ -251,7 +251,7 @@ namespace Oqtane.ChatHubs.Repository
                 throw;
             }
         }
-        public async Task<IQueryable<ChatHubModerator>> GetChatHubModerators(ChatHubRoom ChatHubRoom)
+        public IQueryable<ChatHubModerator> GetChatHubModerators(ChatHubRoom ChatHubRoom)
         {
             try
             {
