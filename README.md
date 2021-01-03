@@ -11,13 +11,13 @@ The oqtane chathubs module allows developers to code and run realtime chat. Post
 - [x] Clone the Oqtane ChatHub Module in VS Team Explorer and build in debug and release mode.
 - [ ] get it work somehow good luck anyways
 
-# Edit _Host.cshtml end of head tag:
+# Edit _Host.cshtml end of head tag
 ```HTML
 <script src="_content/MatBlazor/dist/matBlazor.js"></script>
 <link href="_content/MatBlazor/dist/matBlazor.css" rel="stylesheet" />
 ```
 
-# Edit _Host.cshtml end of body tag:
+# Edit _Host.cshtml end of body tag
 ```HTML
 <script async defer src="https://buttons.github.io/buttons.js"></script>
 <script src="_content/BlazorStrap/blazorStrap.js"></script>
@@ -26,7 +26,7 @@ The oqtane chathubs module allows developers to code and run realtime chat. Post
 <script src="modules/oqtane.chathubs/chat-hub-js-interop.js"></script>
 ```
 
-# Edit startup.cs configure services methode:
+# Edit startup.cs configure services methode
 ```C#
 services.AddScoped<VideoService, VideoService>();
 services.AddScoped<BlazorAlertsService, BlazorAlertsService>();
@@ -54,7 +54,7 @@ services.AddSignalR()
     });
 ```
 
-# Edit startup.cs configure runtime pipeline:
+# Edit startup.cs configure runtime pipeline
 ```C#	
 endpoints.MapHub<ChatHub>("/chathub", options =>
 {
@@ -66,7 +66,7 @@ endpoints.MapHub<ChatHub>("/chathub", options =>
 });
 ```
 
-# Edit TenantResolver.cs (workarround for signalr hub http context multiple tenant resolving):
+# Edit TenantResolver.cs
 ```C#
 if (segments.Length > 1 && (segments[1] == "api" || segments[1] == "pages") && segments[0] != "~")
 {
