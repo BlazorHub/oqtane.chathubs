@@ -1,6 +1,8 @@
-# Oqtane ChatHub Module
+![Module](https://github.com/boredanyway/oqtane.chathubs/blob/master/anyways-logo.png?raw=true "Module")
 
-The chathubs module allows developers to code and run realtime chat. Post issues anytime you want it is okay and appreciated i will reply as soon as im ready and fixed it anyhow. 
+# Asp .Net Core Blazor SingalR Entity Framework Core Chat Hub Template
+
+The oqtane chathubs module allows developers to code and run realtime chat. Post issues anytime you want it is okay and appreciated i will reply as soon as im ready and fixed it anyhow. 
 
 # Getting Started For Oqtane ChatHub Module Dev
 
@@ -17,18 +19,20 @@ Edit _Host.cshtml end of head tag:
 
 Edit _Host.cshtml end of body tag:
 ```HTML
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 <script async defer src="https://buttons.github.io/buttons.js"></script>
 <script src="_content/BlazorStrap/blazorStrap.js"></script>
 <script src="_content/BlazorTable/BlazorTable.min.js"></script>
+<script src="modules/oqtane.chathubs/chat-hub-generated-bootstrap.min.css"></script>
 <script src="modules/oqtane.chathubs/chat-hub-js-interop.js"></script>
 ```
 
 Edit startup.cs configure services methode:
 ```C#
+services.AddScoped<VideoService, VideoService>();
 services.AddScoped<BlazorAlertsService, BlazorAlertsService>();
 services.AddScoped<BlazorDraggableListService, BlazorDraggableListService>();
-services.AddFileReaderService();
+services.AddScoped<BlazorFileUploadService, BlazorFileUploadService>();
+
 
 services.AddMvc()
     .AddNewtonsoftJson(options => 
@@ -76,15 +80,14 @@ else if (segments[0] == "chathub")
 
 Module Dependencies so far
 ```C#
-<dependency id="System.Drawing.Common" version="4.7.0" />
+<dependency id="Oqtane.Framework" version="1.0.0" />      
+<dependency id="System.Drawing.Common" version="5.0.0" />
 <dependency id="MatBlazor" version="2.3.0" />
-<dependency id="BlazorTable" version="1.11.1" />
 <dependency id="Microsoft.CSharp" version="4.7.0" />
 <dependency id="BlazorStrap" version="1.3.3" />
-<dependency id="Tewr.Blazor.FileReader" version="1.4.0.20072" />
-<dependency id="Microsoft.AspNetCore.SignalR.Client" version="3.1.4" />
-<dependency id="Microsoft.AspNetCore.SignalR.Protocols.MessagePack" version="3.1.4" />
-<dependency id="Microsoft.AspNetCore.SignalR.Protocols.NewtonsoftJson" version="3.1.4" />
+<dependency id="Microsoft.AspNetCore.SignalR.Client" version="5.0.0" />
+<dependency id="Microsoft.AspNetCore.SignalR.Protocols.MessagePack" version="5.0.0" />
+<dependency id="Microsoft.AspNetCore.SignalR.Protocols.NewtonsoftJson" version="5.0.0" />
 <dependency id="Microsoft.Composition" version="1.0.31" />
 ```
 
@@ -98,6 +101,6 @@ Module Dependencies so far
 
 Demo Website [Link](https://anyways.tv/).
 
-# Donate Button
+# Donation Buttom
 
 [![Donate](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=DZVSWXB4L2GWA)
