@@ -1,6 +1,7 @@
 ﻿@namespace Oqtane.ChatHubs
 
 @using System.Text.Json
+@using BlazorFileUpload
 
 @inherits EditBase
 
@@ -31,9 +32,14 @@
                 <img class="img-thumbnail" width="200" height="200" src="@string.Format("{0}/modules/oqtane.chathubs/images/rooms/{1}", NavigationManager.BaseUri, imageUrl)" alt="Profile Image" />
             }
 
-            <input type="file" @ref=inputElement />
-            <button @onclick=ReadFile class="btn btn-primary">Read file</button>
-            <button @onclick=ClearFile class="btn btn-primary">Clear</button>
+            @{ 
+                Dictionary<string, string> headers = new Dictionary<string, string>();
+                headers.Add("roomid", this.roomId.ToString());
+
+                var url = string.Concat(NavigationManager.BaseUri.Substring(0, NavigationManager.BaseUri.LastIndexOf('/')), this.ChatHubService.apiurl, "/postroomimageupload");
+            }
+
+            <BlazorFileUploadComponent ApiUrl="@url" FileUploadHeaders="@headers" InputFileId="@FileUploadInputFileElementId" DropzoneElementId="@FileUploadDropzoneContainerElementId"></BlazorFileUploadComponent>
 
             <br />
         </td>

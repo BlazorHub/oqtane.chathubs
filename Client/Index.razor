@@ -110,9 +110,9 @@
 
                             <div class="d-flex flex-wrap flex-sm-nowrap align-items-center w-100">
 
-                                <div style="max-width: 140px">
-                                    <img src="@string.Format("{0}/modules/oqtane.chathubs/images/rooms/{1}", NavigationManager.BaseUri, context.ImageUrl)" class="@(string.IsNullOrEmpty(context.ImageUrl) ? "d-none" : "img-fuid bg-light")" />
-                                    <img src="@string.Format("{0}/modules/oqtane.chathubs/images/chat-room-image.png", NavigationManager.BaseUri, context.ImageUrl)" class="@(string.IsNullOrEmpty(context.ImageUrl) ? "img-fluid bg-light" : "d-none")" />
+                                <div class="px-1">
+                                    <img src="@string.Format("{0}/modules/oqtane.chathubs/images/rooms/{1}", NavigationManager.BaseUri, context.ImageUrl)" class="@(string.IsNullOrEmpty(context.ImageUrl) ? "d-none" : "img-fuid bg-light")" style="max-width: 120px" />
+                                    <img src="@string.Format("{0}/modules/oqtane.chathubs/images/chat-room-image.png", NavigationManager.BaseUri, context.ImageUrl)" class="@(string.IsNullOrEmpty(context.ImageUrl) ? "img-fluid bg-light" : "d-none")" style="max-width: 120px" />
                                 </div>
 
                                 <div class="px-1 py-2">
@@ -501,21 +501,6 @@
 
                                                             </WindowContent>
                                                         </WindowItem>
-                                                        @*
-                                                            <WindowItem>
-                                                                <WindowTitle><div><span class="oi oi-image"></span></div></WindowTitle>
-                                                                <WindowContent>
-
-                                                                    <div class="px-sm-1 py-3">
-
-                                                                        <h5>Share your pics <span class="badge badge-success">FREE</span></h5>
-                                                                        <FileReaderComponent ModuleId="@ModuleState.ModuleId.ToString()" ChatHubRoomId="@room.Id.ToString()" />
-
-                                                                    </div>
-
-                                                                </WindowContent>
-                                                            </WindowItem>
-                                                        *@
                                                         <WindowItem>
                                                             <WindowTitle><div><span class="oi oi-image"></span></div></WindowTitle>
                                                             <WindowContent>
