@@ -58,20 +58,10 @@ namespace BlazorPager
             this.UpdateContext();
         }
 
-        protected override void OnInitialized()
-        {
-            base.OnInitialized();
-        }
-
         protected override void OnParametersSet()
         {
             this.UpdateContext();
             base.OnParametersSet();
-        }
-
-        protected override void OnAfterRender(bool firstRender)
-        {
-            base.OnAfterRender(firstRender);
         }
 
     }

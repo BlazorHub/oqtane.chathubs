@@ -8,7 +8,6 @@ using System.Threading.Tasks;
 
 namespace BlazorFileUpload
 {
-
     public class BlazorFileUploadBase : ComponentBase, IDisposable
     {
 

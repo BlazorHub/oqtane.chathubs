@@ -671,7 +671,7 @@
                 videojsdotnetobj,
                 draggablejsdotnetobj,
                 resizejsdotnetobj,
-                fileuploadjsdotnetobj
+                fileuploadjsdotnetobj,
             )
         );
     };

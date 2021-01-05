@@ -9,6 +9,7 @@ namespace BlazorDraggableList
     {
 
         [Inject] BlazorDraggableListService BlazorDraggableListService { get; set; }
+
         [Parameter] public IList<TItemGeneric> Items { get; set; }
         [Parameter] public string Id { get; set; }
         [Parameter] public string Class { get; set; }
@@ -18,11 +19,6 @@ namespace BlazorDraggableList
         {
             this.BlazorDraggableListService.BlazorDraggableListServiceExtension.OnDropEvent += OnDropEventExecute;
             return base.OnInitializedAsync();
-        }
-
-        protected override Task OnParametersSetAsync()
-        {
-            return base.OnParametersSetAsync();
         }
 
         protected override Task OnAfterRenderAsync(bool firstRender)

@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace BlazorDraggableList
+﻿namespace BlazorDraggableList
 {
     public class BlazorDraggableListEvent
     {
