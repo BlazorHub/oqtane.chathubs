@@ -1,7 +1,7 @@
 ﻿@namespace Oqtane.ChatHubs
-
 @inherits IndexBase
 
+@using Microsoft.AspNetCore.Components.Authorization
 @using Microsoft.AspNetCore.SignalR.Client
 @using System.Collections.Generic
 @using System.Linq
@@ -10,9 +10,9 @@
 @using System.Web
 @using BlazorAlerts
 @using BlazorWindows
+@using BlazorTabs
 @using BlazorPager
 @using BlazorFileUpload
-@using Microsoft.AspNetCore.Components.Authorization
 
 <style type="text/css">
 
@@ -66,13 +66,119 @@
 
 </style>
 
+<style type="text/css">
+
+    .blazor-tabs > ul.nav-tabs {
+        border: none;
+        margin: 0;
+    }
+
+        .blazor-tabs > ul.nav-tabs li a:hover, a:focus {
+            text-decoration: none;
+            outline: none;
+        }
+
+        .blazor-tabs > ul.nav-tabs li a {
+            position: relative;
+            z-index: 2;
+            padding: 10px;
+            font-size: 18px;
+            font-weight: 600;
+            color: slateblue;
+            text-transform: capitalize;
+            border: none;
+            border-radius: 0;
+            background: transparent;
+            transition: all 0.2s linear;
+        }
+
+        .blazor-tabs > ul.nav-tabs li:nth-of-type(4n+1) a:before {
+            background-color: slateblue;
+            border-color: slateblue;
+        }
+
+        .blazor-tabs > ul.nav-tabs li:nth-of-type(4n+2) a:before {
+            background-color: gold;
+            border-color: gold;
+        }
+
+        .blazor-tabs > ul.nav-tabs li:nth-of-type(4n+3) a:before {
+            background-color: indianred;
+            border-color: indianred;
+        }
+
+        .blazor-tabs > ul.nav-tabs li:nth-of-type(4n+4) a:before {
+            background-color: seagreen;
+            border-color: seagreen;
+        }
+
+        .blazor-tabs > ul.nav-tabs li:nth-of-type(4n+1) a:after {
+            background-color: slateblue;
+            border-color: slateblue;
+        }
+
+        .blazor-tabs > ul.nav-tabs li:nth-of-type(4n+2) a:after {
+            background-color: gold;
+            border-color: gold;
+        }
+
+        .blazor-tabs > ul.nav-tabs li:nth-of-type(4n+3) a:after {
+            background-color: indianred;
+            border-color: indianred;
+        }
+
+        .blazor-tabs > ul.nav-tabs li:nth-of-type(4n+4) a:after {
+            background-color: seagreen;
+            border-color: seagreen;
+        }
+
+        .blazor-tabs > ul.nav-tabs li a:hover,
+        .blazor-tabs > ul.nav-tabs li.active a {
+            border: none;
+        }
+
+        .blazor-tabs > ul.nav-tabs li a:before {
+            position: absolute;
+            content: "";
+            width: 100%;
+            height: 2px;
+            border-radius: 0px;
+            bottom: 0;
+            left: 0;
+        }
+
+        .blazor-tabs > ul.nav-tabs li a:after {
+            position: absolute;
+            content: "";
+            width: 100%;
+            height: 4px;
+            border-radius: 0px;
+            bottom: 0;
+            left: 0;
+            opacity: 0;
+            z-index: 1;
+            transition: all 0.2s linear;
+        }
+
+        .blazor-tabs > ul.nav-tabs li:hover a:after,
+        .blazor-tabs > ul.nav-tabs li.active a:after {
+            width: 100%;
+            opacity: 1;
+        }
+
+    .blazor-tabs > .nav-tabs-body {
+        margin-top: 10px;
+    }
+
+</style>
+
 <div id="chathub-module-@ModuleState.ModuleId" class="chathubs-container p-sm-3 mb-4">
 
-    <WindowContainer>
+    <TabContainer>
 
-        <WindowItem>
-            <WindowTitle>Lobby</WindowTitle>
-            <WindowContent>
+        <TabItem>
+            <TabTitle>Lobby</TabTitle>
+            <TabContent>
 
                 @if (PageState.QueryString.ContainsKey("moduleid") && PageState.QueryString.ContainsKey("roomid") && int.Parse(PageState.QueryString["moduleid"]) == ModuleState.ModuleId)
                 {
@@ -144,14 +250,14 @@
 
                 }
 
-            </WindowContent>
-        </WindowItem>
+            </TabContent>
+        </TabItem>
 
-        <WindowItem>
-            <WindowTitle>
+        <TabItem>
+            <TabTitle>
                 @ModuleState.ModuleDefinition.Name
-            </WindowTitle>
-            <WindowContent>
+            </TabTitle>
+            <TabContent>
 
                 <div class="d-flex flex-nowrap align-items-center"></div>
 
@@ -592,14 +698,14 @@
                     }
                 }
 
-            </WindowContent>
-        </WindowItem>
+            </TabContent>
+        </TabItem>
 
-        <WindowItem>
-            <WindowTitle>
+        <TabItem>
+            <TabTitle>
                 Settings
-            </WindowTitle>
-            <WindowContent>
+            </TabTitle>
+            <TabContent>
 
                 <div class="d-flex flex-column bg-white px-1 py-3 w-100">
 
@@ -705,14 +811,12 @@
 
                 </div>
 
-            </WindowContent>
+            </TabContent>
+        </TabItem>
 
-        </WindowItem>
-
-        <WindowItem>
-
-            <WindowTitle>About</WindowTitle>
-            <WindowContent>
+        <TabItem>
+            <TabTitle>About</TabTitle>
+            <TabContent>
 
                 <div class="jumbotron jumbotron-fluid bg-white py-1 mt-3 mb-0">
                     <div class="container">
@@ -729,11 +833,10 @@
                     </div>
                 </div>
 
-            </WindowContent>
+            </TabContent>
+        </TabItem>
 
-        </WindowItem>
-
-    </WindowContainer>
+    </TabContainer>
 
     <div class="d-flex flex-column my-2 px-2">
 

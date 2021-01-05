@@ -40,6 +40,8 @@
     <file src="..\BlazorAlerts\bin\Release\net5.0\BlazorAlerts.pdb" target="lib\net5.0" />
     <file src="..\BlazorWindows\bin\Release\net5.0\BlazorWindows.dll" target="lib\net5.0" />
     <file src="..\BlazorWindows\bin\Release\net5.0\BlazorWindows.pdb" target="lib\net5.0" />
+    <file src="..\BlazorTabs\bin\Release\net5.0\BlazorTabs.dll" target="lib\net5.0" />
+    <file src="..\BlazorTabs\bin\Release\net5.0\BlazorTabs.pdb" target="lib\net5.0" />
     <file src="..\BlazorPager\bin\Release\net5.0\BlazorPager.dll" target="lib\net5.0" />
     <file src="..\BlazorPager\bin\Release\net5.0\BlazorPager.pdb" target="lib\net5.0" />
     <file src="..\BlazorDraggableList\bin\Release\net5.0\BlazorDraggableList.dll" target="lib\net5.0" />

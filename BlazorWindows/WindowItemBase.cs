@@ -36,21 +36,6 @@ namespace BlazorWindows
             await base.OnInitializedAsync();
         }
 
-        public override async Task SetParametersAsync(ParameterView parameters)
-        {
-            await base.SetParametersAsync(parameters);
-        }
-
-        protected override async Task OnAfterRenderAsync(bool firstRender)
-        {
-            if (firstRender)
-            {
-
-            }
-
-            await base.OnAfterRenderAsync(firstRender);
-        }
-
         public string TitleCssClass => this.WindowContainer.ActiveWindow == this ? "active" : null;
 
         public async void ActivateWindow()

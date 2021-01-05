@@ -1,12 +1,11 @@
 ﻿using Microsoft.AspNetCore.Components;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
 namespace BlazorWindows
 {
-    public partial class WindowContainerBase : ComponentBase, IDisposable
+    public partial class WindowContainerBase : ComponentBase
     {
         [Parameter] public RenderFragment ChildContent { get; set; }
         [Parameter] public bool RenderLivestreams { get; set; }
@@ -100,11 +99,6 @@ namespace BlazorWindows
                     StateHasChanged();
                 });
             }
-        }
-
-        public void Dispose()
-        {
-            
         }
 
     }
