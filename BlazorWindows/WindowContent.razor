@@ -4,11 +4,9 @@
 
 @code {
 
-    [CascadingParameter]
-    public IWindowItem WindowItem { get; set; }
+    [CascadingParameter] public IWindowItem WindowItem { get; set; }
 
-    [Parameter]
-    public RenderFragment ChildContent { get; set; }
+    [Parameter] public RenderFragment ChildContent { get; set; }
 
     protected override Task OnInitializedAsync()
     {

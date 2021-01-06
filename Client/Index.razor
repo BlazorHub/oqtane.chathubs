@@ -9,6 +9,7 @@
 @using BlazorStrap
 @using System.Web
 @using BlazorAlerts
+@using BlazorModal
 @using BlazorWindows
 @using BlazorTabs
 @using BlazorPager
@@ -122,6 +123,24 @@
 </style>
 
 <div id="chathub-module-@ModuleState.ModuleId" class="chathubs-container p-sm-3 mb-4">
+
+    <BlazorModalComponent ElementId="CustomBlazorModal">
+
+        <BlazorModalHeader>
+            <h5 class="modal-title">Check out from Github</h5>
+        </BlazorModalHeader>
+        <BlazorModalBody>
+
+            <p>Try out the asp .net core blazor signalr entityframework video chat hub template on github.</p>
+
+        </BlazorModalBody>
+        <BlazorModalFooter>
+
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Oki thank you</button>
+
+        </BlazorModalFooter>
+
+    </BlazorModalComponent>
 
     <TabContainer>
 

@@ -28,6 +28,8 @@
         var chathubscontainer = document.querySelector('.chathubs-container');
         chathubscontainer.style.transition = "opacity 0.24s";
         chathubscontainer.style.opacity = "1";
+
+        $('#CustomBlazorModal').modal('show');
     };
 
     window.cookies = {
@@ -85,7 +87,7 @@
                         console.warn('using unknown browser'); return 'video/webm;codecs=opus,vp8';
                     }
                 }
-            },            
+            },
             livestreams: [],
             locallivestream: function (roomId) {
 
