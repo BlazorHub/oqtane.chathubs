@@ -6,6 +6,8 @@ XCOPY "..\Shared\bin\Debug\net5.0\Oqtane.ChatHubs.Shared.Oqtane.dll" "..\..\oqta
 XCOPY "..\Shared\bin\Debug\net5.0\Oqtane.ChatHubs.Shared.Oqtane.pdb" "..\..\oqtane.framework\Oqtane.Server\bin\Debug\net5.0\" /Y
 XCOPY "..\BlazorAlerts\bin\Debug\net5.0\BlazorAlerts.dll" "..\..\oqtane.framework\Oqtane.Server\bin\Debug\net5.0\" /Y
 XCOPY "..\BlazorAlerts\bin\Debug\net5.0\BlazorAlerts.pdb" "..\..\oqtane.framework\Oqtane.Server\bin\Debug\net5.0\" /Y
+XCOPY "..\BlazorSelect\bin\Debug\net5.0\BlazorSelect.dll" "..\..\oqtane.framework\Oqtane.Server\bin\Debug\net5.0\" /Y
+XCOPY "..\BlazorSelect\bin\Debug\net5.0\BlazorSelect.pdb" "..\..\oqtane.framework\Oqtane.Server\bin\Debug\net5.0\" /Y
 XCOPY "..\BlazorModal\bin\Debug\net5.0\BlazorModal.dll" "..\..\oqtane.framework\Oqtane.Server\bin\Debug\net5.0\" /Y
 XCOPY "..\BlazorModal\bin\Debug\net5.0\BlazorModal.pdb" "..\..\oqtane.framework\Oqtane.Server\bin\Debug\net5.0\" /Y
 XCOPY "..\BlazorWindows\bin\Debug\net5.0\BlazorWindows.dll" "..\..\oqtane.framework\Oqtane.Server\bin\Debug\net5.0\" /Y

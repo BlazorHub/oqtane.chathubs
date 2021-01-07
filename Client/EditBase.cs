@@ -9,6 +9,9 @@ using Oqtane.Shared.Enums;
 using Oqtane.Shared.Models;
 using Oqtane.Shared;
 using BlazorAlerts;
+using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Oqtane.ChatHubs
 {
@@ -24,6 +27,9 @@ namespace Oqtane.ChatHubs
 
         protected readonly string FileUploadDropzoneContainerElementId = "EditComponentFileUploadDropzoneContainer";
         protected readonly string FileUploadInputFileElementId = "EditComponentFileUploadInputFileContainer";
+
+        public HashSet<string> SelectionItems { get; set; } = new HashSet<string>();
+        public string SelectedItem { get; set; }
 
         public override SecurityAccessLevel SecurityAccessLevel { get { return SecurityAccessLevel.Anonymous; } }
         public override string Actions { get { return "Add,Edit"; } }
@@ -41,6 +47,13 @@ namespace Oqtane.ChatHubs
         {
             try
             {
+                foreach(var item in Enum.GetNames(typeof(ChatHubRoomType)))
+                {
+                    this.SelectionItems.Add(item);
+                }
+
+                this.SelectedItem = SelectionItems.FirstOrDefault(item => item == ChatHubRoomType.Public.ToString());
+
                 this.ChatHubService.OnUpdateUI += (object sender, EventArgs e) => UpdateUIStateHasChanged();
                 await this.InitContextRoomAsync();
             }

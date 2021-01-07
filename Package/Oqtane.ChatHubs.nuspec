@@ -38,6 +38,8 @@
     <file src="..\Shared\bin\Release\net5.0\Oqtane.ChatHubs.Shared.Oqtane.pdb" target="lib\net5.0" />
     <file src="..\BlazorAlerts\bin\Release\net5.0\BlazorAlerts.dll" target="lib\net5.0" />
     <file src="..\BlazorAlerts\bin\Release\net5.0\BlazorAlerts.pdb" target="lib\net5.0" />
+    <file src="..\BlazorSelect\bin\Release\net5.0\BlazorSelect.dll" target="lib\net5.0" />
+    <file src="..\BlazorSelect\bin\Release\net5.0\BlazorSelect.pdb" target="lib\net5.0" />
     <file src="..\BlazorModal\bin\Release\net5.0\BlazorModal.dll" target="lib\net5.0" />
     <file src="..\BlazorModal\bin\Release\net5.0\BlazorModal.pdb" target="lib\net5.0" />
     <file src="..\BlazorWindows\bin\Release\net5.0\BlazorWindows.dll" target="lib\net5.0" />

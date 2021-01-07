@@ -2,6 +2,8 @@
 
 @using System.Text.Json
 @using BlazorFileUpload
+@using BlazorSelect
+@using Oqtane.Shared.Enums
 
 @inherits EditBase
 
@@ -24,6 +26,14 @@
     </tr>
     <tr>
         <td>
+            <label for="Type" class="control-label">Type: </label>
+        </td>
+        <td>
+            <BlazorSelectComponent SelectionItems="@SelectionItems" SelectedItem="@SelectedItem"></BlazorSelectComponent>
+        </td>
+    </tr>
+    <tr>
+        <td>
             <label for="Content" class="control-label">Image: </label>
         </td>
         <td>
@@ -32,7 +42,7 @@
                 <img class="img-thumbnail" width="200" height="200" src="@string.Format("{0}/modules/oqtane.chathubs/images/rooms/{1}", NavigationManager.BaseUri, imageUrl)" alt="Profile Image" />
             }
 
-            @{ 
+            @{
                 Dictionary<string, string> headers = new Dictionary<string, string>();
                 headers.Add("roomid", this.roomId.ToString());
 
