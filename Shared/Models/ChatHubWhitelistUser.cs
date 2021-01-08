@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Oqtane.Shared.Models
 {
-    public class ChatHubWhitelistUser
+    public class ChatHubWhitelistUser : ChatHubBaseModel
     {
         public int ChatHubUserId { get; set; }
         public string WhitelistUserDisplayName { get; set; }

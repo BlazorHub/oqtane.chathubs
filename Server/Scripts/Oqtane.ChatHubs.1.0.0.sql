@@ -169,6 +169,36 @@ CREATE TABLE [dbo].[ChatHubRoomChatHubModerator](
 )
 GO
 
+CREATE TABLE [dbo].[ChatHubWhitelistUser](
+	[Id] [int] IDENTITY(1,1) NOT NULL,
+	[ChatHubUserId] [int] NOT NULL,
+	[WhitelistUserDisplayName] [nvarchar](512) NOT NULL,
+	[CreatedBy] [nvarchar](256) NOT NULL,
+	[CreatedOn] [datetime] NOT NULL,
+	[ModifiedBy] [nvarchar](256) NOT NULL,
+	[ModifiedOn] [datetime] NOT NULL,
+  CONSTRAINT [PK_ChatHubWhitelistUser] PRIMARY KEY CLUSTERED 
+  (
+	[Id] ASC
+  )
+)
+GO
+
+CREATE TABLE [dbo].[ChatHubRoomChatHubWhitelistUser](
+	[Id] [int] IDENTITY(1,1) NOT NULL,
+	[ChatHubRoomId] [int] NOT NULL,
+	[ChatHubWhitelistUserId] [int] NOT NULL,
+	[CreatedBy] [nvarchar](256) NOT NULL,
+	[CreatedOn] [datetime] NOT NULL,
+	[ModifiedBy] [nvarchar](256) NOT NULL,
+	[ModifiedOn] [datetime] NOT NULL,
+  CONSTRAINT [PK_ChatHubRoomChatHubWhitelistUser] PRIMARY KEY CLUSTERED 
+  (
+	[Id] ASC
+  )
+)
+GO
+
 /*
 Alter Table Add Columns
 */
@@ -246,6 +276,21 @@ ON DELETE CASCADE
 GO
 
 ALTER TABLE [dbo].[ChatHubRoomChatHubModerator]  WITH CHECK ADD  CONSTRAINT [FK_ChatHubRoomChatHubModerator_ChatHubModerator] FOREIGN KEY([ChatHubModeratorId])
+REFERENCES [dbo].[ChatHubModerator] ([Id])
+ON DELETE CASCADE
+GO
+
+ALTER TABLE [dbo].[ChatHubWhitelistUser]  WITH CHECK ADD  CONSTRAINT [FK_ChatHubWhitelistUser_ChatHubUser] FOREIGN KEY([ChatHubUserId])
+REFERENCES [dbo].[User] ([UserId])
+ON DELETE CASCADE
+GO
+
+ALTER TABLE [dbo].[ChatHubRoomChatHubWhitelistUser]  WITH CHECK ADD  CONSTRAINT [FK_ChatHubRoomChatHubWhitelistUser_ChatHubRoom] FOREIGN KEY([ChatHubRoomId])
+REFERENCES [dbo].[ChatHubRoom] ([Id])
+ON DELETE CASCADE
+GO
+
+ALTER TABLE [dbo].[ChatHubRoomChatHubWhitelistUser]  WITH CHECK ADD  CONSTRAINT [FK_ChatHubRoomChatHubWhitelistUser_ChatHubWhitelistUser] FOREIGN KEY([ChatHubWhitelistUserId])
 REFERENCES [dbo].[ChatHubModerator] ([Id])
 ON DELETE CASCADE
 GO

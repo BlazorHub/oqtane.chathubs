@@ -2,7 +2,7 @@
 
 namespace Oqtane.Shared.Models
 {
-    public class ChatHubRoomChatHubWhitelistUser
+    public class ChatHubRoomChatHubWhitelistUser : ChatHubBaseModel
     {
         public int ChatHubRoomId { get; set; }
         public int ChatHubWhitelistUserId { get; set; }
