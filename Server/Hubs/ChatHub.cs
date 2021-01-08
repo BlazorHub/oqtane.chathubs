@@ -247,6 +247,10 @@ namespace Oqtane.ChatHubs.Hubs
             ChatHubUser user = await this.GetChatHubUserAsync();
 
             var rooms = this.chatHubRepository.GetChatHubRoomsByUser(user).Public().ToList();
+            if (Context.User.Identity.IsAuthenticated)
+            {
+                rooms.AddRange(this.chatHubRepository.GetChatHubRooms().Protected().ToList());
+            }
             foreach (var room in rooms)
             {
                 await this.EnterChatRoom(room.Id);
