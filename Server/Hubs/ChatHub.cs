@@ -249,8 +249,9 @@ namespace Oqtane.ChatHubs.Hubs
             var rooms = this.chatHubRepository.GetChatHubRoomsByUser(user).Public().ToList();
             if (Context.User.Identity.IsAuthenticated)
             {
-                rooms.AddRange(this.chatHubRepository.GetChatHubRooms().Protected().ToList());
+                rooms.AddRange(this.chatHubRepository.GetChatHubRoomsByUser(user).Protected().ToList());
             }
+            
             foreach (var room in rooms)
             {
                 await this.EnterChatRoom(room.Id);
@@ -268,6 +269,14 @@ namespace Oqtane.ChatHubs.Hubs
                 if (!Context.User.Identity.IsAuthenticated)
                 {
                     throw new HubException("This room is for authenticated user only.");
+                }
+            }
+
+            if (room.Private())
+            {
+                if (!this.chatHubService.IsValidPrivateConnection(room, user))
+                {
+                    throw new HubException("No valid private room connection.");
                 }
             }
 
@@ -318,6 +327,14 @@ namespace Oqtane.ChatHubs.Hubs
                 if (!Context.User.Identity.IsAuthenticated)
                 {
                     throw new HubException("This room is for authenticated user only.");
+                }
+            }
+
+            if (room.Private())
+            {
+                if (!this.chatHubService.IsValidPrivateConnection(room, user))
+                {
+                    throw new HubException("No valid private room connection.");
                 }
             }
 

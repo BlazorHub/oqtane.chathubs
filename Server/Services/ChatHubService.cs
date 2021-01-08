@@ -249,6 +249,10 @@ namespace Oqtane.ChatHubs.Services
         {
             return room.OneVsOneId.Split('|').OrderBy(item => item).Any(item => item == caller.UserId.ToString());
         }
+        public bool IsValidPrivateConnection(ChatHubRoom room, ChatHubUser caller)
+        {
+            return false;
+        }
         public string MakeStringAnonymous(string value, int tolerance, char symbol = '*')
         {
             if (tolerance >= value.Length)

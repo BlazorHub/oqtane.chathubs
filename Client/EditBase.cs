@@ -51,10 +51,9 @@ namespace Oqtane.ChatHubs
         {
             try
             {
-                foreach(var item in Enum.GetNames(typeof(ChatHubRoomType)))
-                {
-                    this.SelectionItems.Add(item);
-                }
+                this.SelectionItems.Add(ChatHubRoomType.Public.ToString());
+                this.SelectionItems.Add(ChatHubRoomType.Protected.ToString());
+                this.SelectionItems.Add(ChatHubRoomType.Private.ToString());
 
                 this.ChatHubService.OnUpdateUI += (object sender, EventArgs e) => UpdateUIStateHasChanged();
                 await this.InitContextRoomAsync();
