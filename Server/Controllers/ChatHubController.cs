@@ -59,7 +59,12 @@ namespace Oqtane.ChatHubs.Controllers
             {
                 IList<ChatHubRoom> chatHubRooms = new List<ChatHubRoom>();
 
-                var rooms = chatHubRepository.GetChatHubRooms().Public().ToList();
+                var rooms = this.chatHubRepository.GetChatHubRooms().Public().ToList();
+                if(HttpContext.User.Identity.IsAuthenticated)
+                {
+                    rooms.AddRange(this.chatHubRepository.GetChatHubRooms().Protected().ToList());
+                }
+
                 if (rooms != null && rooms.Any())
                 {
                     foreach(var room in rooms)
@@ -88,7 +93,12 @@ namespace Oqtane.ChatHubs.Controllers
                 IList<ChatHubRoom> chatHubRooms = new List<ChatHubRoom>();
                 if (moduleid == EntityId)
                 {
-                    var rooms = chatHubRepository.GetChatHubRoomsByModuleId(moduleid).Public().ToList();
+                    var rooms = this.chatHubRepository.GetChatHubRoomsByModuleId(moduleid).Public().ToList();
+                    if (HttpContext.User.Identity.IsAuthenticated)
+                    {
+                        rooms.AddRange(this.chatHubRepository.GetChatHubRooms().Protected().ToList());
+                    }
+
                     if (rooms != null && rooms.Any())
                     {
                         foreach (var room in rooms)

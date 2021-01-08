@@ -39,6 +39,16 @@ namespace Oqtane.ChatHubs.Repository
             return rooms.Where(room => room.Type == ChatHubRoomType.Public.ToString());
         }
 
+        public static IQueryable<ChatHubRoom> Protected(this IQueryable<ChatHubRoom> rooms)
+        {
+            return rooms.Where(room => room.Type == ChatHubRoomType.Protected.ToString());
+        }
+
+        public static IQueryable<ChatHubRoom> Private(this IQueryable<ChatHubRoom> rooms)
+        {
+            return rooms.Where(room => room.Type == ChatHubRoomType.Private.ToString());
+        }
+
         public static IQueryable<ChatHubRoom> OneVsOne(this IQueryable<ChatHubRoom> rooms)
         {
             return rooms.Where(room => room.Type == ChatHubRoomType.OneVsOne.ToString());
@@ -47,6 +57,16 @@ namespace Oqtane.ChatHubs.Repository
         public static bool Public(this ChatHubRoom room)
         {
             return room.Type == ChatHubRoomType.Public.ToString();
+        }
+
+        public static bool Protected(this ChatHubRoom room)
+        {
+            return room.Type == ChatHubRoomType.Protected.ToString();
+        }
+
+        public static bool Private(this ChatHubRoom room)
+        {
+            return room.Type == ChatHubRoomType.Private.ToString();
         }
 
         public static bool OneVsOne(this ChatHubRoom room)

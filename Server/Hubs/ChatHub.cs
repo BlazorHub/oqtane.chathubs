@@ -259,6 +259,14 @@ namespace Oqtane.ChatHubs.Hubs
             ChatHubUser user = await this.GetChatHubUserAsync();
             ChatHubRoom room = chatHubRepository.GetChatHubRoom(roomId);
 
+            if(room.Protected())
+            {
+                if (!Context.User.Identity.IsAuthenticated)
+                {
+                    throw new HubException("This room is for authenticated user only.");
+                }
+            }
+
             if (room.OneVsOne())
             {
                 if (!this.chatHubService.IsValidOneVsOneConnection(room, user))
@@ -267,7 +275,7 @@ namespace Oqtane.ChatHubs.Hubs
                 }
             }
 
-            if (room.Public() || room.OneVsOne())
+            if (room.Public() || room.Protected() || room.OneVsOne())
             {
                 ChatHubRoomChatHubUser room_user = new ChatHubRoomChatHubUser()
                 {

@@ -9,9 +9,8 @@ using Oqtane.Shared.Enums;
 using Oqtane.Shared.Models;
 using Oqtane.Shared;
 using BlazorAlerts;
-using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
+using BlazorSelect;
 
 namespace Oqtane.ChatHubs
 {
@@ -29,7 +28,6 @@ namespace Oqtane.ChatHubs
         protected readonly string FileUploadInputFileElementId = "EditComponentFileUploadInputFileContainer";
 
         public HashSet<string> SelectionItems { get; set; } = new HashSet<string>();
-        public string SelectedItem { get; set; }
 
         public override SecurityAccessLevel SecurityAccessLevel { get { return SecurityAccessLevel.Anonymous; } }
         public override string Actions { get { return "Add,Edit"; } }
@@ -37,11 +35,17 @@ namespace Oqtane.ChatHubs
         public int roomId = -1;
         public string title;
         public string content;
+        public string type;
         public string imageUrl;
         public string createdby;
         public DateTime createdon;
         public string modifiedby;
         public DateTime modifiedon;
+
+        public void OnSelect(BlazorSelectEvent e)
+        {
+            this.type = e.SelectedItem;
+        }
 
         protected override async Task OnInitializedAsync()
         {
@@ -51,8 +55,6 @@ namespace Oqtane.ChatHubs
                 {
                     this.SelectionItems.Add(item);
                 }
-
-                this.SelectedItem = SelectionItems.FirstOrDefault(item => item == ChatHubRoomType.Public.ToString());
 
                 this.ChatHubService.OnUpdateUI += (object sender, EventArgs e) => UpdateUIStateHasChanged();
                 await this.InitContextRoomAsync();
@@ -74,13 +76,14 @@ namespace Oqtane.ChatHubs
                     ChatHubRoom room = await this.ChatHubService.GetChatHubRoomAsync(roomId, ModuleState.ModuleId);
                     if (room != null)
                     {
-                        title = room.Title;
-                        content = room.Content;
-                        imageUrl = room.ImageUrl;
-                        createdby = room.CreatedBy;
-                        createdon = room.CreatedOn;
-                        modifiedby = room.ModifiedBy;
-                        modifiedon = room.ModifiedOn;
+                        this.title = room.Title;
+                        this.content = room.Content;
+                        this.type = room.Type;
+                        this.imageUrl = room.ImageUrl;
+                        this.createdby = room.CreatedBy;
+                        this.createdon = room.CreatedOn;
+                        this.modifiedby = room.ModifiedBy;
+                        this.modifiedon = room.ModifiedOn;
                     }
                     else
                     {
@@ -105,9 +108,9 @@ namespace Oqtane.ChatHubs
                     ChatHubRoom room = new ChatHubRoom()
                     {
                         ModuleId = ModuleState.ModuleId,
-                        Title = title,
-                        Content = content,
-                        Type = Enum.GetName(typeof(ChatHubRoomType), ChatHubRoomType.Public),
+                        Title = this.title,
+                        Content = this.content,
+                        Type = this.type,
                         Status = Enum.GetName(typeof(ChatHubRoomStatus), ChatHubRoomStatus.Active),
                         ImageUrl = string.Empty,
                         OneVsOneId = string.Empty,
@@ -123,8 +126,9 @@ namespace Oqtane.ChatHubs
                     ChatHubRoom room = await this.ChatHubService.GetChatHubRoomAsync(roomId, ModuleState.ModuleId);
                     if (room != null)
                     {
-                        room.Title = title;
-                        room.Content = content;
+                        room.Title = this.title;
+                        room.Content = this.content;
+                        room.Type = this.type;
 
                         await this.ChatHubService.UpdateChatHubRoomAsync(room);
 

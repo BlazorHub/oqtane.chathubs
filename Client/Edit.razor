@@ -29,7 +29,7 @@
             <label for="Type" class="control-label">Type: </label>
         </td>
         <td>
-            <BlazorSelectComponent SelectionItems="@SelectionItems" SelectedItem="@SelectedItem"></BlazorSelectComponent>
+            <BlazorSelectComponent SelectionItems="@SelectionItems" SelectedItem="@type" SelectEvent="@OnSelect"></BlazorSelectComponent>
         </td>
     </tr>
     <tr>

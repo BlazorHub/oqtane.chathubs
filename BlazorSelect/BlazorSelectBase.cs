@@ -10,5 +10,12 @@ namespace BlazorSelect
 
         [Parameter] public string SelectedItem { get; set; }
 
+        [Parameter] public EventCallback<BlazorSelectEvent> SelectEvent { get; set; }
+
+        public void OnSelectionChange(ChangeEventArgs e)
+        {
+            InvokeAsync(() => this.SelectEvent.InvokeAsync(new BlazorSelectEvent() { SelectedItem = e.Value.ToString() }));
+        }
+
     }
 }
