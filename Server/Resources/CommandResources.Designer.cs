@@ -203,5 +203,14 @@ namespace Oqtane.ChatHubs.Server.Resources {
                 return ResourceManager.GetString("whisper", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to whitelistuser.
+        /// </summary>
+        public static string whitelistuser {
+            get {
+                return ResourceManager.GetString("whitelistuser", resourceCulture);
+            }
+        }
     }
 }

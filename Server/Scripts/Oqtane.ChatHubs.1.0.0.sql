@@ -291,6 +291,6 @@ ON DELETE CASCADE
 GO
 
 ALTER TABLE [dbo].[ChatHubRoomChatHubWhitelistUser]  WITH CHECK ADD  CONSTRAINT [FK_ChatHubRoomChatHubWhitelistUser_ChatHubWhitelistUser] FOREIGN KEY([ChatHubWhitelistUserId])
-REFERENCES [dbo].[ChatHubModerator] ([Id])
+REFERENCES [dbo].[ChatHubWhitelistUser] ([Id])
 ON DELETE CASCADE
 GO

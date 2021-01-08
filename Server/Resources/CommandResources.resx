@@ -165,4 +165,7 @@
   <data name="whisper" xml:space="preserve">
     <value>whisper;asmr;</value>
   </data>
+  <data name="whitelistuser" xml:space="preserve">
+    <value>whitelistuser</value>
+  </data>
 </root>
