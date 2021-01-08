@@ -313,6 +313,14 @@ namespace Oqtane.ChatHubs.Hubs
                 throw new HubException("User already left room.");
             }
 
+            if (room.Protected())
+            {
+                if (!Context.User.Identity.IsAuthenticated)
+                {
+                    throw new HubException("This room is for authenticated user only.");
+                }
+            }
+
             if (room.OneVsOne())
             {
                 if (!this.chatHubService.IsValidOneVsOneConnection(room, user))
@@ -321,7 +329,7 @@ namespace Oqtane.ChatHubs.Hubs
                 }
             }
 
-            if (room.Public() || room.OneVsOne())
+            if (room.Public() || room.Protected() || room.OneVsOne())
             {
                 this.chatHubRepository.DeleteChatHubRoomChatHubUser(roomId, user.UserId);
                 ChatHubRoom chatHubRoomClientModel = await this.chatHubService.CreateChatHubRoomClientModelAsync(room);
