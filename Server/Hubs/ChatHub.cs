@@ -288,7 +288,7 @@ namespace Oqtane.ChatHubs.Hubs
                 }
             }
 
-            if (room.Public() || room.Protected() || room.OneVsOne())
+            if (room.Public() || room.Protected() || room.Private() || room.OneVsOne())
             {
                 ChatHubRoomChatHubUser room_user = new ChatHubRoomChatHubUser()
                 {
@@ -346,7 +346,7 @@ namespace Oqtane.ChatHubs.Hubs
                 }
             }
 
-            if (room.Public() || room.Protected() || room.OneVsOne())
+            if (room.Public() || room.Protected() || room.Private() || room.OneVsOne())
             {
                 this.chatHubRepository.DeleteChatHubRoomChatHubUser(roomId, user.UserId);
                 ChatHubRoom chatHubRoomClientModel = await this.chatHubService.CreateChatHubRoomClientModelAsync(room);
