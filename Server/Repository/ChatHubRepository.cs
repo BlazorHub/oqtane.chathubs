@@ -256,8 +256,8 @@ namespace Oqtane.ChatHubs.Repository
             try
             {
                 return db.Entry(ChatHubRoom)
-                      .Collection(u => u.RoomModerators)
-                      .Query().Select(u => u.Moderator);
+                      .Collection(item => item.RoomModerators)
+                      .Query().Select(item => item.Moderator);
             }
             catch
             {
@@ -269,6 +269,37 @@ namespace Oqtane.ChatHubs.Repository
             return db.ChatHubRoomChatHubModerator
                     .Where(item => item.ChatHubRoomId == chatHubRoomId)
                     .Where(item => item.ChatHubModeratorId == chatHubModeratorId)
+                    .FirstOrDefault();
+        }
+        public ChatHubWhitelistUser GetChatHubWhitelistUser(int ChatHubUserId)
+        {
+            try
+            {
+                return db.ChatHubWhitelistUser.FirstOrDefault(item => item.ChatHubUserId == ChatHubUserId);
+            }
+            catch
+            {
+                throw;
+            }
+        }
+        public IQueryable<ChatHubWhitelistUser> GetChatHubWhitelistUser(ChatHubRoom ChatHubRoom)
+        {
+            try
+            {
+                return db.Entry(ChatHubRoom)
+                      .Collection(item => item.RoomWhitelistUsers)
+                      .Query().Select(item => item.WhitelistUser);
+            }
+            catch
+            {
+                throw;
+            }
+        }
+        public ChatHubRoomChatHubWhitelistUser GetChatHubRoomChatHubWhitelistUser(int chatHubRoomId, int chatHubWhitelistUserId)
+        {
+            return db.ChatHubRoomChatHubWhitelistUser
+                    .Where(item => item.ChatHubRoomId == chatHubRoomId)
+                    .Where(item => item.ChatHubWhitelistUserId == chatHubWhitelistUserId)
                     .FirstOrDefault();
         }
 
@@ -415,6 +446,38 @@ namespace Oqtane.ChatHubs.Repository
                     db.ChatHubRoomChatHubModerator.Add(ChatHubRoomChatHubModerator);
                     db.SaveChanges();
                     return ChatHubRoomChatHubModerator;
+                }
+
+                return item;
+            }
+            catch
+            {
+                throw;
+            }
+        }
+        public ChatHubWhitelistUser AddChatHubWhitelistUser(ChatHubWhitelistUser ChatHubWhitelistUser)
+        {
+            try
+            {
+                db.ChatHubWhitelistUser.Add(ChatHubWhitelistUser);
+                db.SaveChanges();
+                return ChatHubWhitelistUser;
+            }
+            catch
+            {
+                throw;
+            }
+        }
+        public ChatHubRoomChatHubWhitelistUser AddChatHubRoomChatHubWhitelistUser(ChatHubRoomChatHubWhitelistUser ChatHubRoomChatHubWhitelistUser)
+        {
+            try
+            {
+                var item = this.GetChatHubRoomChatHubWhitelistUser(ChatHubRoomChatHubWhitelistUser.ChatHubRoomId, ChatHubRoomChatHubWhitelistUser.ChatHubWhitelistUserId);
+                if (item == null)
+                {
+                    db.ChatHubRoomChatHubWhitelistUser.Add(ChatHubRoomChatHubWhitelistUser);
+                    db.SaveChanges();
+                    return ChatHubRoomChatHubWhitelistUser;
                 }
 
                 return item;
@@ -574,6 +637,35 @@ namespace Oqtane.ChatHubs.Repository
                 if (item != null)
                 {
                     db.ChatHubRoomChatHubModerator.Remove(item);
+                    db.SaveChanges();
+                }
+            }
+            catch
+            {
+                throw;
+            }
+        }
+        public void DeleteChatHubWhitelistUser(int WhitelistUserId)
+        {
+            try
+            {
+                ChatHubWhitelistUser ChatHubWhitelistUser = db.ChatHubWhitelistUser.Where(item => item.Id == WhitelistUserId).FirstOrDefault();
+                db.ChatHubWhitelistUser.Remove(ChatHubWhitelistUser);
+                db.SaveChanges();
+            }
+            catch
+            {
+                throw;
+            }
+        }
+        public void DeleteChatHubRoomChatHubWhitelistUser(int ChatHubRoomId, int ChatHubWhitelistUserId)
+        {
+            try
+            {
+                ChatHubRoomChatHubWhitelistUser item = this.GetChatHubRoomChatHubWhitelistUser(ChatHubRoomId, ChatHubWhitelistUserId);
+                if (item != null)
+                {
+                    db.ChatHubRoomChatHubWhitelistUser.Remove(item);
                     db.SaveChanges();
                 }
             }

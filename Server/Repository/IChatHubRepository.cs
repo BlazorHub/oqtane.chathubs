@@ -35,6 +35,9 @@ namespace Oqtane.ChatHubs.Repository
         ChatHubModerator GetChatHubModerator(int ChatHubUserId);
         IQueryable<ChatHubModerator> GetChatHubModerators(ChatHubRoom ChatHubRoom);
         ChatHubRoomChatHubModerator GetChatHubRoomChatHubModerator(int chatHubRoomId, int chatHubModeratorId);
+        ChatHubWhitelistUser GetChatHubWhitelistUser(int ChatHubUserId);
+        IQueryable<ChatHubWhitelistUser> GetChatHubWhitelistUser(ChatHubRoom ChatHubRoom);
+        ChatHubRoomChatHubWhitelistUser GetChatHubRoomChatHubWhitelistUser(int chatHubRoomId, int chatHubWhitelistUserId);
 
         #endregion
 
@@ -50,6 +53,8 @@ namespace Oqtane.ChatHubs.Repository
         ChatHubSetting AddChatHubSetting(ChatHubSetting ChatHubSetting);
         ChatHubModerator AddChatHubModerator(ChatHubModerator ChatHubModerator);
         ChatHubRoomChatHubModerator AddChatHubRoomChatHubModerator(ChatHubRoomChatHubModerator ChatHubRoomChatHubModerator);
+        ChatHubWhitelistUser AddChatHubWhitelistUser(ChatHubWhitelistUser ChatHubWhitelistUser);
+        ChatHubRoomChatHubWhitelistUser AddChatHubRoomChatHubWhitelistUser(ChatHubRoomChatHubWhitelistUser ChatHubRoomChatHubWhitelistUser);
 
         #endregion
 
@@ -66,6 +71,8 @@ namespace Oqtane.ChatHubs.Repository
         void DeleteChatHubIgnore(ChatHubIgnore chatHubIgnore);
         void DeleteChatHubModerator(int ModeratorId);
         void DeleteChatHubRoomChatHubModerator(int ChatHubRoomId, int ChatHubModeratorId);
+        void DeleteChatHubWhitelistUser(int WhitelistUserId);
+        void DeleteChatHubRoomChatHubWhitelistUser(int ChatHubRoomId, int ChatHubWhitelistUserId);
 
         #endregion
 
