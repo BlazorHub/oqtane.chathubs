@@ -249,14 +249,32 @@ namespace Oqtane.ChatHubs.Services
         {
             return room.OneVsOneId.Split('|').OrderBy(item => item).Any(item => item == caller.UserId.ToString());
         }
-        public bool IsValidPrivateConnection(ChatHubRoom room, ChatHubUser caller)
+        public bool IsWhitelisted(ChatHubRoom room, ChatHubUser caller)
         {
             var whitelistuser = this.chatHubRepository.GetChatHubWhitelistUser(caller.UserId);
-            var room_whitelistuser = this.chatHubRepository.GetChatHubRoomChatHubWhitelistUser(room.Id, whitelistuser.Id);
-
-            if(room_whitelistuser != null || caller.UserId == room.CreatorId)
+            if(whitelistuser != null)
             {
-                return true;
+                var room_whitelistuser = this.chatHubRepository.GetChatHubRoomChatHubWhitelistUser(room.Id, whitelistuser.Id);
+
+                if (room_whitelistuser != null || caller.UserId == room.CreatorId)
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+        public bool IsBlacklisted(ChatHubRoom room, ChatHubUser caller)
+        {
+            var blacklistuser = this.chatHubRepository.GetChatHubBlacklistUser(caller.UserId);
+            if(blacklistuser != null)
+            {
+                var room_blacklistuser = this.chatHubRepository.GetChatHubRoomChatHubBlacklistUser(room.Id, blacklistuser.Id);
+
+                if (room_blacklistuser != null)
+                {
+                    return true;
+                }
             }
 
             return false;

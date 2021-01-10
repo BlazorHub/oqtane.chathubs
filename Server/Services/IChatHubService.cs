@@ -27,7 +27,9 @@ namespace Oqtane.ChatHubs.Services
 
         bool IsValidOneVsOneConnection(ChatHubRoom room, ChatHubUser caller);
 
-        bool IsValidPrivateConnection(ChatHubRoom room, ChatHubUser caller);
+        bool IsWhitelisted(ChatHubRoom room, ChatHubUser caller);
+
+        bool IsBlacklisted(ChatHubRoom room, ChatHubUser caller);
 
         string MakeStringAnonymous(string value, int tolerance, char symbol = '*');
 

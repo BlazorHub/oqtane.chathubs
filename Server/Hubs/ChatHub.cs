@@ -264,6 +264,14 @@ namespace Oqtane.ChatHubs.Hubs
             ChatHubUser user = await this.GetChatHubUserAsync();
             ChatHubRoom room = chatHubRepository.GetChatHubRoom(roomId);
 
+            if(room.Public() || room.Protected())
+            {
+                if (this.chatHubService.IsBlacklisted(room, user))
+                {
+                    throw new HubException("You have been added to blacklist for this room.");
+                }
+            }
+
             if(room.Protected())
             {
                 if (!Context.User.Identity.IsAuthenticated)
@@ -274,7 +282,7 @@ namespace Oqtane.ChatHubs.Hubs
 
             if (room.Private())
             {
-                if (!this.chatHubService.IsValidPrivateConnection(room, user))
+                if (!this.chatHubService.IsWhitelisted(room, user))
                 {
                     throw new HubException("No valid private room connection.");
                 }
@@ -315,11 +323,19 @@ namespace Oqtane.ChatHubs.Hubs
         public async Task LeaveChatRoom(int roomId)
         {
             ChatHubUser user = await this.GetChatHubUserAsync();
-
             ChatHubRoom room = chatHubRepository.GetChatHubRoom(roomId);
+
             if (!this.chatHubRepository.GetChatHubUsersByRoom(room).Any(item => item.UserId == user.UserId))
             {
                 throw new HubException("User already left room.");
+            }
+
+            if (room.Public() || room.Protected())
+            {
+                if (this.chatHubService.IsBlacklisted(room, user))
+                {
+                    throw new HubException("You have been added to blacklist for this room.");
+                }
             }
 
             if (room.Protected())
@@ -332,7 +348,7 @@ namespace Oqtane.ChatHubs.Hubs
 
             if (room.Private())
             {
-                if (!this.chatHubService.IsValidPrivateConnection(room, user))
+                if (!this.chatHubService.IsWhitelisted(room, user))
                 {
                     throw new HubException("No valid private room connection.");
                 }
