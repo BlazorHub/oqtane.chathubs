@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
+using Oqtane.ChatHubs.Shared.Enums;
 using Oqtane.Models;
 
 namespace Oqtane.Shared.Models
@@ -7,6 +8,8 @@ namespace Oqtane.Shared.Models
 
     public class ChatHubUser : User
     {
+
+        public ChatHubRoomLevelType RoomLevel { get; set; }
 
         [NotMapped]
         public bool UserlistItemCollapsed { get; set; }

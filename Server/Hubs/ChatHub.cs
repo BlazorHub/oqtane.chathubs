@@ -689,4 +689,12 @@ namespace Oqtane.ChatHubs.Hubs
         }        
 
     }
+
+    public static class ChatHubExtensionMethods
+    {
+        public static string CreateChatRoomGroupLevelName(this string roomGroupName, int userRoomLevel)
+        {
+            return $"{roomGroupName}-{userRoomLevel}";
+        }
+    }
 }
