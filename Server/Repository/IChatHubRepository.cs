@@ -38,6 +38,9 @@ namespace Oqtane.ChatHubs.Repository
         ChatHubWhitelistUser GetChatHubWhitelistUser(int ChatHubUserId);
         IQueryable<ChatHubWhitelistUser> GetChatHubWhitelistUsers(ChatHubRoom ChatHubRoom);
         ChatHubRoomChatHubWhitelistUser GetChatHubRoomChatHubWhitelistUser(int chatHubRoomId, int chatHubWhitelistUserId);
+        ChatHubBlacklistUser GetChatHubBlacklistUser(int ChatHubUserId);
+        IQueryable<ChatHubBlacklistUser> GetChatHubBlacklistUsers(ChatHubRoom ChatHubRoom);
+        ChatHubRoomChatHubBlacklistUser GetChatHubRoomChatHubBlacklistUser(int chatHubRoomId, int chatHubBlacklistUserId);
 
         #endregion
 
@@ -55,6 +58,8 @@ namespace Oqtane.ChatHubs.Repository
         ChatHubRoomChatHubModerator AddChatHubRoomChatHubModerator(ChatHubRoomChatHubModerator ChatHubRoomChatHubModerator);
         ChatHubWhitelistUser AddChatHubWhitelistUser(ChatHubUser targetUser);
         ChatHubRoomChatHubWhitelistUser AddChatHubRoomChatHubWhitelistUser(ChatHubRoomChatHubWhitelistUser ChatHubRoomChatHubWhitelistUser);
+        ChatHubBlacklistUser AddChatHubBlacklistUser(ChatHubUser targetUser);
+        ChatHubRoomChatHubBlacklistUser AddChatHubRoomChatHubBlacklistUser(ChatHubRoomChatHubBlacklistUser ChatHubRoomChatHubBlacklistUser);
 
         #endregion
 
@@ -73,6 +78,8 @@ namespace Oqtane.ChatHubs.Repository
         void DeleteChatHubRoomChatHubModerator(int ChatHubRoomId, int ChatHubModeratorId);
         void DeleteChatHubWhitelistUser(int WhitelistUserId);
         void DeleteChatHubRoomChatHubWhitelistUser(int ChatHubRoomId, int ChatHubWhitelistUserId);
+        void DeleteChatHubBlacklistUser(int BlacklistUserId);
+        void DeleteChatHubRoomChatHubBlacklistUser(int ChatHubRoomId, int ChatHubBlacklistUserId);
 
         #endregion
 

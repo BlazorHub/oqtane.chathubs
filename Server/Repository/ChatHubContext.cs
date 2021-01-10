@@ -23,6 +23,8 @@ namespace Oqtane.ChatHubs.Repository
         public virtual DbSet<ChatHubRoomChatHubModerator> ChatHubRoomChatHubModerator { get; set; }
         public virtual DbSet<ChatHubWhitelistUser> ChatHubWhitelistUser { get; set; }
         public virtual DbSet<ChatHubRoomChatHubWhitelistUser> ChatHubRoomChatHubWhitelistUser { get; set; }
+        public virtual DbSet<ChatHubBlacklistUser> ChatHubBlacklistUser { get; set; }
+        public virtual DbSet<ChatHubRoomChatHubBlacklistUser> ChatHubRoomChatHubBlacklistUser { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -124,6 +126,24 @@ namespace Oqtane.ChatHubs.Repository
                 .HasOne(room_whitelistuser => room_whitelistuser.WhitelistUser)
                 .WithMany(whitelistuser => whitelistuser.WhitelistUserRooms)
                 .HasForeignKey(room_whitelistuser => room_whitelistuser.ChatHubWhitelistUserId);
+
+            base.OnModelCreating(modelBuilder);
+
+            // Relations
+            // Many-to-many
+            // ChatHubRoom / ChatHubBlacklistUser
+            modelBuilder.Entity<ChatHubRoomChatHubBlacklistUser>()
+                .HasKey(item => new { item.ChatHubRoomId, item.ChatHubBlacklistUserId });
+
+            modelBuilder.Entity<ChatHubRoomChatHubBlacklistUser>()
+                .HasOne(room_blacklistuser => room_blacklistuser.Room)
+                .WithMany(room => room.RoomBlacklistUsers)
+                .HasForeignKey(room_blacklistuser => room_blacklistuser.ChatHubRoomId);
+
+            modelBuilder.Entity<ChatHubRoomChatHubBlacklistUser>()
+                .HasOne(room_blacklistuser => room_blacklistuser.BlacklistUser)
+                .WithMany(blacklistuser => blacklistuser.BlacklistUserRooms)
+                .HasForeignKey(room_blacklistuser => room_blacklistuser.ChatHubBlacklistUserId);
 
             base.OnModelCreating(modelBuilder);
         }

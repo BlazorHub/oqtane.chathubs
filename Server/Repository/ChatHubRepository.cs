@@ -302,6 +302,37 @@ namespace Oqtane.ChatHubs.Repository
                     .Where(item => item.ChatHubWhitelistUserId == chatHubWhitelistUserId)
                     .FirstOrDefault();
         }
+        public ChatHubBlacklistUser GetChatHubBlacklistUser(int ChatHubUserId)
+        {
+            try
+            {
+                return db.ChatHubBlacklistUser.FirstOrDefault(item => item.ChatHubUserId == ChatHubUserId);
+            }
+            catch
+            {
+                throw;
+            }
+        }
+        public IQueryable<ChatHubBlacklistUser> GetChatHubBlacklistUsers(ChatHubRoom ChatHubRoom)
+        {
+            try
+            {
+                return db.Entry(ChatHubRoom)
+                      .Collection(item => item.RoomBlacklistUsers)
+                      .Query().Select(item => item.BlacklistUser);
+            }
+            catch
+            {
+                throw;
+            }
+        }
+        public ChatHubRoomChatHubBlacklistUser GetChatHubRoomChatHubBlacklistUser(int chatHubRoomId, int chatHubBlacklistUserId)
+        {
+            return db.ChatHubRoomChatHubBlacklistUser
+                    .Where(item => item.ChatHubRoomId == chatHubRoomId)
+                    .Where(item => item.ChatHubBlacklistUserId == chatHubBlacklistUserId)
+                    .FirstOrDefault();
+        }
 
         #endregion
 
@@ -497,6 +528,48 @@ namespace Oqtane.ChatHubs.Repository
                 throw;
             }
         }
+        public ChatHubBlacklistUser AddChatHubBlacklistUser(ChatHubUser targetUser)
+        {
+            try
+            {
+                ChatHubBlacklistUser ChatHubBlacklistUser = this.GetChatHubBlacklistUser(targetUser.UserId);
+                if (ChatHubBlacklistUser == null)
+                {
+                    ChatHubBlacklistUser = new ChatHubBlacklistUser()
+                    {
+                        ChatHubUserId = targetUser.UserId,
+                        BlacklistUserDisplayName = targetUser.DisplayName,
+                    };
+
+                    db.ChatHubBlacklistUser.Add(ChatHubBlacklistUser);
+                    db.SaveChanges();
+                }
+                return ChatHubBlacklistUser;
+            }
+            catch
+            {
+                throw;
+            }
+        }
+        public ChatHubRoomChatHubBlacklistUser AddChatHubRoomChatHubBlacklistUser(ChatHubRoomChatHubBlacklistUser ChatHubRoomChatHubBlacklistUser)
+        {
+            try
+            {
+                var item = this.GetChatHubRoomChatHubBlacklistUser(ChatHubRoomChatHubBlacklistUser.ChatHubRoomId, ChatHubRoomChatHubBlacklistUser.ChatHubBlacklistUserId);
+                if (item == null)
+                {
+                    db.ChatHubRoomChatHubBlacklistUser.Add(ChatHubRoomChatHubBlacklistUser);
+                    db.SaveChanges();
+                    return ChatHubRoomChatHubBlacklistUser;
+                }
+
+                return item;
+            }
+            catch
+            {
+                throw;
+            }
+        }
 
         #endregion
 
@@ -680,6 +753,35 @@ namespace Oqtane.ChatHubs.Repository
                 if (item != null)
                 {
                     db.ChatHubRoomChatHubWhitelistUser.Remove(item);
+                    db.SaveChanges();
+                }
+            }
+            catch
+            {
+                throw;
+            }
+        }
+        public void DeleteChatHubBlacklistUser(int BlacklistUserId)
+        {
+            try
+            {
+                ChatHubBlacklistUser ChatHubBlacklistUser = db.ChatHubBlacklistUser.Where(item => item.Id == BlacklistUserId).FirstOrDefault();
+                db.ChatHubBlacklistUser.Remove(ChatHubBlacklistUser);
+                db.SaveChanges();
+            }
+            catch
+            {
+                throw;
+            }
+        }
+        public void DeleteChatHubRoomChatHubBlacklistUser(int ChatHubRoomId, int ChatHubBlacklistUserId)
+        {
+            try
+            {
+                ChatHubRoomChatHubBlacklistUser item = this.GetChatHubRoomChatHubBlacklistUser(ChatHubRoomId, ChatHubBlacklistUserId);
+                if (item != null)
+                {
+                    db.ChatHubRoomChatHubBlacklistUser.Remove(item);
                     db.SaveChanges();
                 }
             }

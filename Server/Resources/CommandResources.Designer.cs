@@ -61,6 +61,15 @@ namespace Oqtane.ChatHubs.Server.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to blacklistuser.
+        /// </summary>
+        public static string blacklistuser {
+            get {
+                return ResourceManager.GetString("blacklistuser", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to ciaobella.
         /// </summary>
         public static string ciaobella {

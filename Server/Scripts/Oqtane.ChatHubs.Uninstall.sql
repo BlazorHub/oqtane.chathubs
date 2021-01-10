@@ -32,6 +32,12 @@ GO
 DROP TABLE [dbo].[ChatHubWhitelistUser]
 GO
 
+DROP TABLE [dbo].[ChatHubRoomChatHubBlacklistUser]
+GO
+
+DROP TABLE [dbo].[ChatHubBlacklistUser]
+GO
+
 DROP TABLE [dbo].[ChatHubRoomChatHubUser]
 GO
 
