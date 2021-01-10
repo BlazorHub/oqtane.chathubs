@@ -282,7 +282,7 @@ namespace Oqtane.ChatHubs.Repository
                 throw;
             }
         }
-        public IQueryable<ChatHubWhitelistUser> GetChatHubWhitelistUser(ChatHubRoom ChatHubRoom)
+        public IQueryable<ChatHubWhitelistUser> GetChatHubWhitelistUsers(ChatHubRoom ChatHubRoom)
         {
             try
             {
@@ -455,12 +455,22 @@ namespace Oqtane.ChatHubs.Repository
                 throw;
             }
         }
-        public ChatHubWhitelistUser AddChatHubWhitelistUser(ChatHubWhitelistUser ChatHubWhitelistUser)
+        public ChatHubWhitelistUser AddChatHubWhitelistUser(ChatHubUser targetUser)
         {
             try
             {
-                db.ChatHubWhitelistUser.Add(ChatHubWhitelistUser);
-                db.SaveChanges();
+                ChatHubWhitelistUser ChatHubWhitelistUser = this.GetChatHubWhitelistUser(targetUser.UserId);
+                if(ChatHubWhitelistUser == null)
+                {
+                    ChatHubWhitelistUser = new ChatHubWhitelistUser()
+                    {
+                        ChatHubUserId = targetUser.UserId,
+                        WhitelistUserDisplayName = targetUser.DisplayName,
+                    };
+
+                    db.ChatHubWhitelistUser.Add(ChatHubWhitelistUser);
+                    db.SaveChanges();
+                }
                 return ChatHubWhitelistUser;
             }
             catch
@@ -487,6 +497,10 @@ namespace Oqtane.ChatHubs.Repository
                 throw;
             }
         }
+
+        #endregion
+
+        #region ADD OR UPDATE
 
         #endregion
 

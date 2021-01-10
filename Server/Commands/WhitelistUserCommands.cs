@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.SignalR;
-using Oqtane.Shared.Models;
+﻿using Oqtane.Shared.Models;
 using System.Composition;
 using System.Threading.Tasks;
 using Oqtane.Shared;
@@ -60,22 +59,12 @@ namespace Oqtane.ChatHubs.Commands
 
             if (callerRoom.Public() || callerRoom.Protected() || callerRoom.Private())
             {
-                ChatHubWhitelistUser whitelistUser = context.ChatHubRepository.GetChatHubWhitelistUser(targetUser.UserId);
-                if (whitelistUser == null)
-                {
-                    whitelistUser = new ChatHubWhitelistUser()
-                    {
-                        ChatHubUserId = targetUser.UserId,
-                        WhitelistUserDisplayName = targetUser.DisplayName,
-                    };
-
-                    whitelistUser = context.ChatHubRepository.AddChatHubWhitelistUser(whitelistUser);
-                }
+                ChatHubWhitelistUser chatHubWhitelistUser = context.ChatHubRepository.AddChatHubWhitelistUser(targetUser);
 
                 ChatHubRoomChatHubWhitelistUser room_whitelistuser = new ChatHubRoomChatHubWhitelistUser()
                 {
                     ChatHubRoomId = callerRoom.Id,
-                    ChatHubWhitelistUserId = whitelistUser.Id,
+                    ChatHubWhitelistUserId = chatHubWhitelistUser.Id,
                 };
                 context.ChatHubRepository.AddChatHubRoomChatHubWhitelistUser(room_whitelistuser);
 

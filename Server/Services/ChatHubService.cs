@@ -251,6 +251,14 @@ namespace Oqtane.ChatHubs.Services
         }
         public bool IsValidPrivateConnection(ChatHubRoom room, ChatHubUser caller)
         {
+            var whitelistuser = this.chatHubRepository.GetChatHubWhitelistUser(caller.UserId);
+            var room_whitelistuser = this.chatHubRepository.GetChatHubRoomChatHubWhitelistUser(room.Id, whitelistuser.Id);
+
+            if(room_whitelistuser != null || caller.UserId == room.CreatorId)
+            {
+                return true;
+            }
+
             return false;
         }
         public string MakeStringAnonymous(string value, int tolerance, char symbol = '*')

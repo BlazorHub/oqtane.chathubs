@@ -29,7 +29,7 @@
         chathubscontainer.style.transition = "opacity 0.24s";
         chathubscontainer.style.opacity = "1";
 
-        $('#CustomBlazorModal').modal('show');
+        //$('#CustomBlazorModal').modal('show');
     };
 
     window.cookies = {
