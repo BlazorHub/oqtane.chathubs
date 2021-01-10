@@ -9,6 +9,7 @@ namespace Oqtane.Shared.Models
     public class ChatHubUser : User
     {
 
+        [NotMapped]
         public ChatHubRoomLevelType RoomLevel { get; set; }
 
         [NotMapped]
