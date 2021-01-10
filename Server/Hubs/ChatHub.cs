@@ -692,9 +692,9 @@ namespace Oqtane.ChatHubs.Hubs
 
     public static class ChatHubExtensionMethods
     {
-        public static string CreateChatRoomGroupLevelName(this string roomGroupName, int userRoomLevel)
+        public static string CreateSignalRChatHubRoomGroupLevelName(this string roomId, int userRoomLevel)
         {
-            return $"{roomGroupName}-{userRoomLevel}";
+            return $"roomId:{roomId};userRoomLevel{userRoomLevel}";
         }
     }
 }
