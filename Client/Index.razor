@@ -17,108 +17,120 @@
 
 <style type="text/css">
 
-    .bg-green {
-        background-color: #ddffdd !important;
-    }
-
-    .bg-yellow {
-        background-color: #ffffdd !important;
-    }
-
-    .chathubs-container {
-        min-height: 1000px;
-        background-color: #ffffff;
-        border: 1px solid #dddddd;
-        opacity: 0;
-    }
-
-    .chathub-font-size-075rem {
-        font-size: 0.75rem;
-    }
-
-    .blazor-tabs > ul.nav-tabs {
-        border: none;
-        margin: 0;
-    }
-
-        .blazor-tabs > ul.nav-tabs li a:hover, a:focus {
-            text-decoration: none;
-            outline: none;
+        .bg-green {
+            background-color: #ddffdd !important;
         }
 
-        .blazor-tabs > ul.nav-tabs li a {
-            position: relative;
-            z-index: 2;
-            padding: 10px;
-            font-size: 18px;
-            font-weight: 600;
-            color: slateblue;
-            text-transform: capitalize;
-            border: none;
-            border-radius: 0px;
-            background: transparent;
-            transition: all 0.2s linear;
+        .bg-yellow {
+            background-color: #ffffdd !important;
         }
 
-        .blazor-tabs > ul.nav-tabs li:nth-of-type(4n+1) a:before,
-        .blazor-tabs > ul.nav-tabs li:nth-of-type(4n+1) a:after {
-            background-color: slateblue;
-            border-color: slateblue;
-        }
-
-        .blazor-tabs > ul.nav-tabs li:nth-of-type(4n+2) a:before,
-        .blazor-tabs > ul.nav-tabs li:nth-of-type(4n+2) a:after {
-            background-color: gold;
-            border-color: gold;
-        }
-
-        .blazor-tabs > ul.nav-tabs li:nth-of-type(4n+3) a:before,
-        .blazor-tabs > ul.nav-tabs li:nth-of-type(4n+3) a:after {
-            background-color: indianred;
-            border-color: indianred;
-        }
-
-        .blazor-tabs > ul.nav-tabs li:nth-of-type(4n+4) a:before,
-        .blazor-tabs > ul.nav-tabs li:nth-of-type(4n+4) a:after {
-            background-color: seagreen;
-            border-color: seagreen;
-        }
-
-        .blazor-tabs > ul.nav-tabs li a:hover,
-        .blazor-tabs > ul.nav-tabs li.active a {
-            border: none;
-        }
-
-        .blazor-tabs > ul.nav-tabs li a:before {
-            position: absolute;
-            content: "";
-            width: 100%;
-            height: 2px;
-            bottom: 0;
-            left: 0;
-        }
-
-        .blazor-tabs > ul.nav-tabs li a:after {
-            position: absolute;
-            content: "";
-            width: 100%;
-            height: 4px;
-            bottom: 0;
-            left: 0;
+        .chathubs-container {
+            min-height: 1000px;
+            background-color: #ffffff;
+            border: 1px solid #dddddd;
             opacity: 0;
-            z-index: 1;
-            transition: all 0.2s linear;
         }
 
-        .blazor-tabs > ul.nav-tabs li:hover a:after,
-        .blazor-tabs > ul.nav-tabs li.active a:after {
-            width: 100%;
-            opacity: 1;
+        .chathub-font-size-075rem {
+            font-size: 0.75rem;
         }
 
-    .blazor-tabs > .nav-tabs-body {
-        margin-top: 10px;
-    }
+        @@media (max-width: 1199px) {
+            .userlist {
+                position: fixed;
+                z-index: 1100;
+                top: 0px;
+                left: 0px;
+                width: 100%;
+                height: 100%;
+                max-width: 100% !important;
+            }
+        }
+
+        .blazor-tabs > ul.nav-tabs {
+            border: none;
+            margin: 0;
+        }
+
+            .blazor-tabs > ul.nav-tabs li a:hover, a:focus {
+                text-decoration: none;
+                outline: none;
+            }
+
+            .blazor-tabs > ul.nav-tabs li a {
+                position: relative;
+                z-index: 2;
+                padding: 10px;
+                font-size: 18px;
+                font-weight: 600;
+                color: slateblue;
+                text-transform: capitalize;
+                border: none;
+                border-radius: 0px;
+                background: transparent;
+                transition: all 0.2s linear;
+            }
+
+            .blazor-tabs > ul.nav-tabs li:nth-of-type(4n+1) a:before,
+            .blazor-tabs > ul.nav-tabs li:nth-of-type(4n+1) a:after {
+                background-color: slateblue;
+                border-color: slateblue;
+            }
+
+            .blazor-tabs > ul.nav-tabs li:nth-of-type(4n+2) a:before,
+            .blazor-tabs > ul.nav-tabs li:nth-of-type(4n+2) a:after {
+                background-color: gold;
+                border-color: gold;
+            }
+
+            .blazor-tabs > ul.nav-tabs li:nth-of-type(4n+3) a:before,
+            .blazor-tabs > ul.nav-tabs li:nth-of-type(4n+3) a:after {
+                background-color: indianred;
+                border-color: indianred;
+            }
+
+            .blazor-tabs > ul.nav-tabs li:nth-of-type(4n+4) a:before,
+            .blazor-tabs > ul.nav-tabs li:nth-of-type(4n+4) a:after {
+                background-color: seagreen;
+                border-color: seagreen;
+            }
+
+            .blazor-tabs > ul.nav-tabs li a:hover,
+            .blazor-tabs > ul.nav-tabs li.active a {
+                border: none;
+            }
+
+            .blazor-tabs > ul.nav-tabs li a:before {
+                position: absolute;
+                content: "";
+                width: 100%;
+                height: 2px;
+                bottom: 0;
+                left: 0;
+            }
+
+            .blazor-tabs > ul.nav-tabs li a:after {
+                position: absolute;
+                content: "";
+                width: 100%;
+                height: 4px;
+                bottom: 0;
+                left: 0;
+                opacity: 0;
+                z-index: 1;
+                transition: all 0.2s linear;
+            }
+
+            .blazor-tabs > ul.nav-tabs li:hover a:after,
+            .blazor-tabs > ul.nav-tabs li.active a:after {
+                width: 100%;
+                opacity: 1;
+            }
+
+        .blazor-tabs > .nav-tabs-body {
+            margin-top: 10px;
+        }
 
 </style>
 
@@ -499,7 +511,7 @@
                                                 </div>
                                             </div>
 
-                                            <div class="userlist bg-light p-0 p-sm-2 w-100 d-none d-xl-flex @(room.ShowUserlist ? "flex-fill d-flex" : "")" style="min-width: 340px; max-width: 340px;">
+                                            <div class="userlist bg-light p-0 p-sm-2 w-100 d-none d-xl-flex @(room.ShowUserlist ? "flex-fill d-flex" : "")" style="min-width: 340px; max-width: 340px">
                                                 <div class="w-100 my-3" style="height: @(string.Format("{0}px", UserlistWindowHeight)); overflow: auto;">
 
                                                     <button type="button" class="btn btn-light input-group-button @(room.ShowUserlist ? "d-block" : "d-none")" @onclick="() => ChatHubService.ToggleUserlist(room)" style="position: relative; float: right;"><span class="oi oi-x"></span></button>
