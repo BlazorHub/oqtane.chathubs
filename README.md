@@ -93,9 +93,7 @@ else if (segments[0] == "chathub")
 
 # Example Screenshots
 
-![Module](https://github.com/boredanyway/oqtane.chathubs/blob/master/screenshot1.png?raw=true "Module")
-
-![Module](https://github.com/boredanyway/oqtane.chathubs/blob/master/screenshot2.png?raw=true "Module")
+<img src="https://raw.githubusercontent.com/boredanyway/oqtane.chathubs/master/screenshot1.png" height="300">
 
 # Demo Site
 
