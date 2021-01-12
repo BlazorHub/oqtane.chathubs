@@ -93,7 +93,7 @@ else if (segments[0] == "chathub")
 
 # Example Screenshots
 
-<img src="https://raw.githubusercontent.com/boredanyway/oqtane.chathubs/master/screenshot1.png" height="300">
+<img src="https://raw.githubusercontent.com/boredanyway/oqtane.chathubs/master/screenshot1.png" height="400">
 
 # Demo Site
 
