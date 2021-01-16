@@ -30,7 +30,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BlazorTabs", "BlazorTabs\Bl
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BlazorModal", "BlazorModal\BlazorModal.csproj", "{D050FC12-D08B-4533-BEA3-97611DD465E3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BlazorSelect", "BlazorSelect\BlazorSelect.csproj", "{965CF4D8-EB3C-4831-884E-080C93926BE7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BlazorSelect", "BlazorSelect\BlazorSelect.csproj", "{965CF4D8-EB3C-4831-884E-080C93926BE7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BlazorAccordion", "BlazorAccordion\BlazorAccordion.csproj", "{5E931E10-F983-4CAB-90BA-CB3F26DCD9CA}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -322,6 +324,24 @@ Global
 		{965CF4D8-EB3C-4831-884E-080C93926BE7}.Wasm|iPhone.Build.0 = Debug|Any CPU
 		{965CF4D8-EB3C-4831-884E-080C93926BE7}.Wasm|iPhoneSimulator.ActiveCfg = Debug|Any CPU
 		{965CF4D8-EB3C-4831-884E-080C93926BE7}.Wasm|iPhoneSimulator.Build.0 = Debug|Any CPU
+		{5E931E10-F983-4CAB-90BA-CB3F26DCD9CA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5E931E10-F983-4CAB-90BA-CB3F26DCD9CA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5E931E10-F983-4CAB-90BA-CB3F26DCD9CA}.Debug|iPhone.ActiveCfg = Debug|Any CPU
+		{5E931E10-F983-4CAB-90BA-CB3F26DCD9CA}.Debug|iPhone.Build.0 = Debug|Any CPU
+		{5E931E10-F983-4CAB-90BA-CB3F26DCD9CA}.Debug|iPhoneSimulator.ActiveCfg = Debug|Any CPU
+		{5E931E10-F983-4CAB-90BA-CB3F26DCD9CA}.Debug|iPhoneSimulator.Build.0 = Debug|Any CPU
+		{5E931E10-F983-4CAB-90BA-CB3F26DCD9CA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5E931E10-F983-4CAB-90BA-CB3F26DCD9CA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5E931E10-F983-4CAB-90BA-CB3F26DCD9CA}.Release|iPhone.ActiveCfg = Release|Any CPU
+		{5E931E10-F983-4CAB-90BA-CB3F26DCD9CA}.Release|iPhone.Build.0 = Release|Any CPU
+		{5E931E10-F983-4CAB-90BA-CB3F26DCD9CA}.Release|iPhoneSimulator.ActiveCfg = Release|Any CPU
+		{5E931E10-F983-4CAB-90BA-CB3F26DCD9CA}.Release|iPhoneSimulator.Build.0 = Release|Any CPU
+		{5E931E10-F983-4CAB-90BA-CB3F26DCD9CA}.Wasm|Any CPU.ActiveCfg = Debug|Any CPU
+		{5E931E10-F983-4CAB-90BA-CB3F26DCD9CA}.Wasm|Any CPU.Build.0 = Debug|Any CPU
+		{5E931E10-F983-4CAB-90BA-CB3F26DCD9CA}.Wasm|iPhone.ActiveCfg = Debug|Any CPU
+		{5E931E10-F983-4CAB-90BA-CB3F26DCD9CA}.Wasm|iPhone.Build.0 = Debug|Any CPU
+		{5E931E10-F983-4CAB-90BA-CB3F26DCD9CA}.Wasm|iPhoneSimulator.ActiveCfg = Debug|Any CPU
+		{5E931E10-F983-4CAB-90BA-CB3F26DCD9CA}.Wasm|iPhoneSimulator.Build.0 = Debug|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

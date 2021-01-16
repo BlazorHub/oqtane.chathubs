@@ -30,6 +30,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\BlazorAccordion\BlazorAccordion.csproj" />
     <ProjectReference Include="..\BlazorAlerts\BlazorAlerts.csproj" />
     <ProjectReference Include="..\BlazorDraggableList\BlazorDraggableList.csproj" />
     <ProjectReference Include="..\BlazorFileUpload\BlazorFileUpload.csproj" />
