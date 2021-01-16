@@ -17,7 +17,7 @@
     <summary></summary>
     <dependencies>
 		
-        <dependency id="Oqtane.Framework" version="1.0.0" />      
+        <dependency id="Oqtane.Framework" version="2.0.0" />      
 		    <dependency id="System.Drawing.Common" version="5.0.0" />
 		    <dependency id="MatBlazor" version="2.3.0" />
 		    <dependency id="Microsoft.CSharp" version="4.7.0" />
