@@ -1,7 +1,9 @@
 ﻿@namespace Oqtane.ChatHubs
 
+@using System
 @using Oqtane.ChatHubs.Services
 @using Oqtane.Shared.Models
+@using BlazorAlerts
 
 <style type="text/css">
 
@@ -108,64 +110,16 @@
 @code {
 
     [Inject] public IChatHubService ChatHubService { get; set; }
-
     [Inject] public VideoService VideoService { get; set; }
+    [Inject] public BlazorAlertsService BlazorAlertsService { get; set; }
 
     [Parameter] public ChatHubRoom ChatHubRoom { get; set; }
-
     [Parameter] public int ItemIndex { get; set; }
 
-    private string[] _colors = new string[]
+    private Dictionary<Guid, string[]> _color_sets { get; set; } = new Dictionary<Guid, string[]>()
     {
-        "BurlyWood",
-        "CadetBlue",
-        "CornflowerBlue",
-        "Coral",
-        "DarkKhaki",
-        "DarkSalmon",
-        "SeaGreen",
-        "DarkSlateBlue",
-        "DarkSlateGrey",
-        "YellowGreen",
-        "Chocolate",
-        "DarkGoldenRod",
-        "DarkMagenta",
-        "MidnightBlue",
-        "Orchid",
-        "SlateBlue",
-        "SandyBrown",
-        "SteelBlue",
-        "Teal",
-        "BlueViolet",
-        "Brown",
-        "DarkGray",
-        "DarkOliveGreen",
-        "DarkOrange",
-        "DarkSeaGreen",
-        "DimGray",
-        "FireBrick",
-        "GoldenRod",
-        "Gray",
-        "GreenYellow",
-        "Khaki",
-        "IndianRed",
-        "LightBlue",
-        "LightGray",
-        "LightGreen",
-        "LightPink",
-        "LightSkyBlue",
-        "LightSeaGreen",
-        "Olive",
-        "OliveDrab",
-        "Peru",
-        "Plum",
-        "PowderBlue",
-        "Salmon",
-        "Sienna",
-        "Silver",
-        "Thistle",
-        "Tan",
-        "SlateGray",
+        { Guid.NewGuid(), new string[] { "LightBlue", "LightGreen", "LightSeaGreen", "LightPink", "LightPink", "LightGray", "Plum", "Silver", "Tan", "Thistle", "Salmon", "Orchid" } },
+        { Guid.NewGuid(), new string[] { "SlateBlue", "Gold", "IndianRed", "SeaGreen", "Peru", "Sienna", "Teal", "YellowGreen", "MidnightBlue", "CadetBlue", "BurlyWood", "PowderBlue", "FireBrick", "Chocolate", "GoldenRod" } },
     };
 
     private string _videoItemBackgroundColor { get; set; }
@@ -178,14 +132,18 @@
 
     protected override void OnInitialized()
     {
-        this.VideoItemBackgroundColor = this._colors[new Random().Next(0, this._colors.Count() - 1)];
+        double elementAt = Convert.ToDouble(DateTime.UtcNow.Second) / 59 * Convert.ToDouble((this._color_sets.Keys.Count - 1));
+        double elementAtRounded = Math.Round(elementAt, 0, MidpointRounding.ToEven);
+        KeyValuePair<Guid, string[]> colorset = this._color_sets.ElementAt(Convert.ToInt32(elementAtRounded));
+        this.VideoItemBackgroundColor = colorset.Value[new Random().Next(0, colorset.Value.Length - 1)];
+
         base.OnInitialized();
     }
 
     protected override void OnAfterRender(bool firstRender)
     {
         if(firstRender) {
-                
+
             this.VideoService.ContinueLivestreamTask(ChatHubRoom.Id);
         }
 
