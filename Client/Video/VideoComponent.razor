@@ -132,7 +132,7 @@
 
     protected override void OnInitialized()
     {
-        double elementAt = Convert.ToDouble(DateTime.UtcNow.Second) / 59 * Convert.ToDouble((this._color_sets.Keys.Count - 1));
+        double elementAt = Convert.ToDouble(DateTime.UtcNow.Millisecond) / 999 * Convert.ToDouble((this._color_sets.Keys.Count - 1));
         double elementAtRounded = Math.Round(elementAt, 0, MidpointRounding.ToEven);
         KeyValuePair<Guid, string[]> colorset = this._color_sets.ElementAt(Convert.ToInt32(elementAtRounded));
         this.VideoItemBackgroundColor = colorset.Value[new Random().Next(0, colorset.Value.Length - 1)];
