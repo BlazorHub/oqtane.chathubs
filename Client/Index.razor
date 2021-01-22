@@ -133,7 +133,6 @@
     .blazor-tabs > .nav-tabs-body {
         margin-top: 10px;
     }
-
 </style>
 
 <div id="chathub-module-@ModuleState.ModuleId" class="chathubs-container p-sm-3 mb-4">
@@ -578,6 +577,32 @@
                                                                                                 </BSCard>
                                                                                             }
 
+                                                                                            @if (!room.WhitelistUsers.Any(item => item.ChatHubUserId == user.UserId))
+                                                                                            {
+                                                                                                <BSCard CardType="CardType.Text">
+                                                                                                    <button type="button" class="btn btn-sm btn-link" @onclick="() => ChatHubService.AddWhitelistUser_Clicked(user.UserId, room.Id)">Add Whitelist User</button>
+                                                                                                </BSCard>
+                                                                                            }
+                                                                                            else
+                                                                                            {
+                                                                                                <BSCard CardType="CardType.Text">
+                                                                                                    <button type="button" class="btn btn-sm btn-link" @onclick="() => ChatHubService.RemoveWhitelistUser_Clicked(user.UserId, room.Id)">Delete Whitelist User</button>
+                                                                                                </BSCard>
+                                                                                            }
+
+                                                                                            @if (!room.BlacklistUsers.Any(item => item.ChatHubUserId == user.UserId))
+                                                                                            {
+                                                                                                <BSCard CardType="CardType.Text">
+                                                                                                    <button type="button" class="btn btn-sm btn-link" @onclick="() => ChatHubService.AddBlacklistUser_Clicked(user.UserId, room.Id)">Add Blacklist User</button>
+                                                                                                </BSCard>
+                                                                                            }
+                                                                                            else
+                                                                                            {
+                                                                                                <BSCard CardType="CardType.Text">
+                                                                                                    <button type="button" class="btn btn-sm btn-link" @onclick="() => ChatHubService.RemoveBlacklistUser_Clicked(user.UserId, room.Id)">Delete Blacklist User</button>
+                                                                                                </BSCard>
+                                                                                            }
+
                                                                                         </BSCard>
                                                                                     }
                                                                                 </BSCard>
@@ -656,6 +681,76 @@
                                                                     {
                                                                         <div class="alert alert-warning" role="alert">
                                                                             No moderators found yet.
+                                                                        </div>
+                                                                    }
+
+                                                                </div>
+
+                                                            </WindowContent>
+                                                        </WindowItem>
+                                                        <WindowItem>
+                                                            <WindowTitle><div><span class="oi oi-question-mark"></span> (@room.WhitelistUsers.Count())</div></WindowTitle>
+                                                            <WindowContent>
+
+                                                                <div class="px-sm-1 py-3">
+
+                                                                    <h5>Whitelist Users <span class="badge badge-success">NEW</span></h5>
+
+                                                                    <table class="table table-sm">
+                                                                        <tbody>
+                                                                            @foreach (var whitelistUser in room.WhitelistUsers)
+                                                                            {
+                                                                                <tr>
+                                                                                    <td>@whitelistUser.WhitelistUserDisplayName</td>
+                                                                                    <td>
+                                                                                        <button type="button" class="btn btn-sm btn-link" @onclick="() => ChatHubService.RemoveWhitelistUser_Clicked(whitelistUser.ChatHubUserId, room.Id)">
+                                                                                            <span class="oi oi-x"></span>
+                                                                                        </button>
+                                                                                    </td>
+                                                                                </tr>
+                                                                            }
+                                                                        </tbody>
+                                                                    </table>
+
+                                                                    @if (!room.WhitelistUsers.Any())
+                                                                    {
+                                                                        <div class="alert alert-warning" role="alert">
+                                                                            No whitelist users found yet.
+                                                                        </div>
+                                                                    }
+
+                                                                </div>
+
+                                                            </WindowContent>
+                                                        </WindowItem>
+                                                        <WindowItem>
+                                                            <WindowTitle><div><span class="oi oi-ban"></span> (@room.BlacklistUsers.Count())</div></WindowTitle>
+                                                            <WindowContent>
+
+                                                                <div class="px-sm-1 py-3">
+
+                                                                    <h5>Blacklist Users <span class="badge badge-success">NEW</span></h5>
+
+                                                                    <table class="table table-sm">
+                                                                        <tbody>
+                                                                            @foreach (var blacklistUser in room.BlacklistUsers)
+                                                                            {
+                                                                                <tr>
+                                                                                    <td>@blacklistUser.BlacklistUserDisplayName</td>
+                                                                                    <td>
+                                                                                        <button type="button" class="btn btn-sm btn-link" @onclick="() => ChatHubService.RemoveBlacklistUser_Clicked(blacklistUser.ChatHubUserId, room.Id)">
+                                                                                            <span class="oi oi-x"></span>
+                                                                                        </button>
+                                                                                    </td>
+                                                                                </tr>
+                                                                            }
+                                                                        </tbody>
+                                                                    </table>
+
+                                                                    @if (!room.BlacklistUsers.Any())
+                                                                    {
+                                                                        <div class="alert alert-warning" role="alert">
+                                                                            No blacklist users found yet.
                                                                         </div>
                                                                     }
 

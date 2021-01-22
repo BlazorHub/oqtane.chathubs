@@ -17,6 +17,10 @@ namespace Oqtane.ChatHubs.Services
 
         ChatHubModerator CreateChatHubModeratorClientModel(ChatHubModerator moderator);
 
+        ChatHubWhitelistUser CreateChatHubWhitelistUserClientModel(ChatHubWhitelistUser whitelistUser);
+
+        ChatHubBlacklistUser CreateChatHubBlacklistUserClientModel(ChatHubBlacklistUser blacklistUser);
+
         void IgnoreUser(ChatHubUser guest, ChatHubUser targetUser);
 
         List<string> GetAllExceptConnectionIds(ChatHubUser user);

@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.SignalR;
 namespace Oqtane.ChatHubs.Commands
 {
     [Export("ICommand", typeof(ICommand))]
-    [Command("ciaobella", "[username]", new string[] { Constants.AllUsersRole }, "Usage: /ciaobella")]
+    [Command("ciaobella", "[username]", new string[] { RoleNames.Everyone, RoleNames.Registered, RoleNames.Admin }, "Usage: /ciaobella")]
     public class CiaoBellaCommand : BaseCommand
     {
         public override async Task Execute(CommandServicesContext context, CommandCallerContext callerContext, string[] args, ChatHubUser caller)

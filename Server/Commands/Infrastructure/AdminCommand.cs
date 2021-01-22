@@ -9,7 +9,7 @@ namespace Oqtane.ChatHubs.Commands
     {
         public override async Task Execute(CommandServicesContext commandServicesContext, CommandCallerContext commandCallerContext, string[] args, ChatHubUser caller)
         {
-            if(!commandServicesContext.ChatHub.Context.User.HasClaim(ClaimTypes.Role, Shared.Constants.AdminRole))
+            if(!commandServicesContext.ChatHub.Context.User.HasClaim(ClaimTypes.Role, Shared.RoleNames.Admin))
             {
                 throw new HubException("You do not have any permissions to run this command");
             }

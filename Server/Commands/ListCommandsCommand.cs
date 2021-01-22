@@ -6,7 +6,7 @@ using Oqtane.Shared;
 namespace Oqtane.ChatHubs.Commands
 {
     [Export("ICommand", typeof(ICommand))]
-    [Command("commands", "[]", new string[] { Constants.AllUsersRole, Constants.AdminRole }, "Usage: /commands | /list-commands")]
+    [Command("commands", "[]", new string[] { RoleNames.Everyone, RoleNames.Registered, RoleNames.Admin }, "Usage: /commands | /list-commands")]
     public class ListCommandsCommand : BaseCommand
     {
 

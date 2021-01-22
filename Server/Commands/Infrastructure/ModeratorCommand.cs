@@ -13,7 +13,7 @@ namespace Oqtane.ChatHubs.Commands
             var moderator = commandServicesContext.ChatHubRepository.GetChatHubModerator(caller.UserId);
             var chatHubRoomChatHubModerator = commandServicesContext.ChatHubRepository.GetChatHubRoomChatHubModerator(commandCallerContext.RoomId, moderator.Id);
 
-            if(room.CreatorId != caller.UserId && chatHubRoomChatHubModerator == null && !commandServicesContext.ChatHub.Context.User.HasClaim(ClaimTypes.Role, Shared.Constants.AdminRole))
+            if(room.CreatorId != caller.UserId && chatHubRoomChatHubModerator == null && !commandServicesContext.ChatHub.Context.User.HasClaim(ClaimTypes.Role, Shared.RoleNames.Admin))
             {
                 throw new HubException("You do not have any permissions to run this command.");
             }

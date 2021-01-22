@@ -69,6 +69,10 @@ namespace Oqtane.ChatHubs.Services
         public event EventHandler<ChatHubUser> OnRemoveIgnoredByUserEvent;
         public event EventHandler<dynamic> OnAddModeratorEvent;
         public event EventHandler<dynamic> OnRemoveModeratorEvent;
+        public event EventHandler<dynamic> OnAddWhitelistUserEvent;
+        public event EventHandler<dynamic> OnRemoveWhitelistUserEvent;
+        public event EventHandler<dynamic> OnAddBlacklistUserEvent;
+        public event EventHandler<dynamic> OnRemoveBlacklistUserEvent;
         public event EventHandler<dynamic> OnDownloadBytes;
         public event EventHandler<int> OnClearHistoryEvent;
         public event EventHandler<ChatHubUser> OnDisconnectEvent;
@@ -103,6 +107,10 @@ namespace Oqtane.ChatHubs.Services
             this.OnAddIgnoredByUserEvent += OnAddIgnoredByUserExecute;
             this.OnAddModeratorEvent += OnAddModeratorExecute;
             this.OnRemoveModeratorEvent += OnRemoveModeratorExecute;
+            this.OnAddWhitelistUserEvent += OnAddWhitelistUserExecute;
+            this.OnRemoveWhitelistUserEvent += OnRemoveWhitelistUserExecute;
+            this.OnAddBlacklistUserEvent += OnAddBlacklistUserExecute;
+            this.OnRemoveBlacklistUserEvent += OnRemoveBlacklistUserExecute;
             this.OnDownloadBytes += OnDownloadBytesExecuteAsync;
             this.OnRemoveIgnoredByUserEvent += OnRemoveIgnoredByUserExecute;
             this.OnClearHistoryEvent += OnClearHistoryExecute;
@@ -194,6 +202,10 @@ namespace Oqtane.ChatHubs.Services
             this.Connection.On("RemoveIgnoredByUser", (ChatHubUser ignoredUser) => OnRemoveIgnoredByUserExecute(this, ignoredUser));
             this.Connection.On("AddModerator", (ChatHubModerator moderator, int roomId) => OnAddModeratorExecute(this, new { moderator = moderator, roomId = roomId }));
             this.Connection.On("RemoveModerator", (ChatHubModerator moderator, int roomId) => OnRemoveModeratorExecute(this, new { moderator = moderator, roomId = roomId }));
+            this.Connection.On("AddWhitelistUser", (ChatHubWhitelistUser whitelistUser, int roomId) => OnAddWhitelistUserExecute(this, new { whitelistUser = whitelistUser, roomId = roomId }));
+            this.Connection.On("RemoveWhitelistUser", (ChatHubWhitelistUser whitelistUser, int roomId) => OnRemoveWhitelistUserExecute(this, new { whitelistUser = whitelistUser, roomId = roomId }));
+            this.Connection.On("AddBlacklistUser", (ChatHubBlacklistUser blacklistUser, int roomId) => OnAddBlacklistUserExecute(this, new { blacklistUser = blacklistUser, roomId = roomId }));
+            this.Connection.On("RemoveBlacklistUser", (ChatHubBlacklistUser blacklistUser, int roomId) => OnRemoveBlacklistUserExecute(this, new { blacklistUser = blacklistUser, roomId = roomId }));
             this.Connection.On("ClearHistory", (int roomId) => OnClearHistoryEvent(this, roomId));
             this.Connection.On("Disconnect", (ChatHubUser user) => OnDisconnectEvent(this, user));
         }
@@ -547,6 +559,48 @@ namespace Oqtane.ChatHubs.Services
             });
         }
 
+        public void AddWhitelistUser_Clicked(int userId, int roomId)
+        {
+            this.Connection.InvokeAsync("AddWhitelistUser", userId, roomId).ContinueWith((task) =>
+            {
+                if (task.IsCompleted)
+                {
+                    this.HandleException(task);
+                }
+            });
+        }
+        public void RemoveWhitelistUser_Clicked(int userId, int roomId)
+        {
+            this.Connection.InvokeAsync("RemoveWhitelistUser", userId, roomId).ContinueWith((task) =>
+            {
+                if (task.IsCompleted)
+                {
+                    this.HandleException(task);
+                }
+            });
+        }
+
+        public void AddBlacklistUser_Clicked(int userId, int roomId)
+        {
+            this.Connection.InvokeAsync("AddBlacklistUser", userId, roomId).ContinueWith((task) =>
+            {
+                if (task.IsCompleted)
+                {
+                    this.HandleException(task);
+                }
+            });
+        }
+        public void RemoveBlacklistUser_Clicked(int userId, int roomId)
+        {
+            this.Connection.InvokeAsync("RemoveBlacklistUser", userId, roomId).ContinueWith((task) =>
+            {
+                if (task.IsCompleted)
+                {
+                    this.HandleException(task);
+                }
+            });
+        }
+
         public void ClearHistory(int roomId)
         {
             var room = this.Rooms.FirstOrDefault(x => x.Id == roomId);
@@ -636,11 +690,34 @@ namespace Oqtane.ChatHubs.Services
         private void OnAddModeratorExecute(object sender, dynamic e)
         {
             this.AddModerator(e.moderator, e.roomId);
+            this.RunUpdateUI();
         }
         private void OnRemoveModeratorExecute(object sender, dynamic e)
         {
             this.RemoveModerator(e.moderator, e.roomId);
+            this.RunUpdateUI();
         }
+        private void OnAddWhitelistUserExecute(object sender, dynamic e)
+        {
+            this.AddWhitelistUser(e.whitelistUser, e.roomId);
+            this.RunUpdateUI();
+        }
+        private void OnRemoveWhitelistUserExecute(object sender, dynamic e)
+        {
+            this.RemoveWhitelistUser(e.whitelistUser, e.roomId);
+            this.RunUpdateUI();
+        }
+        private void OnAddBlacklistUserExecute(object sender, dynamic e)
+        {
+            this.AddBlacklistUser(e.blacklistUser, e.roomId);
+            this.RunUpdateUI();
+        }
+        private void OnRemoveBlacklistUserExecute(object sender, dynamic e)
+        {
+            this.RemoveBlacklistUser(e.blacklistUser, e.roomId);
+            this.RunUpdateUI();
+        }
+
         private void OnClearHistoryExecute(object sender, int roomId)
         {
             this.ClearHistory(roomId);
@@ -754,6 +831,46 @@ namespace Oqtane.ChatHubs.Services
                 if (modi != null)
                 {
                     room.Moderators.Remove(modi);
+                }
+            }
+        }
+        public void AddWhitelistUser(ChatHubWhitelistUser whitelistUser, int roomId)
+        {
+            var room = this.Rooms.FirstOrDefault(item => item.Id == roomId);
+            if (room != null && !room.WhitelistUsers.Any(item => item.Id == whitelistUser.Id))
+            {
+                room.WhitelistUsers.Add(whitelistUser);
+            }
+        }
+        public void RemoveWhitelistUser(ChatHubWhitelistUser whitelistUser, int roomId)
+        {
+            var room = this.Rooms.FirstOrDefault(item => item.Id == roomId);
+            if (room != null)
+            {
+                var user = room.WhitelistUsers.FirstOrDefault(item => item.Id == whitelistUser.Id);
+                if (user != null)
+                {
+                    room.WhitelistUsers.Remove(user);
+                }
+            }
+        }
+        public void AddBlacklistUser(ChatHubBlacklistUser blacklistUser, int roomId)
+        {
+            var room = this.Rooms.FirstOrDefault(item => item.Id == roomId);
+            if (room != null && !room.BlacklistUsers.Any(item => item.Id == blacklistUser.Id))
+            {
+                room.BlacklistUsers.Add(blacklistUser);
+            }
+        }
+        public void RemoveBlacklistUser(ChatHubBlacklistUser blacklistUser, int roomId)
+        {
+            var room = this.Rooms.FirstOrDefault(item => item.Id == roomId);
+            if (room != null)
+            {
+                var user = room.BlacklistUsers.FirstOrDefault(item => item.Id == blacklistUser.Id);
+                if (user != null)
+                {
+                    room.BlacklistUsers.Remove(user);
                 }
             }
         }

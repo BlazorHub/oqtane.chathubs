@@ -37,6 +37,12 @@ namespace Oqtane.ChatHubs.Services
             IQueryable<ChatHubModerator> moderatorsQuery = this.chatHubRepository.GetChatHubModerators(room);
             IList<ChatHubModerator> moderatorsList = await moderatorsQuery.ToListAsync();
 
+            IQueryable<ChatHubWhitelistUser> whitelistUsersQuery = this.chatHubRepository.GetChatHubWhitelistUsers(room);
+            IList<ChatHubWhitelistUser> whitelistUsersList = await whitelistUsersQuery.ToListAsync();
+
+            IQueryable<ChatHubBlacklistUser> blacklistUsersQuery = this.chatHubRepository.GetChatHubBlacklistUsers(room);
+            IList<ChatHubBlacklistUser> blacklistUsersList = await blacklistUsersQuery.ToListAsync();
+
             ChatHubUser creator = await this.chatHubRepository.GetUserByIdAsync(room.CreatorId);
 
             return new ChatHubRoom()
@@ -54,6 +60,8 @@ namespace Oqtane.ChatHubs.Services
                 Messages = lastMessages,
                 Users = onlineUsers,
                 Moderators = moderatorsList,
+                WhitelistUsers = whitelistUsersList,
+                BlacklistUsers = blacklistUsersList,
                 CreatedOn = room.CreatedOn,
                 CreatedBy = room.CreatedBy,
                 ModifiedBy = room.ModifiedBy,
@@ -159,6 +167,26 @@ namespace Oqtane.ChatHubs.Services
                 Id = moderator.Id,
                 ModeratorDisplayName = moderator.ModeratorDisplayName,
                 ChatHubUserId = moderator.ChatHubUserId,
+            };
+        }
+
+        public ChatHubWhitelistUser CreateChatHubWhitelistUserClientModel(ChatHubWhitelistUser whitelistUser)
+        {
+            return new ChatHubWhitelistUser()
+            {
+                Id = whitelistUser.Id,
+                WhitelistUserDisplayName = whitelistUser.WhitelistUserDisplayName,
+                ChatHubUserId = whitelistUser.ChatHubUserId,
+            };
+        }
+
+        public ChatHubBlacklistUser CreateChatHubBlacklistUserClientModel(ChatHubBlacklistUser blacklistUser)
+        {
+            return new ChatHubBlacklistUser()
+            {
+                Id = blacklistUser.Id,
+                BlacklistUserDisplayName = blacklistUser.BlacklistUserDisplayName,
+                ChatHubUserId = blacklistUser.ChatHubUserId,
             };
         }
 

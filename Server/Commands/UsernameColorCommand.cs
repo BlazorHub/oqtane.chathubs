@@ -7,7 +7,7 @@ using Oqtane.Shared.Enums;
 namespace Oqtane.ChatHubs.Commands
 {
     [Export("ICommand", typeof(ICommand))]
-    [Command("username-color", "[]", new string[] { Constants.AllUsersRole, Constants.AdminRole } , "Usage: /username-color")]
+    [Command("username-color", "[]", new string[] { RoleNames.Everyone, RoleNames.Registered, RoleNames.Admin } , "Usage: /username-color")]
     public class UsernameColorCommand : BaseCommand
     {
         public override async Task Execute(CommandServicesContext context, CommandCallerContext callerContext, string[] args, ChatHubUser caller)

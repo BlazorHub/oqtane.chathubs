@@ -9,7 +9,7 @@ using Oqtane.Shared.Enums;
 namespace Oqtane.ChatHubs.Commands
 {
     [Export("ICommand", typeof(ICommand))]
-    [Command("reverse", "[message]", new string[] { Constants.AllUsersRole, Constants.AdminRole } , "Usage: /reverse")]
+    [Command("reverse", "[message]", new string[] { RoleNames.Everyone, RoleNames.Registered, RoleNames.Admin } , "Usage: /reverse")]
     public class ReverseCommand : BaseCommand
     {
         public override async Task Execute(CommandServicesContext context, CommandCallerContext callerContext, string[] args, ChatHubUser caller)

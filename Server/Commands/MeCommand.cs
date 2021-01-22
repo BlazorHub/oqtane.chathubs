@@ -9,7 +9,7 @@ using System;
 namespace Oqtane.ChatHubs.Commands
 {
     [Export("ICommand", typeof(ICommand))]
-    [Command("me", "[message]", new string[] { Constants.AllUsersRole, Constants.AdminRole } , "Usage: /me | /myself | /i")]
+    [Command("me", "[message]", new string[] { RoleNames.Everyone, RoleNames.Registered, RoleNames.Admin } , "Usage: /me | /myself | /i")]
     public class MeCommand : BaseCommand
     {
         public override async Task Execute(CommandServicesContext context, CommandCallerContext callerContext, string[] args, ChatHubUser caller)

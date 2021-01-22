@@ -10,7 +10,7 @@ using Oqtane.ChatHubs.Repository;
 namespace Oqtane.ChatHubs.Commands
 {
     [Export("ICommand", typeof(ICommand))]
-    [Command("blacklistuser", "[username]", new string[] { Constants.AllUsersRole, Constants.AdminRole }, "Usage: /blacklistuser")]
+    [Command("blacklistuser", "[username]", new string[] { RoleNames.Everyone, RoleNames.Registered, RoleNames.Admin }, "Usage: /blacklistuser")]
     public class BlacklistUserCommand : BaseCommand
     {
         public override async Task Execute(CommandServicesContext context, CommandCallerContext callerContext, string[] args, ChatHubUser caller)

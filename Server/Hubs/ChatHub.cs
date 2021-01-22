@@ -131,7 +131,7 @@ namespace Oqtane.ChatHubs.Hubs
             };
             chatHubUser = this.chatHubRepository.AddChatHubUser(chatHubUser);
 
-            if (chatHubUser != null && chatHubUser.Username != Constants.HostUser)
+            if (chatHubUser != null && chatHubUser.Username != RoleNames.Host)
             {
                 List<Role> roles = this.roles.GetRoles(chatHubUser.SiteId).Where(item => item.IsAutoAssigned).ToList();
                 foreach (Role role in roles)
@@ -412,11 +412,11 @@ namespace Oqtane.ChatHubs.Hubs
         public async Task SendCommandMetaDatas(int roomId)
         {
             ChatHubUser user = await this.GetChatHubUserAsync();
-            List<string> callerUserRoles = new List<string>() { Constants.AllUsersRole };
+            List<string> callerUserRoles = new List<string>() { RoleNames.Everyone };
 
-            if (Context.User.HasClaim(ClaimTypes.Role, Shared.Constants.AdminRole))
+            if (Context.User.HasClaim(ClaimTypes.Role, RoleNames.Admin))
             {
-                callerUserRoles.Add(Constants.AdminRole);
+                callerUserRoles.Add(RoleNames.Admin);
             }
 
             List<ChatHubCommandMetaData> commandMetaDatas = CommandManager.GetCommandsMetaDataByUserRole(callerUserRoles.ToArray()).ToList();
@@ -604,7 +604,7 @@ namespace Oqtane.ChatHubs.Hubs
                 if (user != null && targetUser != null)
                 {
                     var room = this.chatHubRepository.GetChatHubRoom(roomId);
-                    if (user.UserId != room.CreatorId && !Context.User.HasClaim(ClaimTypes.Role, Shared.Constants.AdminRole))
+                    if (user.UserId != room.CreatorId && !Context.User.HasClaim(ClaimTypes.Role, RoleNames.Admin))
                     {
                         throw new HubException("Only room creators and administrators can add moderations.");
                     }
@@ -647,9 +647,9 @@ namespace Oqtane.ChatHubs.Hubs
                 if (user != null && targetUser != null)
                 {
                     var room = this.chatHubRepository.GetChatHubRoom(roomId);
-                    if (user.UserId != room.CreatorId && !Context.User.HasClaim(ClaimTypes.Role, Shared.Constants.AdminRole))
+                    if (user.UserId != room.CreatorId && !Context.User.HasClaim(ClaimTypes.Role, RoleNames.Admin))
                     {
-                        throw new HubException("Only room creators and administrators can add moderations.");
+                        throw new HubException("Only room creators and administrators can remove moderations.");
                     }
 
                     var moderator = this.chatHubRepository.GetChatHubModerator(targetUser.UserId);
@@ -657,6 +657,130 @@ namespace Oqtane.ChatHubs.Hubs
 
                     var targetModeratorClientModel = this.chatHubService.CreateChatHubModeratorClientModel(moderator);
                     await Clients.Group(roomId.ToString()).SendAsync("RemoveModerator", targetModeratorClientModel, roomId);
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new HubException(ex.Message);
+            }
+        }
+        [AllowAnonymous]
+        public async Task AddWhitelistUser(int userId, int roomId)
+        {
+            try
+            {
+                ChatHubUser user = await this.GetChatHubUserAsync();
+                ChatHubUser targetUser = await this.chatHubRepository.GetUserByIdAsync(userId);
+
+                if (user != null && targetUser != null)
+                {
+                    var room = this.chatHubRepository.GetChatHubRoom(roomId);
+                    if (user.UserId != room.CreatorId && !Context.User.HasClaim(ClaimTypes.Role, RoleNames.Admin))
+                    {
+                        throw new HubException("Only room creators and administrators can add whitelist users.");
+                    }
+
+                    ChatHubWhitelistUser whitelistUser = this.chatHubRepository.AddChatHubWhitelistUser(targetUser);
+
+                    ChatHubRoomChatHubWhitelistUser room_whitelistuser = new ChatHubRoomChatHubWhitelistUser()
+                    {
+                        ChatHubRoomId = roomId,
+                        ChatHubWhitelistUserId = whitelistUser.Id,
+                    };
+                    this.chatHubRepository.AddChatHubRoomChatHubWhitelistUser(room_whitelistuser);
+
+                    var targetWhitelistUserClientModel = this.chatHubService.CreateChatHubWhitelistUserClientModel(whitelistUser);
+                    await Clients.Group(roomId.ToString()).SendAsync("AddWhitelistUser", targetWhitelistUserClientModel, roomId);
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new HubException(ex.Message);
+            }
+        }
+        [AllowAnonymous]
+        public async Task RemoveWhitelistUser(int userId, int roomId)
+        {
+            try
+            {
+                ChatHubUser user = await this.GetChatHubUserAsync();
+                ChatHubUser targetUser = await this.chatHubRepository.GetUserByIdAsync(userId);
+
+                if (user != null && targetUser != null)
+                {
+                    var room = this.chatHubRepository.GetChatHubRoom(roomId);
+                    if (user.UserId != room.CreatorId && !Context.User.HasClaim(ClaimTypes.Role, RoleNames.Admin))
+                    {
+                        throw new HubException("Only room creators and administrators can remove whitelist users.");
+                    }
+
+                    var whitelistUser = this.chatHubRepository.GetChatHubWhitelistUser(targetUser.UserId);
+                    this.chatHubRepository.DeleteChatHubRoomChatHubWhitelistUser(roomId, whitelistUser.Id);
+
+                    var targetWhitelistUserClientModel = this.chatHubService.CreateChatHubWhitelistUserClientModel(whitelistUser);
+                    await Clients.Group(roomId.ToString()).SendAsync("RemoveWhitelistUser", targetWhitelistUserClientModel, roomId);
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new HubException(ex.Message);
+            }
+        }
+        [AllowAnonymous]
+        public async Task AddBlacklistUser(int userId, int roomId)
+        {
+            try
+            {
+                ChatHubUser user = await this.GetChatHubUserAsync();
+                ChatHubUser targetUser = await this.chatHubRepository.GetUserByIdAsync(userId);
+
+                if (user != null && targetUser != null)
+                {
+                    var room = this.chatHubRepository.GetChatHubRoom(roomId);
+                    if (user.UserId != room.CreatorId && !Context.User.HasClaim(ClaimTypes.Role, RoleNames.Admin))
+                    {
+                        throw new HubException("Only room creators and administrators can add blacklist users.");
+                    }
+
+                    ChatHubBlacklistUser blacklistUser = this.chatHubRepository.AddChatHubBlacklistUser(targetUser);
+
+                    ChatHubRoomChatHubBlacklistUser room_blacklistuser = new ChatHubRoomChatHubBlacklistUser()
+                    {
+                        ChatHubRoomId = roomId,
+                        ChatHubBlacklistUserId = blacklistUser.Id,
+                    };
+                    this.chatHubRepository.AddChatHubRoomChatHubBlacklistUser(room_blacklistuser);
+
+                    var targetBlacklistUserClientModel = this.chatHubService.CreateChatHubBlacklistUserClientModel(blacklistUser);
+                    await Clients.Group(roomId.ToString()).SendAsync("AddBlacklistUser", targetBlacklistUserClientModel, roomId);
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new HubException(ex.Message);
+            }
+        }
+        [AllowAnonymous]
+        public async Task RemoveBlacklistUser(int userId, int roomId)
+        {
+            try
+            {
+                ChatHubUser user = await this.GetChatHubUserAsync();
+                ChatHubUser targetUser = await this.chatHubRepository.GetUserByIdAsync(userId);
+
+                if (user != null && targetUser != null)
+                {
+                    var room = this.chatHubRepository.GetChatHubRoom(roomId);
+                    if (user.UserId != room.CreatorId && !Context.User.HasClaim(ClaimTypes.Role, RoleNames.Admin))
+                    {
+                        throw new HubException("Only room creators and administrators can remove blacklis users.");
+                    }
+
+                    var blacklistUser = this.chatHubRepository.GetChatHubBlacklistUser(targetUser.UserId);
+                    this.chatHubRepository.DeleteChatHubRoomChatHubBlacklistUser(roomId, blacklistUser.Id);
+
+                    var targetBlacklistUserClientModel = this.chatHubService.CreateChatHubBlacklistUserClientModel(blacklistUser);
+                    await Clients.Group(roomId.ToString()).SendAsync("RemoveBlacklistUser", targetBlacklistUserClientModel, roomId);
                 }
             }
             catch (Exception ex)

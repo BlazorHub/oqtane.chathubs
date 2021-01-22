@@ -99,6 +99,12 @@ namespace Oqtane.ChatHubs.Services
         void AddModerator_Clicked(int userId, int roomId);
         void RemoveModerator_Clicked(int userId, int roomId);
 
+        void AddWhitelistUser_Clicked(int userId, int roomId);
+        void RemoveWhitelistUser_Clicked(int userId, int roomId);
+
+        void AddBlacklistUser_Clicked(int userId, int roomId);
+        void RemoveBlacklistUser_Clicked(int userId, int roomId);
+
         void ClearHistory(int roomId);
 
         void ToggleUserlist(ChatHubRoom room);
