@@ -818,7 +818,7 @@ namespace Oqtane.ChatHubs.Hubs
     {
         public static string CreateSignalRChatHubRoomGroupLevelName(this string roomId, int userRoomLevel)
         {
-            return $"roomId:{roomId};userRoomLevel{userRoomLevel}";
+            return $"roomId:{roomId};userRoomLevel:{userRoomLevel};";
         }
     }
 }
