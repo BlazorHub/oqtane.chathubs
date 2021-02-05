@@ -172,9 +172,9 @@
                             volume: { exact: 0.5 },
                         },
                         video: {
-                            width: { min: 240, ideal: 240, max: 240 },
-                            height: { min: 180, ideal: 180, max: 180 },
-                            frameRate: { ideal: 20 },
+                            width: { min: 320, ideal: 320, max: 320 },
+                            height: { min: 240, ideal: 240, max: 240 },
+                            frameRate: { ideal: 14 },
                             facingMode: { ideal: "user" },
                         }
                     };
