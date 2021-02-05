@@ -882,11 +882,11 @@ namespace Oqtane.ChatHubs.Services
 
         public async Task<List<ChatHubRoom>> GetChatHubRoomsByModuleIdAsync(int ModuleId)
         {
-            return await HttpClient.GetJsonAsync<List<ChatHubRoom>>(apiurl + "/getchathubroomsbymoduleid?moduleid=" + ModuleId + "&entityid=" + ModuleId);
+            return await HttpClient.GetJsonAsync<List<ChatHubRoom>>(apiurl + "/getchathubroomsbymoduleid?entityid=" + ModuleId);
         }
         public async Task<ChatHubRoom> GetChatHubRoomAsync(int ChatHubRoomId, int ModuleId)
         {
-            return await HttpClient.GetJsonAsync<ChatHubRoom>(apiurl + "/getchathubroom/" + ChatHubRoomId + "?moduleid=" + ModuleId + "&entityid=" + ModuleId);
+            return await HttpClient.GetJsonAsync<ChatHubRoom>(apiurl + "/getchathubroom/" + ChatHubRoomId + "?entityid=" + ModuleId);
         }
         public async Task<ChatHubRoom> AddChatHubRoomAsync(ChatHubRoom ChatHubRoom)
         {
@@ -898,11 +898,11 @@ namespace Oqtane.ChatHubs.Services
         }
         public async Task DeleteChatHubRoomAsync(int ChatHubRoomId, int ModuleId)
         {
-            await HttpClient.DeleteAsync(apiurl + "/deletechathubroom/" + ChatHubRoomId + "?moduleid=" + ModuleId + "&entityid=" + ModuleId);
+            await HttpClient.DeleteAsync(apiurl + "/deletechathubroom/" + ChatHubRoomId + "?entityid=" + ModuleId);
         }
         public async Task DeleteRoomImageAsync(int ChatHubRoomId, int ModuleId)
         {
-            await HttpClient.DeleteAsync(apiurl + "/deleteroomimage/" + ChatHubRoomId + "?moduleid=" + ModuleId + "&entityid=" + ModuleId);
+            await HttpClient.DeleteAsync(apiurl + "/deleteroomimage/" + ChatHubRoomId + "?entityid=" + ModuleId);
         }
 
         public string apiurl
@@ -966,7 +966,7 @@ namespace Oqtane.ChatHubs.Services
 
         public async Task FixCorruptConnections(int ModuleId)
         {
-            await HttpClient.DeleteAsync(apiurl + "/fixcorruptconnections" + "?moduleid=" + ModuleId + "&entityid=" + ModuleId);
+            await HttpClient.DeleteAsync(apiurl + "/fixcorruptconnections" + "?entityid=" + ModuleId);
         }
         
     }

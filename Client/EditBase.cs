@@ -42,11 +42,6 @@ namespace Oqtane.ChatHubs
         public string modifiedby;
         public DateTime modifiedon;
 
-        public void OnSelect(BlazorSelectEvent e)
-        {
-            this.type = e.SelectedItem;
-        }
-
         protected override async Task OnInitializedAsync()
         {
             try
@@ -54,6 +49,8 @@ namespace Oqtane.ChatHubs
                 this.SelectionItems.Add(ChatHubRoomType.Public.ToString());
                 this.SelectionItems.Add(ChatHubRoomType.Protected.ToString());
                 this.SelectionItems.Add(ChatHubRoomType.Private.ToString());
+
+                this.type = ChatHubRoomType.Public.ToString();
 
                 this.ChatHubService.OnUpdateUI += (object sender, EventArgs e) => UpdateUIStateHasChanged();
                 await this.InitContextRoomAsync();
@@ -63,6 +60,11 @@ namespace Oqtane.ChatHubs
                 await logger.LogError(ex, "Error Loading Room {ChatHubRoomId} {Error}", roomId, ex.Message);
                 ModuleInstance.AddModuleMessage("Error Loading Room", MessageType.Error);
             }
+        }
+
+        public void OnSelect(BlazorSelectEvent e)
+        {
+            this.type = e.SelectedItem;
         }
 
         private async Task InitContextRoomAsync()

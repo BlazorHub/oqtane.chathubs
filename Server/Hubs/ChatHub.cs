@@ -810,15 +810,12 @@ namespace Oqtane.ChatHubs.Hubs
             Regex regex = new Regex(guestNamePattern);
             Match match = regex.Match(guestName);
             return match.Success;
-        }        
-
-    }
-
-    public static class ChatHubExtensionMethods
-    {
-        public static string CreateSignalRChatHubRoomGroupLevelName(this string roomId, int userRoomLevel)
+        }
+        public string CreateSignalRChatHubRoomGroupLevelName(string roomId, int userRoomLevel)
         {
             return $"roomId:{roomId};userRoomLevel:{userRoomLevel};";
         }
+
     }
+
 }

@@ -8,7 +8,6 @@ using Oqtane.Enums;
 using System.Threading.Tasks;
 using System.Linq;
 using Oqtane.Shared.Enums;
-using Microsoft.AspNetCore.Identity;
 using System.IO;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.SignalR;
@@ -29,18 +28,16 @@ namespace Oqtane.ChatHubs.Controllers
         IWebHostEnvironment webHostEnvironment;
         private readonly IHubContext<ChatHub> chatHubContext;
         private readonly ChatHub chatHub;
-        private readonly UserManager<IdentityUser> userManager;
         private readonly IChatHubRepository chatHubRepository;
         private readonly IChatHubService chatHubService;
         private readonly ILogManager logger;
         private int EntityId = -1; // passed as a querystring parameter for authorization and used for validation
 
-        public ChatHubController(IWebHostEnvironment webHostEnvironment, IHubContext<ChatHub> chatHubContext, ChatHub chatHub, UserManager<IdentityUser> identityUserManager, IChatHubRepository chatHubRepository, IChatHubService chatHubService, IHttpContextAccessor httpContextAccessor, ILogManager logger)
+        public ChatHubController(IWebHostEnvironment webHostEnvironment, IHubContext<ChatHub> chatHubContext, ChatHub chatHub, IChatHubRepository chatHubRepository, IChatHubService chatHubService, IHttpContextAccessor httpContextAccessor, ILogManager logger)
         {
             this.webHostEnvironment = webHostEnvironment;
             this.chatHubContext = chatHubContext;
             this.chatHub = chatHub;
-            this.userManager = identityUserManager;
             this.chatHubRepository = chatHubRepository;
             this.chatHubService = chatHubService;
             this.logger = logger;
@@ -86,26 +83,23 @@ namespace Oqtane.ChatHubs.Controllers
         [HttpGet]
         [ActionName("GetChatHubRoomsByModuleId")]
         [Authorize(Policy = "ViewModule")]
-        public async Task<IEnumerable<ChatHubRoom>> GetAsync(int moduleid)
+        public async Task<IEnumerable<ChatHubRoom>> GetChatHubRoomsByModuleId()
         {
             try
             {
                 IList<ChatHubRoom> chatHubRooms = new List<ChatHubRoom>();
-                if (moduleid == EntityId)
+                var rooms = this.chatHubRepository.GetChatHubRoomsByModuleId(this.EntityId).Public().ToList();
+                if (HttpContext.User.Identity.IsAuthenticated)
                 {
-                    var rooms = this.chatHubRepository.GetChatHubRoomsByModuleId(moduleid).Public().ToList();
-                    if (HttpContext.User.Identity.IsAuthenticated)
-                    {
-                        rooms.AddRange(this.chatHubRepository.GetChatHubRooms().Protected().ToList());
-                    }
+                    rooms.AddRange(this.chatHubRepository.GetChatHubRooms().Protected().ToList());
+                }
 
-                    if (rooms != null && rooms.Any())
+                if (rooms != null && rooms.Any())
+                {
+                    foreach (var room in rooms)
                     {
-                        foreach (var room in rooms)
-                        {
-                            var item = await this.chatHubService.CreateChatHubRoomClientModelAsync(room);
-                            chatHubRooms.Add(item);
-                        }
+                        var item = await this.chatHubService.CreateChatHubRoomClientModelAsync(room);
+                        chatHubRooms.Add(item);
                     }
                 }
 
@@ -121,16 +115,13 @@ namespace Oqtane.ChatHubs.Controllers
         [HttpGet("{id}")]
         [ActionName("GetChatHubRoom")]
         [Authorize(Policy = "ViewModule")]
-        public async Task<ChatHubRoom> GetAsync(int id, int moduleid)
+        public async Task<ChatHubRoom> GetAsync(int id)
         {
             try
             {
-                ChatHubRoom chatHubRoomClientModel = null;
-                if (moduleid == EntityId)
-                {
-                    ChatHubRoom chatHubRoom = chatHubRepository.GetChatHubRoom(id);
-                    chatHubRoomClientModel = await this.chatHubService.CreateChatHubRoomClientModelAsync(chatHubRoom);
-                }
+                ChatHubRoom chatHubRoom = chatHubRepository.GetChatHubRoom(id);
+                ChatHubRoom chatHubRoomClientModel = await this.chatHubService.CreateChatHubRoomClientModelAsync(chatHubRoom);
+
                 return chatHubRoomClientModel;
             }
             catch (Exception ex)
@@ -147,10 +138,10 @@ namespace Oqtane.ChatHubs.Controllers
         {
             try
             {
-                if (ModelState.IsValid && ChatHubRoom.ModuleId == EntityId)
+                if (ModelState.IsValid && ChatHubRoom.ModuleId == this.EntityId)
                 {
                     ChatHubRoom = chatHubRepository.AddChatHubRoom(ChatHubRoom);
-                    logger.Log(LogLevel.Information, this, LogFunction.Create, "ChatHubRoom Added {ChatHubRoom}", ChatHubRoom);                    
+                    logger.Log(LogLevel.Information, this, LogFunction.Create, "ChatHubRoom Added {ChatHubRoom}", ChatHubRoom);
                 }
 
                 return await this.chatHubService.CreateChatHubRoomClientModelAsync(ChatHubRoom);
@@ -169,7 +160,7 @@ namespace Oqtane.ChatHubs.Controllers
         {
             try
             {
-                if (ModelState.IsValid && ChatHubRoom.ModuleId == EntityId)
+                if (ModelState.IsValid && ChatHubRoom.ModuleId == this.EntityId)
                 {
                     ChatHubRoom = chatHubRepository.UpdateChatHubRoom(ChatHubRoom);
                     logger.Log(LogLevel.Information, this, LogFunction.Update, "ChatHubRoom Updated {ChatHubRoom}", ChatHubRoom);
@@ -186,15 +177,12 @@ namespace Oqtane.ChatHubs.Controllers
         [HttpDelete("{id}")]
         [ActionName("DeleteChatHubRoom")]
         [Authorize(Policy = "EditModule")]
-        public void Delete(int id, int moduleid)
+        public void Delete(int id)
         {
             try
             {
-                if (moduleid == EntityId)
-                {
-                    chatHubRepository.DeleteChatHubRoom(id, moduleid);
-                    logger.Log(LogLevel.Information, this, LogFunction.Delete, "ChatHubRoom Deleted {ChatHubRoomId}", id);
-                }
+                chatHubRepository.DeleteChatHubRoom(id, this.EntityId);
+                logger.Log(LogLevel.Information, this, LogFunction.Delete, "ChatHubRoom Deleted {ChatHubRoomId}", id);
             }
             catch (Exception ex)
             {
@@ -206,24 +194,21 @@ namespace Oqtane.ChatHubs.Controllers
         [HttpDelete]
         [ActionName("FixCorruptConnections")]
         [Authorize(Policy = "EditModule")]
-        public void FixCorruptConnections(int moduleid)
+        public void FixCorruptConnections()
         {
             try
             {
-                if (moduleid == EntityId)
+                List<ChatHubUser> onlineUsers = chatHubRepository.GetOnlineUsers().ToList();
+                foreach (var user in onlineUsers)
                 {
-                    List<ChatHubUser> onlineUsers = chatHubRepository.GetOnlineUsers().ToList();
-                    foreach (var user in onlineUsers)
+                    foreach (ChatHubConnection connection in user.Connections)
                     {
-                        foreach (ChatHubConnection connection in user.Connections)
-                        {
-                            connection.Status = Enum.GetName(typeof(ChatHubConnectionStatus), ChatHubConnectionStatus.Inactive);
-                            chatHubRepository.UpdateChatHubConnection(connection);
+                        connection.Status = Enum.GetName(typeof(ChatHubConnectionStatus), ChatHubConnectionStatus.Inactive);
+                        chatHubRepository.UpdateChatHubConnection(connection);
 
-                            logger.Log(LogLevel.Information, this, LogFunction.Delete, "ChatHubConnection Deleted {ChatHubConnection}", connection);
-                        }
+                        logger.Log(LogLevel.Information, this, LogFunction.Delete, "ChatHubConnection Deleted {ChatHubConnection}", connection);
                     }
-                }
+                }                
             }
             catch (Exception ex)
             {
@@ -236,78 +221,77 @@ namespace Oqtane.ChatHubs.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> PostImageUpload()
         {
-
-            string connectionId = null;
-            if (Request.Headers.ContainsKey("connectionId"))
-            {
-                connectionId = Request.Headers["connectionId"];
-                if (string.IsNullOrEmpty(connectionId))
-                {
-                    return new BadRequestObjectResult(new { Message = "No connection id." });
-                }
-            }
-
-            ChatHubUser user = await this.chatHub.IdentifyGuest(connectionId);
-            if (user == null)
-            {
-                return new BadRequestObjectResult(new { Message = "No user found." });
-            }
-
-            string displayName = string.Empty;
-            if (Request.Headers.ContainsKey("displayName"))
-            {
-                displayName = Request.Headers["displayName"];
-                if (string.IsNullOrEmpty(displayName))
-                {
-                    return new BadRequestObjectResult(new { Message = "No display name." });
-                }
-            }
-
-            string roomId = string.Empty;
-            if (Request.Headers.ContainsKey("roomId"))
-            {
-                roomId = Request.Headers["roomId"];
-                if (string.IsNullOrEmpty(roomId))
-                {
-                    return new BadRequestObjectResult(new { Message = "No room id." });
-                }
-            }
-
-            string moduleId = string.Empty;
-            if (Request.Headers.ContainsKey("moduleId"))
-            {
-                moduleId = Request.Headers["moduleId"];
-                if (string.IsNullOrEmpty(moduleId))
-                {
-                    return new BadRequestObjectResult(new { Message = "No module id." });
-                }
-            }
-
-            IFormFileCollection files = Request.Form.Files;
-            if (files == null || files.Count <= 0)
-            {
-                return new BadRequestObjectResult(new { Message = "No files." });
-            }
-
-            string content = string.Concat(files.Count, " ", "Photo(s)");
-            ChatHubRoom chatHubRoom = this.chatHubRepository.GetChatHubRoom(Int32.Parse(roomId));
-            if (chatHubRoom == null)
-            {
-                return new BadRequestObjectResult(new { Message = "No room found." });
-            }
-
-            ChatHubMessage chatHubMessage = new ChatHubMessage()
-            {
-                ChatHubRoomId = chatHubRoom.Id,
-                ChatHubUserId = user.UserId,
-                Type = Enum.GetName(typeof(ChatHubMessageType), ChatHubMessageType.Image),
-                Content = content,
-                User = user
-            };
-            chatHubMessage = this.chatHubRepository.AddChatHubMessage(chatHubMessage);
-
             try
             {
+                string connectionId = null;
+                if (Request.Headers.ContainsKey("connectionId"))
+                {
+                    connectionId = Request.Headers["connectionId"];
+                    if (string.IsNullOrEmpty(connectionId))
+                    {
+                        return new BadRequestObjectResult(new { Message = "No connection id." });
+                    }
+                }
+
+                ChatHubUser user = await this.chatHub.IdentifyGuest(connectionId);
+                if (user == null)
+                {
+                    return new BadRequestObjectResult(new { Message = "No user found." });
+                }
+
+                string displayName = string.Empty;
+                if (Request.Headers.ContainsKey("displayName"))
+                {
+                    displayName = Request.Headers["displayName"];
+                    if (string.IsNullOrEmpty(displayName))
+                    {
+                        return new BadRequestObjectResult(new { Message = "No display name." });
+                    }
+                }
+
+                string roomId = string.Empty;
+                if (Request.Headers.ContainsKey("roomId"))
+                {
+                    roomId = Request.Headers["roomId"];
+                    if (string.IsNullOrEmpty(roomId))
+                    {
+                        return new BadRequestObjectResult(new { Message = "No room id." });
+                    }
+                }
+
+                string moduleId = string.Empty;
+                if (Request.Headers.ContainsKey("moduleId"))
+                {
+                    moduleId = Request.Headers["moduleId"];
+                    if (string.IsNullOrEmpty(moduleId))
+                    {
+                        return new BadRequestObjectResult(new { Message = "No module id." });
+                    }
+                }
+
+                IFormFileCollection files = Request.Form.Files;
+                if (files == null || files.Count <= 0)
+                {
+                    return new BadRequestObjectResult(new { Message = "No files." });
+                }
+
+                string content = string.Concat(files.Count, " ", "Photo(s)");
+                ChatHubRoom chatHubRoom = this.chatHubRepository.GetChatHubRoom(Int32.Parse(roomId));
+                if (chatHubRoom == null)
+                {
+                    return new BadRequestObjectResult(new { Message = "No room found." });
+                }
+
+                ChatHubMessage chatHubMessage = new ChatHubMessage()
+                {
+                    ChatHubRoomId = chatHubRoom.Id,
+                    ChatHubUserId = user.UserId,
+                    Type = Enum.GetName(typeof(ChatHubMessageType), ChatHubMessageType.Image),
+                    Content = content,
+                    User = user
+                };
+                chatHubMessage = this.chatHubRepository.AddChatHubMessage(chatHubMessage);
+
                 var maxFileSize = 10;
                 var maxFileCount = 3;
 
@@ -357,7 +341,6 @@ namespace Oqtane.ChatHubs.Controllers
                     */
 
                     int imageWidth, imageHeight;
-
                     string fileName = string.Concat(Guid.NewGuid().ToString(), fileExtension);
                     string fullPath = Path.Combine(newPath, fileName);
                     using (var stream = new FileStream(fullPath, FileMode.Create))
@@ -387,9 +370,10 @@ namespace Oqtane.ChatHubs.Controllers
 
                 chatHubMessage = this.chatHubService.CreateChatHubMessageClientModel(chatHubMessage);
                 await this.chatHubContext.Clients.Group(chatHubMessage.ChatHubRoomId.ToString()).SendAsync("AddMessage", chatHubMessage);
+
                 return new OkObjectResult(new { Message = "Successfully Uploaded Files." });
             }
-            catch (Exception ex)
+            catch
             {
                 return new BadRequestObjectResult(new { Message = "Error Uploading Files." });
             }
@@ -398,26 +382,26 @@ namespace Oqtane.ChatHubs.Controllers
 
         [HttpPost]
         [AllowAnonymous]
-        public async Task<IActionResult> PostRoomImageUpload()
+        public IActionResult PostRoomImageUpload()
         {
-            string roomId = string.Empty;
-            if (Request.Headers.ContainsKey("roomid"))
-            {
-                roomId = Request.Headers["roomid"];
-                if (string.IsNullOrEmpty(roomId))
-                {
-                    return new BadRequestObjectResult(new { Message = "No room id." });
-                }
-            }
-
-            IFormFileCollection files = Request.Form.Files;
-            if (files == null || files.Count <= 0)
-            {
-                return new BadRequestObjectResult(new { Message = "No files." });
-            }
-
             try
             {
+                string roomId = string.Empty;
+                if (Request.Headers.ContainsKey("roomid"))
+                {
+                    roomId = Request.Headers["roomid"];
+                    if (string.IsNullOrEmpty(roomId))
+                    {
+                        return new BadRequestObjectResult(new { Message = "No room id." });
+                    }
+                }
+
+                IFormFileCollection files = Request.Form.Files;
+                if (files == null || files.Count <= 0)
+                {
+                    return new BadRequestObjectResult(new { Message = "No files." });
+                }
+
                 var maxFileSize = 10;
                 var maxFileCount = 3;
 
@@ -456,53 +440,42 @@ namespace Oqtane.ChatHubs.Controllers
                     }
 
                     var room = this.chatHubRepository.GetChatHubRoom(Int32.Parse(roomId));
-                    if(room != null)
+                    if (room != null)
                     {
                         room.ImageUrl = fileName;
                         this.chatHubRepository.UpdateChatHubRoom(room);
                     }
                 }
+
+                return new OkObjectResult(new { Message = "Successfully Uploaded Files." });
             }
-            catch (Exception ex)
+            catch
             {
                 return new BadRequestObjectResult(new { Message = "Error Uploading Files." });
             }
-
-            return new OkObjectResult(new { Message = "Successfully Uploaded Files." });
         }
 
         [HttpDelete("{id}")]
         [ActionName("DeleteRoomImage")]
         [Authorize(Policy = "EditModule")]
-        public async Task<IActionResult> DeleteRoomImage(int id, int moduleid)
+        public IActionResult DeleteRoomImage(int id, int moduleid)
         {
-
             try
             {
-                string roomId = string.Empty;
-                if (Request.Headers.ContainsKey("roomid"))
-                {
-                    roomId = Request.Headers["roomid"];
-                    if (string.IsNullOrEmpty(roomId))
-                    {
-                        return new BadRequestObjectResult(new { Message = "No room id." });
-                    }
-                }
-
                 var room = this.chatHubRepository.GetChatHubRoom(id);
                 if (room != null)
                 {
                     room.ImageUrl = string.Empty;
                     this.chatHubRepository.UpdateChatHubRoom(room);
+                    return new OkObjectResult(new { Message = "Successfully Removed Image." });
                 }
+
+                return new NotFoundObjectResult(new { Message = "Could not found any requested objects." });
             }
-            catch (Exception ex)
+            catch
             {
                 return new BadRequestObjectResult(new { Message = "Error Removing Image." });
             }
-
-            return new OkObjectResult(new { Message = "Successfully Removed Image." });
-
         }
 
     }
