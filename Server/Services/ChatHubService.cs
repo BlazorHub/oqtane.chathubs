@@ -24,10 +24,10 @@ namespace Oqtane.ChatHubs.Services
 
         public async Task<ChatHubRoom> CreateChatHubRoomClientModelAsync(ChatHubRoom room)
         {
-            List<ChatHubMessage> lastMessages = new List<ChatHubMessage>();
-            if(false && room.OneVsOne())
+            IList<ChatHubMessage> lastMessages = new List<ChatHubMessage>();
+            if(room.OneVsOne())
             {
-                lastMessages = await this.chatHubRepository.GetChatHubMessages(room.Id).Take(10).ToListAsync();
+                lastMessages = this.chatHubRepository.GetChatHubMessages(room.Id, 42);
                 lastMessages = lastMessages != null && lastMessages.Any() ? lastMessages.Select(item => this.CreateChatHubMessageClientModel(item)).ToList() : new List<ChatHubMessage>();
             }
 

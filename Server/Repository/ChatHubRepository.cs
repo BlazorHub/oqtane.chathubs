@@ -78,11 +78,20 @@ namespace Oqtane.ChatHubs.Repository
                 throw;
             }
         }
-        public IQueryable<ChatHubMessage> GetChatHubMessages(int roomId)
+        public IList<ChatHubMessage> GetChatHubMessages(int roomId, int count)
         {
             try
             {
-                return db.ChatHubMessage.Where(item => item.ChatHubRoomId == roomId).Include(item => item.User).OrderByDescending(item => item.CreatedOn);
+                // for now return list instead of queryable result
+                // return db.ChatHubMessage.Where(item => item.ChatHubRoomId == roomId).Include(item => item.User).OrderByDescending(item => item.CreatedOn);
+
+                var msgs = db.ChatHubMessage.Where(item => item.ChatHubRoomId == roomId).OrderByDescending(item => item.CreatedOn).Take(count).ToList();
+                foreach (var msg in msgs)
+                {
+                    msg.User = db.ChatHubUser.FirstOrDefault(item => item.UserId == msg.ChatHubUserId);
+                }
+
+                return msgs;
             }
             catch
             {
