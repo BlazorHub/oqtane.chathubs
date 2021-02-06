@@ -218,7 +218,7 @@ namespace Oqtane.ChatHubs.Hubs
         {
             ChatHubUser user = await this.GetChatHubUserAsync();
 
-            var rooms = chatHubRepository.GetChatHubRoomsByUser(user).Active();
+            var rooms = chatHubRepository.GetChatHubRoomsByUser(user).Enabled();
             foreach (var room in await rooms.ToListAsync())
             {
                 if (user.Connections.Active().Count() == 1)
@@ -229,6 +229,13 @@ namespace Oqtane.ChatHubs.Hubs
 
                 await this.SendGroupNotification(string.Format("{0} disconnected from chat with client device {1}.", user.DisplayName, this.chatHubService.MakeStringAnonymous(Context.ConnectionId, 7, '*')), room.Id, Context.ConnectionId, user, ChatHubMessageType.Connect_Disconnect);
                 await Groups.RemoveFromGroupAsync(Context.ConnectionId, room.Id.ToString());
+
+
+                if(!Context.User.HasClaim(ClaimTypes.Role, RoleNames.Registered) && !Context.User.HasClaim(ClaimTypes.Role, RoleNames.Admin) && !Context.User.HasClaim(ClaimTypes.Role, RoleNames.Host))
+                {
+                    room.Status = ChatHubRoomStatus.Archived.ToString();
+                    this.chatHubRepository.UpdateChatHubRoom(room);
+                }
             }
 
             var connection = await this.chatHubRepository.GetConnectionByConnectionId(Context.ConnectionId);
@@ -246,10 +253,10 @@ namespace Oqtane.ChatHubs.Hubs
         {
             ChatHubUser user = await this.GetChatHubUserAsync();
 
-            var rooms = this.chatHubRepository.GetChatHubRoomsByUser(user).Public().ToList();
+            var rooms = this.chatHubRepository.GetChatHubRoomsByUser(user).Public().Enabled().ToList();
             if (Context.User.Identity.IsAuthenticated)
             {
-                rooms.AddRange(this.chatHubRepository.GetChatHubRoomsByUser(user).Protected().ToList());
+                rooms.AddRange(this.chatHubRepository.GetChatHubRoomsByUser(user).Protected().Enabled().ToList());
             }
             
             foreach (var room in rooms)

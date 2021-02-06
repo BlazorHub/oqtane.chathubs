@@ -2,7 +2,7 @@
 {
     public enum ChatHubRoomStatus
     {
-        Active,
-        Inactive
+        Enabled,
+        Archived
     }
 }

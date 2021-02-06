@@ -112,7 +112,7 @@ namespace Oqtane.ChatHubs
                         Title = this.title,
                         Content = this.content,
                         Type = this.type,
-                        Status = Enum.GetName(typeof(ChatHubRoomStatus), ChatHubRoomStatus.Active),
+                        Status = ChatHubRoomStatus.Enabled.ToString(),
                         ImageUrl = string.Empty,
                         OneVsOneId = string.Empty,
                         CreatorId = ChatHubService.ConnectedUser.UserId,

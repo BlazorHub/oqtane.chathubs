@@ -253,7 +253,7 @@ namespace Oqtane.ChatHubs.Services
                     Title = string.Format("{0} vs {1}", callerUser.DisplayName, targetUser.DisplayName),
                     Content = "One Vs One",
                     Type = ChatHubRoomType.OneVsOne.ToString(),
-                    Status = ChatHubRoomStatus.Active.ToString(),
+                    Status = ChatHubRoomStatus.Enabled.ToString(),
                     ImageUrl = string.Empty,
                     OneVsOneId = this.CreateOneVsOneId(callerUser, targetUser),
                     CreatorId = callerUser.UserId

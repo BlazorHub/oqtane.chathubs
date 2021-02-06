@@ -9,9 +9,9 @@ namespace Oqtane.ChatHubs.Repository
     public static class ChatHubRepositoryExtensionMethods
     {
 
-        public static IQueryable<ChatHubRoom> Active(this IQueryable<ChatHubRoom> rooms)
+        public static IQueryable<ChatHubRoom> Enabled(this IQueryable<ChatHubRoom> rooms)
         {
-            return rooms.Where(r => r.Status == Enum.GetName(typeof(ChatHubRoomStatus), ChatHubRoomStatus.Active));
+            return rooms.Where(r => r.Status == ChatHubRoomStatus.Enabled.ToString());
         }
 
         public static IQueryable<ChatHubConnection> Active(this IQueryable<ChatHubConnection> connections)
