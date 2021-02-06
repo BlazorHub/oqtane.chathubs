@@ -13,6 +13,7 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using System.Text.RegularExpressions;
 using Oqtane.Shared.Models;
+using Oqtane.Shared.Enums;
 using BlazorAlerts;
 using BlazorWindows;
 using System.Net;
@@ -142,6 +143,22 @@ namespace Oqtane.ChatHubs
             }
 
             await base.OnParametersSetAsync();
+        }
+
+        public async Task ArchiveRoom(ChatHubRoom room)
+        {
+            try
+            {
+                room.Status = ChatHubRoomStatus.Archived.ToString();
+                await ChatHubService.UpdateChatHubRoomAsync(room);
+                await logger.LogInformation("Room Archived {ChatHubRoom}", room);
+                NavigationManager.NavigateTo(NavigateUrl());
+            }
+            catch (Exception ex)
+            {
+                await logger.LogError(ex, "Error Archiving Room {ChatHubRoom} {Error}", room, ex.Message);
+                ModuleInstance.AddModuleMessage("Error Archiving Room", MessageType.Error);
+            }
         }
 
         public async Task DeleteRoom(int id)

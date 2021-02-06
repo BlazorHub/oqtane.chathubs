@@ -502,7 +502,7 @@ namespace Oqtane.ChatHubs.Services
         {
             if (this.Lobbies != null && this.Lobbies.Any())
             {
-                this.Lobbies = this.Lobbies.OrderByDescending(item => item.Users?.Count()).ThenByDescending(item => item.CreatedOn).Take(100).ToList();
+                this.Lobbies = this.Lobbies.OrderByDescending(item => item.Users?.Count()).ThenByDescending(item => item.CreatedOn).Take(1000).ToList();
             }
         }
 
