@@ -145,11 +145,19 @@ namespace Oqtane.ChatHubs
             await base.OnParametersSetAsync();
         }
 
-        public async Task ArchiveRoom(ChatHubRoom room)
+        public async Task EnableArchiveRoom(ChatHubRoom room)
         {
             try
             {
-                room.Status = ChatHubRoomStatus.Archived.ToString();
+                if(room.Status == ChatHubRoomStatus.Archived.ToString())
+                {
+                    room.Status = ChatHubRoomStatus.Enabled.ToString();
+                }
+                else if(room.Status == ChatHubRoomStatus.Enabled.ToString())
+                {
+                    room.Status = ChatHubRoomStatus.Archived.ToString();
+                }
+
                 await ChatHubService.UpdateChatHubRoomAsync(room);
                 await logger.LogInformation("Room Archived {ChatHubRoom}", room);
                 NavigationManager.NavigateTo(NavigateUrl());
