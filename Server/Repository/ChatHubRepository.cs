@@ -50,6 +50,10 @@ namespace Oqtane.ChatHubs.Repository
                       .Collection(u => u.UserRooms)
                       .Query().Select(u => u.Room);            
         }
+        public IQueryable<ChatHubRoom> GetChatHubRoomsByCreator(int creatorId)
+        {
+            return db.ChatHubRoom.Where(item => item.CreatorId == creatorId);
+        }
         public IQueryable<ChatHubUser> GetChatHubUsersByRoom(ChatHubRoom room)
         {
             return db.Entry(room)

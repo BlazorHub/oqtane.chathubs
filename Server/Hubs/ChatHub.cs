@@ -229,8 +229,12 @@ namespace Oqtane.ChatHubs.Hubs
 
                 await this.SendGroupNotification(string.Format("{0} disconnected from chat with client device {1}.", user.DisplayName, this.chatHubService.MakeStringAnonymous(Context.ConnectionId, 7, '*')), room.Id, Context.ConnectionId, user, ChatHubMessageType.Connect_Disconnect);
                 await Groups.RemoveFromGroupAsync(Context.ConnectionId, room.Id.ToString());
+            }
 
-                if(!Context.User.HasClaim(ClaimTypes.Role, RoleNames.Registered) && !Context.User.HasClaim(ClaimTypes.Role, RoleNames.Admin) && !Context.User.HasClaim(ClaimTypes.Role, RoleNames.Host))
+            if (!Context.User.HasClaim(ClaimTypes.Role, RoleNames.Registered) && !Context.User.HasClaim(ClaimTypes.Role, RoleNames.Admin) && !Context.User.HasClaim(ClaimTypes.Role, RoleNames.Host))
+            {
+                var roomsByCreator = this.chatHubRepository.GetChatHubRoomsByCreator(user.UserId);
+                foreach (var room in await roomsByCreator.ToListAsync())
                 {
                     room.Status = ChatHubRoomStatus.Archived.ToString();
                     this.chatHubRepository.UpdateChatHubRoom(room);

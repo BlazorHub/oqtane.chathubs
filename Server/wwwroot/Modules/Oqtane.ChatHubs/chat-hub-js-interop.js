@@ -188,7 +188,7 @@
 
                             __selflocallivestream.vElement.srcObject = mediastream;
 
-                            __selfgetstream.options = { mimeType: self.__obj.videomimetypeobject.mimetype, audioBitsPerSecond: 240000, videoBitsPerSecond: 400000, ignoreMutedMedia: true };
+                            __selfgetstream.options = { mimeType: self.__obj.videomimetypeobject.mimetype, audioBitsPerSecond: 120000, videoBitsPerSecond: 200000, ignoreMutedMedia: true };
                             __selfgetstream.recorder = new MediaRecorder(mediastream, __selfgetstream.options);
 
                             __selfgetstream.recorder.start();
@@ -389,12 +389,16 @@
                 this.video.preload = 'auto';
                 this.video.muted = true;
 
+                this.video.src = URL.createObjectURL(this.mediasource);
+
+                /*
                 try {
                     this.video.srcObject = this.mediasource;
                 } catch (ex) {
                     console.warn(ex);
                     this.video.src = URL.createObjectURL(this.mediasource);
                 }
+                */
 
                 this.drawimage = function (base64str) {
 
