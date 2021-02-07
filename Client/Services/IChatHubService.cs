@@ -113,6 +113,8 @@ namespace Oqtane.ChatHubs.Services
 
         Task DeleteRoomImageAsync(int ChatHubRoomId, int ModuleId);
 
+        string AutocompleteUsername(string msgInput, int roomId, int autocompleteCounter, string pressedKey);
+
         void HandleException(Exception exception);
 
         Task DisconnectAsync();

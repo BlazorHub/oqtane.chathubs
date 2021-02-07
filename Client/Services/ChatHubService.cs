@@ -905,6 +905,28 @@ namespace Oqtane.ChatHubs.Services
             await HttpClient.DeleteAsync(apiurl + "/deleteroomimage/" + ChatHubRoomId + "?entityid=" + ModuleId);
         }
 
+        public string AutocompleteUsername(string msgInput, int roomId, int autocompleteCounter, string pressedKey)
+        {
+            List<string> words = msgInput.Trim().Split(' ').ToList();
+            string lastWord = words.Last();
+
+            var room = this.Rooms.FirstOrDefault(item => item.Id == roomId);
+            var users = room.Users.Where(x => x.DisplayName.StartsWith(lastWord));
+
+            if (users.Any())
+            {
+                autocompleteCounter = autocompleteCounter % users.Count();
+
+                words.Remove(lastWord);
+                if (pressedKey == "Enter")
+                    words.Add(users.ToArray()[autocompleteCounter].DisplayName);
+
+                msgInput = string.Join(' ', words);
+            }
+
+            return msgInput;
+        }
+
         public string apiurl
         {
             //get { return NavigationManager.BaseUri + "api/ChatHub"; }

@@ -233,11 +233,43 @@ namespace Oqtane.ChatHubs
             this.ChatHubService.RemoveInvitation(guid);
         }
 
+        private int _cachedMsgInputCounter { get; set; } = 1;
+        private List<string> _cachedMsgInputList { get; set; } = new List<string>();
         public async Task KeyDown(KeyboardEventArgs e, ChatHubRoom room)
         {
             if (!e.ShiftKey && e.Key == "Enter")
             {
                 await this.SendMessage_Clicked(room.MessageInput, room);
+            }
+            else if (e.ShiftKey && e.Key == "Enter")
+            {
+                if (!string.IsNullOrEmpty(room.MessageInput))
+                {
+                    room.MessageInput.Trim();
+
+                    if (this._cachedMsgInputCounter == 1)
+                    {
+                        this._cachedMsgInputList.Add(room.MessageInput);
+                    }
+
+                    if (this._cachedMsgInputList.Contains(room.MessageInput) == false)
+                    {
+                        this._cachedMsgInputList.Clear();
+                        this._cachedMsgInputList.Add(room.MessageInput);
+                        this._cachedMsgInputCounter = 1;
+                    }
+
+                    string newMessageInput = this.ChatHubService.AutocompleteUsername(this._cachedMsgInputList.FirstOrDefault(), room.Id, this._cachedMsgInputCounter, e.Key);
+                    this._cachedMsgInputList.Add(newMessageInput);
+                    room.MessageInput = newMessageInput;
+
+                    if (this._cachedMsgInputList.Contains(room.MessageInput) == true)
+                    {
+                        this._cachedMsgInputCounter++;
+                    }
+
+                    this.UpdateUIStateHasChanged();
+                }
             }
         }
 
