@@ -2,12 +2,28 @@
 body * { border-radius: 0px; -webkit-border-radius: 0px; -moz-border-radius: 0px; }
 */
 
+html {
+    scrollbar-color: #616161 #161616;
+}
+
 body {
     background-color: #ddffdd !important;
 }
 
-@media (max-width: 767px) {
+    body::-webkit-scrollbar {
+        width: auto;
+        background-color: #161616;
+    }
 
+    body::-webkit-scrollbar-thumb {
+        background: #616161;
+    }
+
+    body::-webkit-scrollbar-button {
+        background-color: #464646;
+    }
+
+@media (max-width: 767px) {
     body main nav.navbar {
         padding: 0.25rem 0rem !important;
     }
