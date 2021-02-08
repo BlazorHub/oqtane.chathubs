@@ -20,6 +20,7 @@ using Microsoft.AspNetCore.SignalR;
 using BlazorAlerts;
 using System.Net;
 using BlazorDraggableList;
+using Oqtane.Shared.Enums;
 
 namespace Oqtane.ChatHubs.Services
 {
@@ -502,7 +503,7 @@ namespace Oqtane.ChatHubs.Services
         {
             if (this.Lobbies != null && this.Lobbies.Any())
             {
-                this.Lobbies = this.Lobbies.OrderByDescending(item => item.Users?.Count()).ThenByDescending(item => item.CreatedOn).Take(1000).ToList();
+                this.Lobbies = this.Lobbies.OrderByDescending(item => item.Users?.Count()).ThenByDescending(item => item.CreatedOn).OrderBy(item => (int)Enum.Parse(typeof(ChatHubRoomStatus), item.Status)).Take(1000).ToList();
             }
         }
 
