@@ -276,7 +276,10 @@ namespace Oqtane.ChatHubs.Hubs
 
             if(room.Status == ChatHubRoomStatus.Archived.ToString())
             {
-                throw new HubException("You cannot enter an archived room.");
+                if (!Context.User.HasClaim(ClaimTypes.Role, RoleNames.Admin) && !Context.User.HasClaim(ClaimTypes.Role, RoleNames.Host))
+                {
+                    throw new HubException("You cannot enter an archived room.");
+                }
             }
 
             if(room.Public() || room.Protected())
