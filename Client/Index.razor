@@ -202,7 +202,7 @@
 
                         <BlazorPagerItem>
 
-                            <div class="d-flex flex-wrap flex-sm-nowrap align-items-center w-100" style="@(context.Status == ChatHubRoomStatus.Archived.ToString() ? "background-color: #ffffdd; border-top: 1px solid red;" : "border-top: 1px solid #dcdcdc")">
+                            <div class="d-flex flex-wrap flex-sm-nowrap align-items-center w-100 py-2" style="@(context.Status == ChatHubRoomStatus.Archived.ToString() ? "background-color: #ffffdd; border-top: 1px solid red;" : "border-top: 1px solid #dcdcdc")">
 
                                 <div class="px-1">
                                     <img src="@string.Format("{0}/modules/oqtane.chathubs/images/rooms/{1}", NavigationManager.BaseUri, context.ImageUrl)" class="@(string.IsNullOrEmpty(context.ImageUrl) ? "d-none" : "img-fuid bg-light")" style="max-width: 120px" />
@@ -211,15 +211,14 @@
 
                                 <div class="px-1 py-2">
                                     <a href="@NavigateUrl(PageState.Page.Path, "moduleid=" + context.ModuleId.ToString() + "&" + "roomid=" + context.Id.ToString())">
-                                        <h6>@context.Title</h6>
+                                        <h4>@context.Title</h4>
                                     </a>
                                     <div>
                                         <div>@context.Content</div>
                                         <div>
-                                            Online Users: @context.Users.Count()
-                                        </div>
-                                        <div>
-                                            Room Status: @context.Status
+                                            <span class="badge badge-secondary">@context.Type</span>
+                                            <span class="badge badge-secondary">@context.Users.Count() Users Online</span>
+                                            <span class="badge badge-secondary">@context.Status</span>
                                         </div>
                                         <div>
                                             <small class="text-muted">Posted by @context.Creator.DisplayName on @context.CreatedOn.ToShortDateString()</small>
