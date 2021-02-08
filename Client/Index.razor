@@ -202,7 +202,7 @@
 
                         <BlazorPagerItem>
 
-                            <div class="d-flex flex-wrap flex-sm-nowrap align-items-center w-100" style="@(context.Status == ChatHubRoomStatus.Archived.ToString() ? "background-color: rgba(255,0,0,0.42)" : "")">
+                            <div class="d-flex flex-wrap flex-sm-nowrap align-items-center w-100" style="@(context.Status == ChatHubRoomStatus.Archived.ToString() ? "background-color: #ffffdd; border-top: 1px solid red;" : "border-top: 1px solid #dcdcdc")">
 
                                 <div class="px-1">
                                     <img src="@string.Format("{0}/modules/oqtane.chathubs/images/rooms/{1}", NavigationManager.BaseUri, context.ImageUrl)" class="@(string.IsNullOrEmpty(context.ImageUrl) ? "d-none" : "img-fuid bg-light")" style="max-width: 120px" />
