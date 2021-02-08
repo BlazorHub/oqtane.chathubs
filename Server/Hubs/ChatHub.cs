@@ -274,6 +274,11 @@ namespace Oqtane.ChatHubs.Hubs
             ChatHubUser user = await this.GetChatHubUserAsync();
             ChatHubRoom room = chatHubRepository.GetChatHubRoom(roomId);
 
+            if(room.Status == ChatHubRoomStatus.Archived.ToString())
+            {
+                throw new HubException("You cannot enter an archived room.");
+            }
+
             if(room.Public() || room.Protected())
             {
                 if (this.chatHubService.IsBlacklisted(room, user))
