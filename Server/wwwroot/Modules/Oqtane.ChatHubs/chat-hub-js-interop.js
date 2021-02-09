@@ -174,7 +174,7 @@
                         video: {
                             width: { min: 320, ideal: 320, max: 320 },
                             height: { min: 240, ideal: 240, max: 240 },
-                            frameRate: { ideal: 14 },
+                            frameRate: { ideal: 10 },
                             facingMode: { ideal: "user" },
                         }
                     };
@@ -388,17 +388,13 @@
                 this.video.autoplay = true;
                 this.video.preload = 'auto';
                 this.video.muted = true;
-
-                this.video.src = URL.createObjectURL(this.mediasource);
-
-                /*
+                
                 try {
                     this.video.srcObject = this.mediasource;
                 } catch (ex) {
                     console.warn(ex);
                     this.video.src = URL.createObjectURL(this.mediasource);
-                }
-                */
+                }                
 
                 this.drawimage = function (base64str) {
 
@@ -428,7 +424,7 @@
                         reader.onloadend = function (event) {
 
                             __selfremotelivestream.remotemediasequences.push(reader.result);
-                            if (__selfremotelivestream.remotemediasequences >= 2) {
+                            if (__selfremotelivestream.remotemediasequences.length >= 2) {
 
                                 __selfremotelivestream.remotemediasequences.shift();
                             }
