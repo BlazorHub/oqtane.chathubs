@@ -174,7 +174,7 @@
                         video: {
                             width: { min: 320, ideal: 320, max: 320 },
                             height: { min: 240, ideal: 240, max: 240 },
-                            frameRate: { ideal: 10 },
+                            frameRate: { ideal: 30 },
                             facingMode: { ideal: "user" },
                         }
                     };
@@ -530,6 +530,14 @@
                             livestream.item.drawimage(dataURI);
                         }
                     }
+                    else if (livestream.item instanceof self.__obj.locallivestream) {
+
+                        console.warn("js interop locallivestream should actually not retrieve these data from the server hub");
+                    }
+                }
+                else if (livestream === undefined) {
+
+                    console.warn("these data are sent into the wild thats big problem do not like this");
                 }
             },
             closelivestream: function (roomId) {
