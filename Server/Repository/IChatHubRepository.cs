@@ -25,6 +25,7 @@ namespace Oqtane.ChatHubs.Repository
         IQueryable<ChatHubConnection> GetConnectionsByUserId(int userId);
         Task<ChatHubConnection> GetConnectionByConnectionId(string connectionId);
         ChatHubRoomChatHubUser GetChatHubRoomChatHubUser(int chatHubRoomId, int chatHubUserId);
+        ChatHubIgnore GetChatHubIgnore(int callerUserId, int targetUserId);
         IQueryable<ChatHubIgnore> GetIgnoredUsers(ChatHubUser user);
         IQueryable<ChatHubUser> GetIgnoredApplicationUsers(ChatHubUser user);
         IQueryable<ChatHubUser> GetIgnoredByApplicationUsers(ChatHubUser user);

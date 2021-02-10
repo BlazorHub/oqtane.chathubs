@@ -151,6 +151,10 @@ namespace Oqtane.ChatHubs.Repository
                     .Where(item => item.ChatHubUserId == chatHubUserId)
                     .FirstOrDefault();
         }
+        public ChatHubIgnore GetChatHubIgnore(int callerUserId, int targetUserId)
+        {
+            return this.db.ChatHubIgnore.FirstOrDefault(item => item.ChatHubUserId == callerUserId && item.ChatHubIgnoredUserId == targetUserId);
+        }
         public IQueryable<ChatHubIgnore> GetIgnoredUsers(ChatHubUser user)
         {
             return db.Entry(user)

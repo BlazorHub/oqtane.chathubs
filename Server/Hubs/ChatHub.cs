@@ -589,8 +589,7 @@ namespace Oqtane.ChatHubs.Hubs
 
             if (user != null && targetUser != null)
             {
-                var chatHubIgnores = await this.chatHubRepository.GetIgnoredUsers(user).ToListAsync();
-                ChatHubIgnore chatHubIgnore = chatHubIgnores.FirstOrDefault(item => item.ChatHubIgnoredUserId == targetUser.UserId);
+                ChatHubIgnore chatHubIgnore = this.chatHubRepository.GetChatHubIgnore(user.UserId, targetUser.UserId);
 
                 if (chatHubIgnore != null)
                 {

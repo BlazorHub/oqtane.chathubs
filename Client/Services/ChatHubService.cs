@@ -198,15 +198,15 @@ namespace Oqtane.ChatHubs.Services
             this.Connection.On("RemoveInvitation", (ChatHubInvitation invitation) => OnRemoveChatHubInvitationEvent(this, invitation));
             this.Connection.On("AddIgnoredUser", (ChatHubUser ignoredUser) => OnAddIgnoredUserEvent(this, ignoredUser));
             this.Connection.On("RemoveIgnoredUser", (ChatHubUser ignoredUser) => OnRemoveIgnoredUserEvent(this, ignoredUser));
-            this.Connection.On("AddIgnoredByUser", (ChatHubUser ignoredUser) => OnAddIgnoredByUserExecute(this, ignoredUser));
-            this.Connection.On("DownloadBytes", (string dataURI, int roomId, string dataType) => OnDownloadBytesExecuteAsync(this, new { dataURI = dataURI, roomId = roomId, dataType = dataType }));
-            this.Connection.On("RemoveIgnoredByUser", (ChatHubUser ignoredUser) => OnRemoveIgnoredByUserExecute(this, ignoredUser));
-            this.Connection.On("AddModerator", (ChatHubModerator moderator, int roomId) => OnAddModeratorExecute(this, new { moderator = moderator, roomId = roomId }));
-            this.Connection.On("RemoveModerator", (ChatHubModerator moderator, int roomId) => OnRemoveModeratorExecute(this, new { moderator = moderator, roomId = roomId }));
-            this.Connection.On("AddWhitelistUser", (ChatHubWhitelistUser whitelistUser, int roomId) => OnAddWhitelistUserExecute(this, new { whitelistUser = whitelistUser, roomId = roomId }));
-            this.Connection.On("RemoveWhitelistUser", (ChatHubWhitelistUser whitelistUser, int roomId) => OnRemoveWhitelistUserExecute(this, new { whitelistUser = whitelistUser, roomId = roomId }));
-            this.Connection.On("AddBlacklistUser", (ChatHubBlacklistUser blacklistUser, int roomId) => OnAddBlacklistUserExecute(this, new { blacklistUser = blacklistUser, roomId = roomId }));
-            this.Connection.On("RemoveBlacklistUser", (ChatHubBlacklistUser blacklistUser, int roomId) => OnRemoveBlacklistUserExecute(this, new { blacklistUser = blacklistUser, roomId = roomId }));
+            this.Connection.On("AddIgnoredByUser", (ChatHubUser ignoredUser) => OnAddIgnoredByUserEvent(this, ignoredUser));
+            this.Connection.On("RemoveIgnoredByUser", (ChatHubUser ignoredUser) => OnRemoveIgnoredByUserEvent(this, ignoredUser));
+            this.Connection.On("DownloadBytes", (string dataURI, int roomId, string dataType) => OnDownloadBytes(this, new { dataURI = dataURI, roomId = roomId, dataType = dataType }));
+            this.Connection.On("AddModerator", (ChatHubModerator moderator, int roomId) => OnAddModeratorEvent(this, new { moderator = moderator, roomId = roomId }));
+            this.Connection.On("RemoveModerator", (ChatHubModerator moderator, int roomId) => OnRemoveModeratorEvent(this, new { moderator = moderator, roomId = roomId }));
+            this.Connection.On("AddWhitelistUser", (ChatHubWhitelistUser whitelistUser, int roomId) => OnAddWhitelistUserEvent(this, new { whitelistUser = whitelistUser, roomId = roomId }));
+            this.Connection.On("RemoveWhitelistUser", (ChatHubWhitelistUser whitelistUser, int roomId) => OnRemoveWhitelistUserEvent(this, new { whitelistUser = whitelistUser, roomId = roomId }));
+            this.Connection.On("AddBlacklistUser", (ChatHubBlacklistUser blacklistUser, int roomId) => OnAddBlacklistUserEvent(this, new { blacklistUser = blacklistUser, roomId = roomId }));
+            this.Connection.On("RemoveBlacklistUser", (ChatHubBlacklistUser blacklistUser, int roomId) => OnRemoveBlacklistUserEvent(this, new { blacklistUser = blacklistUser, roomId = roomId }));
             this.Connection.On("ClearHistory", (int roomId) => OnClearHistoryEvent(this, roomId));
             this.Connection.On("Disconnect", (ChatHubUser user) => OnDisconnectEvent(this, user));
         }

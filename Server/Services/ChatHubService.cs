@@ -192,10 +192,7 @@ namespace Oqtane.ChatHubs.Services
 
         public void IgnoreUser(ChatHubUser callerUser, ChatHubUser targetUser)
         {
-            ChatHubIgnore chatHubIgnore = null;
-            var users = this.chatHubRepository.GetIgnoredUsers(targetUser);
-            chatHubIgnore = users.Where(u => u.ChatHubUserId == targetUser.UserId).FirstOrDefault();
-
+            ChatHubIgnore chatHubIgnore = this.chatHubRepository.GetChatHubIgnore(callerUser.UserId, targetUser.UserId);
             if (chatHubIgnore != null)
             {
                 chatHubIgnore.ModifiedOn = DateTime.Now;

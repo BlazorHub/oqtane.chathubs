@@ -532,12 +532,12 @@
                     }
                     else if (livestream.item instanceof self.__obj.locallivestream) {
 
-                        console.warn("js interop locallivestream should actually not retrieve these data from the server hub");
+                        console.warn("this local livestream should actually not retrieve these data from the server hub");
                     }
                 }
                 else if (livestream === undefined) {
 
-                    console.warn("these data are sent into the wild thats big problem do not like this");
+                    console.warn("these data are sent into the wild thats not oki");
                 }
             },
             closelivestream: function (roomId) {
