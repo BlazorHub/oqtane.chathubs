@@ -6,17 +6,15 @@
     <BlazorTouchMenuComponent MenuItemModels="@MenuItemModels"></BlazorTouchMenuComponent>
 
     <div class="main">
-        <div class="top-row px-4">
-            <a href="http://blazor.net" target="_blank" class="ml-md-auto">About</a>
-        </div>
 
-        <div class="content px-4">
+        <div class="content px-2 px-sm-4">
             @Body
         </div>
+
     </div>
 </div>
 
-@code { 
+@code {
 
     public List<BlazorTouchMenuItemModel> MenuItemModels { get; set; } = new List<BlazorTouchMenuItemModel>()
     {

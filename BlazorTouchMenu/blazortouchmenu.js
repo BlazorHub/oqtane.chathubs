@@ -2,7 +2,12 @@
 
     document.addEventListener('swiped-right', function (e) {
 
-        alert(e.target);
+        document.getElementById('blazortouchmenuid').style.display = "block";
+    });
+
+    document.addEventListener('swiped-left', function (e) {
+
+        document.getElementById('blazortouchmenuid').style.display = "none";
     });
 
 });
