@@ -12,6 +12,7 @@
   {
     "outputFileName": "wwwroot/js/blazortouchmenu.min.js",
     "inputFiles": [
+      "swiped-events.js",
       "blazortouchmenu.js"
     ],
     "minify": {
