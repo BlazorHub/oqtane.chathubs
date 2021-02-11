@@ -3,7 +3,7 @@
 
 <div class="page">
 
-    <BlazorTouchMenuComponent></BlazorTouchMenuComponent>
+    <BlazorTouchMenuComponent MenuItemModels="@MenuItemModels"></BlazorTouchMenuComponent>
 
     <div class="main">
         <div class="top-row px-4">
@@ -15,3 +15,14 @@
         </div>
     </div>
 </div>
+
+@code { 
+
+    public List<BlazorTouchMenuItemModel> MenuItemModels { get; set; } = new List<BlazorTouchMenuItemModel>()
+    {
+        new BlazorTouchMenuItemModel() { Name = "Home", Href = "", Icon = "oi-home", NavLinkMatch = NavLinkMatch.All },
+        new BlazorTouchMenuItemModel() { Name = "Counter", Href = "counter", Icon = "oi-plus", NavLinkMatch = NavLinkMatch.Prefix },
+        new BlazorTouchMenuItemModel() { Name = "Fetch Data", Href = "fetchdata", Icon = "oi-list-rich", NavLinkMatch = NavLinkMatch.Prefix },
+    };
+
+}
