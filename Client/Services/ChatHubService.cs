@@ -123,17 +123,6 @@ namespace Oqtane.ChatHubs.Services
             GetLobbyRoomsTimer.Enabled = true;
         }
 
-        public void RunUpdateUI()
-        {
-            this.OnUpdateUI.Invoke(this, EventArgs.Empty);
-        }
-
-        public void OnUpdateConnectedUserExecute(object sender, ChatHubUser user)
-        {
-            this.ConnectedUser = user;
-            this.RunUpdateUI();
-        }
-
         public void BuildGuestConnection(string username, int moduleId)
         {
             StringBuilder urlBuilder = new StringBuilder();
@@ -156,7 +145,6 @@ namespace Oqtane.ChatHubs.Services
             })
             .Build();
         }
-
         public void RegisterHubConnectionHandlers()
         {
             Connection.Reconnecting += (ex) =>
@@ -211,7 +199,6 @@ namespace Oqtane.ChatHubs.Services
             this.Connection.On("ClearHistory", (int roomId) => OnClearHistoryEvent(this, roomId));
             this.Connection.On("Disconnect", (ChatHubUser user) => OnDisconnectEvent(this, user));
         }
-
         public async Task ConnectAsync()
         {
             await this.Connection.StartAsync().ContinueWith(async task =>
@@ -259,7 +246,6 @@ namespace Oqtane.ChatHubs.Services
                 this.HandleException(ex);
             }
         }
-
         public async Task StopVideoChat(int roomId)
         {
             var room = this.Rooms.FirstOrDefault(item => item.Id == roomId);
@@ -274,7 +260,6 @@ namespace Oqtane.ChatHubs.Services
                 await this.VideoService.CloseLivestream(roomId);
             }
         }
-
         public async Task RestartStreamTaskIfExists(int roomId)
         {
             if (this.LocalStreamTasks.Any(item => item.Key == roomId) || this.RemoteStreamTasks.Any(item => item == roomId))
@@ -284,7 +269,6 @@ namespace Oqtane.ChatHubs.Services
 
             this.RunUpdateUI();
         }
-
         public void AddLocalStreamTask(int roomId, Task task, CancellationTokenSource tokenSource)
         {
             this.RemoveLocalStreamTask(roomId);
@@ -293,7 +277,6 @@ namespace Oqtane.ChatHubs.Services
             this.LocalStreamTasks.Add(roomId, obj);
             this.RunUpdateUI();
         }
-
         public void RemoveLocalStreamTask(int roomId)
         {
             List<KeyValuePair<int, dynamic>> list = this.LocalStreamTasks.Where(item => item.Key == roomId).ToList();
@@ -308,7 +291,6 @@ namespace Oqtane.ChatHubs.Services
                 this.LocalStreamTasks.Remove(keyValuePair.Key);
             }
         }
-
         public void AddRemoteStreamTask(int roomId)
         {
             var items = this.RemoteStreamTasks.Where(id => id == roomId);
@@ -318,7 +300,6 @@ namespace Oqtane.ChatHubs.Services
                 this.RunUpdateUI();
             }
         }
-
         public void RemoveRemoteStreamTask(int roomId)
         {
             var items = this.RemoteStreamTasks.Where(id => id == roomId);
@@ -327,7 +308,6 @@ namespace Oqtane.ChatHubs.Services
                 this.RemoteStreamTasks.Remove(roomId);
             }
         }
-
         public async Task StreamTaskImplementation(int roomId, CancellationToken token)
         {
             while (!token.IsCancellationRequested)
@@ -345,7 +325,6 @@ namespace Oqtane.ChatHubs.Services
                 }
             }
         }
-
         public async Task DisposeStreamTasksAsync()
         {
             foreach(var task in LocalStreamTasks)
@@ -353,7 +332,6 @@ namespace Oqtane.ChatHubs.Services
                 await this.StopVideoChat(task.Key);
             }
         }
-
         public async Task OnDataAvailableEventHandlerExecute(string dataURI, int roomId, string dataType)
         {
             try
@@ -383,7 +361,6 @@ namespace Oqtane.ChatHubs.Services
                 Console.WriteLine(ex.Message);
             }
         }
-
         public void OnPauseLivestreamTaskExecute(object sender, int roomId)
         {
             List<KeyValuePair<int, dynamic>> list = this.LocalStreamTasks.Where(item => item.Key == roomId).ToList();
@@ -395,7 +372,6 @@ namespace Oqtane.ChatHubs.Services
                 obj.task.Dispose();
             }
         }
-
         public async Task OnContinueLivestreamTaskExecute(object sender, int roomId)
         {
             List<KeyValuePair<int, dynamic>> localList = this.LocalStreamTasks.Where(item => item.Key == roomId).ToList();
@@ -406,7 +382,6 @@ namespace Oqtane.ChatHubs.Services
                 await this.StartVideoChat(roomId);
             }
         }
-
         public async void OnDownloadBytesExecuteAsync(object sender, dynamic e)
         {
             string dataURI = e.dataURI;
@@ -433,7 +408,6 @@ namespace Oqtane.ChatHubs.Services
                 }
             });
         }
-
         public async Task LeaveChatRoom(int roomId)
         {
             await this.Connection.InvokeAsync("LeaveChatRoom", roomId).ContinueWith((task) =>
@@ -444,7 +418,6 @@ namespace Oqtane.ChatHubs.Services
                 }
             });
         }
-
         public async Task GetLobbyRooms(int moduleId)
         {
             try
@@ -459,7 +432,6 @@ namespace Oqtane.ChatHubs.Services
                 this.HandleException(ex);
             }
         }
-
         public async Task GetIgnoredUsers()
         {
             await this.Connection.InvokeAsync<List<ChatHubUser>>("GetIgnoredUsers").ContinueWith((task) =>
@@ -479,7 +451,6 @@ namespace Oqtane.ChatHubs.Services
                 }
             });
         }
-
         public async Task GetIgnoredByUsers()
         {
             await this.Connection.InvokeAsync<List<ChatHubUser>>("GetIgnoredByUsers").ContinueWith((task) =>
@@ -518,7 +489,6 @@ namespace Oqtane.ChatHubs.Services
                 }
             });
         }
-
         public void IgnoreUser_Clicked(int userId, int roomId, string username)
         {
             this.Connection.InvokeAsync("IgnoreUser", username).ContinueWith((task) =>
@@ -539,7 +509,6 @@ namespace Oqtane.ChatHubs.Services
                 }
             });
         }
-
         public void AddModerator_Clicked(int userId, int roomId)
         {
             this.Connection.InvokeAsync("AddModerator", userId, roomId).ContinueWith((task) =>
@@ -560,7 +529,6 @@ namespace Oqtane.ChatHubs.Services
                 }
             });
         }
-
         public void AddWhitelistUser_Clicked(int userId, int roomId)
         {
             this.Connection.InvokeAsync("AddWhitelistUser", userId, roomId).ContinueWith((task) =>
@@ -581,7 +549,6 @@ namespace Oqtane.ChatHubs.Services
                 }
             });
         }
-
         public void AddBlacklistUser_Clicked(int userId, int roomId)
         {
             this.Connection.InvokeAsync("AddBlacklistUser", userId, roomId).ContinueWith((task) =>
@@ -602,19 +569,6 @@ namespace Oqtane.ChatHubs.Services
                 }
             });
         }
-
-        public void ClearHistory(int roomId)
-        {
-            var room = this.Rooms.FirstOrDefault(x => x.Id == roomId);
-            room.Messages.Clear();
-            this.RunUpdateUI();
-        }
-
-        public void ToggleUserlist(ChatHubRoom room)
-        {
-            room.ShowUserlist = !room.ShowUserlist;
-        }
-
         public async Task DisconnectAsync()
         {
             if (Connection.State != HubConnectionState.Disconnected)
@@ -643,7 +597,6 @@ namespace Oqtane.ChatHubs.Services
             this.Rooms.RemoveUser(obj.userModel as ChatHubUser, obj.roomId as string);
             this.RunUpdateUI();
         }
-
         public async void OnAddChatHubMessageExecute(object sender, ChatHubMessage message)
         {
             ChatHubRoom room = this.Rooms.FirstOrDefault(item => item.Id == message.ChatHubRoomId);
@@ -659,7 +612,6 @@ namespace Oqtane.ChatHubs.Services
             string elementId = string.Concat("#message-window-", this.ModuleId.ToString(), "-", message.ChatHubRoomId.ToString());
             await this.ScrollService.ScrollToBottom(elementId);
         }
-
         private void OnAddChatHubInvitationExecute(object sender, ChatHubInvitation item)
         {
             this.Invitations.AddInvitation(item);
@@ -668,7 +620,6 @@ namespace Oqtane.ChatHubs.Services
         {
             this.Invitations.RemoveInvitation(item.Guid);
         }
-
         private void OnAddIngoredUserExexute(object sender, ChatHubUser user)
         {
             this.IgnoredUsers.AddIgnoredUser(user);
@@ -719,10 +670,14 @@ namespace Oqtane.ChatHubs.Services
             this.Rooms.RemoveBlacklistUser(e.blacklistUser as ChatHubBlacklistUser, (int)e.roomId);
             this.RunUpdateUI();
         }
-
         private void OnClearHistoryExecute(object sender, int roomId)
         {
             this.ClearHistory(roomId);
+        }
+        public void OnUpdateConnectedUserExecute(object sender, ChatHubUser user)
+        {
+            this.ConnectedUser = user;
+            this.RunUpdateUI();
         }
         private async void OnDisconnectExecute(object sender, ChatHubUser user)
         {
@@ -734,31 +689,16 @@ namespace Oqtane.ChatHubs.Services
             await this.GetLobbyRooms(this.ModuleId);
         }
 
-        public async Task<List<ChatHubRoom>> GetChatHubRoomsByModuleIdAsync(int ModuleId)
+        public void ClearHistory(int roomId)
         {
-            return await HttpClient.GetJsonAsync<List<ChatHubRoom>>(apiurl + "/getchathubroomsbymoduleid?entityid=" + ModuleId);
+            var room = this.Rooms.FirstOrDefault(x => x.Id == roomId);
+            room.Messages.Clear();
+            this.RunUpdateUI();
         }
-        public async Task<ChatHubRoom> GetChatHubRoomAsync(int ChatHubRoomId, int ModuleId)
+        public void ToggleUserlist(ChatHubRoom room)
         {
-            return await HttpClient.GetJsonAsync<ChatHubRoom>(apiurl + "/getchathubroom/" + ChatHubRoomId + "?entityid=" + ModuleId);
+            room.ShowUserlist = !room.ShowUserlist;
         }
-        public async Task<ChatHubRoom> AddChatHubRoomAsync(ChatHubRoom ChatHubRoom)
-        {
-            return await HttpClient.PostJsonAsync<ChatHubRoom>(apiurl + "/addchathubroom" + "?entityid=" + ChatHubRoom.ModuleId, ChatHubRoom);
-        }
-        public async Task UpdateChatHubRoomAsync(ChatHubRoom ChatHubRoom)
-        {
-            await HttpClient.PutJsonAsync(apiurl + "/updatechathubroom/" + ChatHubRoom.Id + "?entityid=" + ChatHubRoom.ModuleId, ChatHubRoom);
-        }
-        public async Task DeleteChatHubRoomAsync(int ChatHubRoomId, int ModuleId)
-        {
-            await HttpClient.DeleteAsync(apiurl + "/deletechathubroom/" + ChatHubRoomId + "?entityid=" + ModuleId);
-        }
-        public async Task DeleteRoomImageAsync(int ChatHubRoomId, int ModuleId)
-        {
-            await HttpClient.DeleteAsync(apiurl + "/deleteroomimage/" + ChatHubRoomId + "?entityid=" + ModuleId);
-        }
-
         public string AutocompleteUsername(string msgInput, int roomId, int autocompleteCounter, string pressedKey)
         {
             List<string> words = msgInput.Trim().Split(' ').ToList();
@@ -781,10 +721,27 @@ namespace Oqtane.ChatHubs.Services
             return msgInput;
         }
 
-        public string apiurl
+        public void HandleException(Task task)
         {
-            //get { return NavigationManager.BaseUri + "api/ChatHub"; }
-            get { return CreateApiUrl(SiteState.Alias, "ChatHub"); }
+            if (task.Exception != null)
+            {
+                this.HandleException(task.Exception);
+            }
+        }
+        public void HandleException(Exception exception)
+        {
+            string message = string.Empty;
+            if (exception.InnerException != null && exception.InnerException is HubException)
+            {
+                message = exception.Message.ToString();
+            }
+            else
+            {
+                message = exception.ToString();
+            }
+
+            BlazorAlertsService.NewBlazorAlert(message, "Javascript Application", PositionType.Fixed);
+            this.RunUpdateUI();
         }
 
         public void Dispose()
@@ -817,29 +774,40 @@ namespace Oqtane.ChatHubs.Services
             this.Connection.StopAsync();
         }
 
-        public void HandleException(Task task)
+        public void RunUpdateUI()
         {
-            if (task.Exception != null)
-            {
-                this.HandleException(task.Exception);
-            }
-        }
-        public void HandleException(Exception exception)
-        {
-            string message = string.Empty;
-            if (exception.InnerException != null && exception.InnerException is HubException)
-            {
-                message = exception.Message.ToString();
-            }
-            else
-            {
-                message = exception.ToString();
-            }
-
-            BlazorAlertsService.NewBlazorAlert(message, "Javascript Application", PositionType.Fixed);
-            this.RunUpdateUI();
+            this.OnUpdateUI.Invoke(this, EventArgs.Empty);
         }
 
+        public string apiurl
+        {
+            //get { return NavigationManager.BaseUri + "api/ChatHub"; }
+            get { return CreateApiUrl(SiteState.Alias, "ChatHub"); }
+        }
+        public async Task<List<ChatHubRoom>> GetChatHubRoomsByModuleIdAsync(int ModuleId)
+        {
+            return await HttpClient.GetJsonAsync<List<ChatHubRoom>>(apiurl + "/getchathubroomsbymoduleid?entityid=" + ModuleId);
+        }
+        public async Task<ChatHubRoom> GetChatHubRoomAsync(int ChatHubRoomId, int ModuleId)
+        {
+            return await HttpClient.GetJsonAsync<ChatHubRoom>(apiurl + "/getchathubroom/" + ChatHubRoomId + "?entityid=" + ModuleId);
+        }
+        public async Task<ChatHubRoom> AddChatHubRoomAsync(ChatHubRoom ChatHubRoom)
+        {
+            return await HttpClient.PostJsonAsync<ChatHubRoom>(apiurl + "/addchathubroom" + "?entityid=" + ChatHubRoom.ModuleId, ChatHubRoom);
+        }
+        public async Task UpdateChatHubRoomAsync(ChatHubRoom ChatHubRoom)
+        {
+            await HttpClient.PutJsonAsync(apiurl + "/updatechathubroom/" + ChatHubRoom.Id + "?entityid=" + ChatHubRoom.ModuleId, ChatHubRoom);
+        }
+        public async Task DeleteChatHubRoomAsync(int ChatHubRoomId, int ModuleId)
+        {
+            await HttpClient.DeleteAsync(apiurl + "/deletechathubroom/" + ChatHubRoomId + "?entityid=" + ModuleId);
+        }
+        public async Task DeleteRoomImageAsync(int ChatHubRoomId, int ModuleId)
+        {
+            await HttpClient.DeleteAsync(apiurl + "/deleteroomimage/" + ChatHubRoomId + "?entityid=" + ModuleId);
+        }
         public async Task FixCorruptConnections(int ModuleId)
         {
             await HttpClient.DeleteAsync(apiurl + "/fixcorruptconnections" + "?entityid=" + ModuleId);
