@@ -11,3 +11,4 @@ Oqtane.Server/appsettings.json
 Oqtane.Server/Data/*.mdf
 Oqtane.Server/Data/*.ldf
 *.nupkg
+/Blazor.Webassembly.Chathubs/Properties/PublishProfiles/IISProfile.pubxml

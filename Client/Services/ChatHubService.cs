@@ -21,6 +21,7 @@ using BlazorAlerts;
 using System.Net;
 using BlazorDraggableList;
 using Oqtane.Shared.Enums;
+using Oqtane.Shared.Extensions;
 
 namespace Oqtane.ChatHubs.Services
 {
@@ -624,29 +625,29 @@ namespace Oqtane.ChatHubs.Services
 
         private void OnAddChatHubRoomExecute(object sender, ChatHubRoom room)
         {
-            this.AddRoom(room);
+            this.Rooms.AddRoom(room);
             this.RunUpdateUI();
         }
         private void OnRemoveChatHubRoomExecute(object sender, ChatHubRoom room)
         {
-            this.RemoveRoom(room);
+            this.Rooms.RemoveRoom(room);
             this.RunUpdateUI();
         }
         private void OnAddChatHubUserExecute(object sender, dynamic obj)
         {
-            this.AddUser(obj.userModel, obj.roomId);
+            this.Rooms.AddUser(obj.userModel as ChatHubUser, obj.roomId as string);
             this.RunUpdateUI();
         }
         private void OnRemoveChatHubUserExecute(object sender, dynamic obj)
         {
-            this.RemoveUser(obj.userModel, obj.roomId);
+            this.Rooms.RemoveUser(obj.userModel as ChatHubUser, obj.roomId as string);
             this.RunUpdateUI();
         }
 
         public async void OnAddChatHubMessageExecute(object sender, ChatHubMessage message)
         {
             ChatHubRoom room = this.Rooms.FirstOrDefault(item => item.Id == message.ChatHubRoomId);
-            this.AddMessage(message, room);
+            room.AddMessage(message);
 
             if (message.ChatHubRoomId.ToString() != this.ContextRoomId)
             {
@@ -728,48 +729,9 @@ namespace Oqtane.ChatHubs.Services
             await this.DisconnectAsync();
         }
 
-        public void AddRoom(ChatHubRoom room)
-        {
-            if (!this.Rooms.Any(x => x.Id == room.Id))
-            {
-                this.Rooms.Add(room);
-            }
-        }
-        public void RemoveRoom(ChatHubRoom room)
-        {
-            var chatRoom = this.Rooms.First(x => x.Id == room.Id);
-            if (chatRoom != null)
-            {
-                this.Rooms.Remove(chatRoom);
-            }
-        }
-        public void AddUser(ChatHubUser user, string roomId)
-        {
-            var room = this.Rooms.FirstOrDefault(x => x.Id.ToString() == roomId);
-            if (room != null && !room.Users.Any(x => x.UserId == user.UserId))
-            {
-                room.Users.Add(user);
-            }
-        }
-        public void RemoveUser(ChatHubUser user, string roomId)
-        {
-            var room = this.Rooms.FirstOrDefault(x => x.Id.ToString() == roomId);
-            if (room != null)
-            {
-                var userItem = room.Users.FirstOrDefault(x => x.UserId == user.UserId);
-                if (userItem != null)
-                {
-                    room.Users.Remove(userItem);
-                }
-            }
-        }
-        public void AddMessage(ChatHubMessage message, ChatHubRoom room)
-        {
-            if (!room.Messages.Any(x => x.Id == message.Id))
-            {
-                room.Messages.Add(message);
-            }
-        }
+        
+        
+        
         public void AddInvitation(ChatHubInvitation invitation)
         {
             if (!this.Invitations.Any(x => x.Guid == invitation.Guid))
