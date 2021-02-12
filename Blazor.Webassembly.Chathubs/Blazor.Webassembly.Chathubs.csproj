@@ -12,6 +12,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\BlazorTabMenu\BlazorTabMenu.csproj" />
     <ProjectReference Include="..\BlazorTouchMenu\BlazorTouchMenu.csproj" />
   </ItemGroup>
 

@@ -1,8 +1,8 @@
 ﻿using Microsoft.AspNetCore.Components.Routing;
 
-namespace BlazorTouchMenu
+namespace BlazorTabMenu
 {
-    public class BlazorTouchMenuItemModel
+    public class BlazorTabMenuItemModel
     {
 
         public string Name { get; set; }

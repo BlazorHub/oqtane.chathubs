@@ -1,0 +1,21 @@
+﻿@using Microsoft.AspNetCore.Components.Routing
+
+<div class="blazortabmenu">
+
+    <ul class="nav nav-pills nav-fill">
+
+        @foreach (var item in TabMenuItemModels.Select((model, index) => new { model = model, index = index }))
+        {
+            <li class="nav-item">
+                <NavLink class="nav-link rounded-0" href="@item.model.Href" Match="@item.model.NavLinkMatch">@item.model.Name</NavLink>
+            </li>
+        }
+
+    </ul>
+
+</div>
+
+@code {
+
+    [Parameter] public List<BlazorTabMenuItemModel> TabMenuItemModels { get; set; }
+}
