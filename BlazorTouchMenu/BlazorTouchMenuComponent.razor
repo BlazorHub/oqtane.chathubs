@@ -1,18 +1,18 @@
 ﻿@using Microsoft.AspNetCore.Components
 @using Microsoft.AspNetCore.Components.Web
-@using Microsoft.AspNetCore.Components.Forms
 @using Microsoft.AspNetCore.Components.Routing
 
-<div id="blazortouchmenuid" class="sidebar">
+<button class="position-absolute" @onclick="ToggleNavMenu" style="top: 10px; right: 10px;">
+    <span class="oi oi-menu"></span>
+</button>
+
+<div id="blazortouchmenuid" class="sidebar @NavMenuCssClass">
 
     <div class="top-row pl-4 navbar navbar-dark">
-        <a class="navbar-brand" href="">Blazor.Webassembly.Chathubs</a>
-        <button class="navbar-toggler" @onclick="ToggleNavMenu">
-            <span class="navbar-toggler-icon"></span>
-        </button>
+        <a class="navbar-brand" href="">anyways webassembly</a>
     </div>
 
-    <div class="@NavMenuCssClass" @onclick="ToggleNavMenu">
+    <div>
         <ul class="nav flex-column">
 
             @foreach (var MenuItemModel in MenuItemModels)
@@ -33,12 +33,12 @@
 
     [Parameter] public List<BlazorTouchMenuItemModel> MenuItemModels { get; set; }
 
-    private bool collapseNavMenu = true;
+    private bool showNavMenu = true;
 
-    private string NavMenuCssClass => collapseNavMenu ? "collapse show" : null;
+    private string NavMenuCssClass => showNavMenu ? "d-block" : "d-none";
 
     private void ToggleNavMenu()
     {
-        collapseNavMenu = !collapseNavMenu;
+        showNavMenu = !showNavMenu;
     }
 }
