@@ -19,6 +19,7 @@ using BlazorWindows;
 using System.Net;
 using BlazorDraggableList;
 using BlazorFileUpload;
+using Oqtane.Shared.Extensions;
 
 namespace Oqtane.ChatHubs
 {
@@ -224,13 +225,13 @@ namespace Oqtane.ChatHubs
             if (ChatHubService.Connection?.State == HubConnectionState.Connected)
             {
                 await this.ChatHubService.EnterChatRoom(roomId);
-                this.ChatHubService.RemoveInvitation(invitationGuid);
+                this.ChatHubService.Invitations.RemoveInvitation(invitationGuid);
             }
         }
 
         public void RemoveInvitation_Clicked(Guid guid)
         {
-            this.ChatHubService.RemoveInvitation(guid);
+            this.ChatHubService.Invitations.RemoveInvitation(guid);
         }
 
         private int _cachedMsgInputCounter { get; set; } = 1;

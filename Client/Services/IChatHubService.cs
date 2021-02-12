@@ -88,8 +88,6 @@ namespace Oqtane.ChatHubs.Services
         Task UpdateChatHubRoomAsync(ChatHubRoom ChatHubRoom);
         Task DeleteChatHubRoomAsync(int ChatHubRoomId, int ModuleId);
 
-        void RemoveInvitation(Guid guid);
-
         void IgnoreUser_Clicked(int userId, int roomId, string username);
         void UnignoreUser_Clicked(string username);
 

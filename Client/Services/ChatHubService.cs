@@ -473,7 +473,7 @@ namespace Oqtane.ChatHubs.Services
                     {
                         foreach (var user in ignoredUsers)
                         {
-                            this.AddIgnoredUser(user);
+                            this.IgnoredUsers.AddIgnoredUser(user);
                         }
                     }
                 }
@@ -493,7 +493,7 @@ namespace Oqtane.ChatHubs.Services
                     {
                         foreach (var user in ignoredByUsers)
                         {
-                            this.AddIgnoredByUser(user);
+                            this.IgnoredByUsers.AddIgnoredByUser(user);
                         }
                     }
                 }
@@ -662,61 +662,61 @@ namespace Oqtane.ChatHubs.Services
 
         private void OnAddChatHubInvitationExecute(object sender, ChatHubInvitation item)
         {
-            this.AddInvitation(item);
+            this.Invitations.AddInvitation(item);
         }
         private void OnRemoveChatHubInvitationExecute(object sender, ChatHubInvitation item)
         {
-            this.RemoveInvitation(item.Guid);
+            this.Invitations.RemoveInvitation(item.Guid);
         }
 
         private void OnAddIngoredUserExexute(object sender, ChatHubUser user)
         {
-            this.AddIgnoredUser(user);
+            this.IgnoredUsers.AddIgnoredUser(user);
             this.RunUpdateUI();
         }
         private void OnRemoveIgnoredUserExecute(object sender, ChatHubUser user)
         {
-            this.RemoveIgnoredUser(user);
+            this.IgnoredUsers.RemoveIgnoredUser(user);
             this.RunUpdateUI();
         }
         private void OnAddIgnoredByUserExecute(object sender, ChatHubUser user)
         {
-            this.AddIgnoredByUser(user);
+            this.IgnoredByUsers.AddIgnoredByUser(user);
             this.RunUpdateUI();
         }
         private void OnRemoveIgnoredByUserExecute(object sender, ChatHubUser user)
         {
-            this.RemoveIgnoredByUser(user);
+            this.IgnoredByUsers.RemoveIgnoredByUser(user);
             this.RunUpdateUI();
         }
         private void OnAddModeratorExecute(object sender, dynamic e)
         {
-            this.AddModerator(e.moderator, e.roomId);
+            this.Rooms.AddModerator(e.moderator as ChatHubModerator, (int)e.roomId);
             this.RunUpdateUI();
         }
         private void OnRemoveModeratorExecute(object sender, dynamic e)
         {
-            this.RemoveModerator(e.moderator, e.roomId);
+            this.Rooms.RemoveModerator(e.moderator as ChatHubModerator, (int)e.roomId);
             this.RunUpdateUI();
         }
         private void OnAddWhitelistUserExecute(object sender, dynamic e)
         {
-            this.AddWhitelistUser(e.whitelistUser, e.roomId);
+            this.Rooms.AddWhitelistUser(e.whitelistUser as ChatHubWhitelistUser, (int)e.roomId);
             this.RunUpdateUI();
         }
         private void OnRemoveWhitelistUserExecute(object sender, dynamic e)
         {
-            this.RemoveWhitelistUser(e.whitelistUser, e.roomId);
+            this.Rooms.RemoveWhitelistUser(e.whitelistUser as ChatHubWhitelistUser, (int)e.roomId);
             this.RunUpdateUI();
         }
         private void OnAddBlacklistUserExecute(object sender, dynamic e)
         {
-            this.AddBlacklistUser(e.blacklistUser, e.roomId);
+            this.Rooms.AddBlacklistUser(e.blacklistUser as ChatHubBlacklistUser, (int)e.roomId);
             this.RunUpdateUI();
         }
         private void OnRemoveBlacklistUserExecute(object sender, dynamic e)
         {
-            this.RemoveBlacklistUser(e.blacklistUser, e.roomId);
+            this.Rooms.RemoveBlacklistUser(e.blacklistUser as ChatHubBlacklistUser, (int)e.roomId);
             this.RunUpdateUI();
         }
 
@@ -727,115 +727,6 @@ namespace Oqtane.ChatHubs.Services
         private async void OnDisconnectExecute(object sender, ChatHubUser user)
         {
             await this.DisconnectAsync();
-        }
-
-        
-        
-        
-        public void AddInvitation(ChatHubInvitation invitation)
-        {
-            if (!this.Invitations.Any(x => x.Guid == invitation.Guid))
-            {
-                this.Invitations.Add(invitation);
-            }
-        }
-        public void RemoveInvitation(Guid guid)
-        {
-            var item = this.Invitations.First(x => x.Guid == guid);
-            if (item != null)
-            {
-                this.Invitations.Remove(item);
-            }
-        }
-        public void AddIgnoredUser(ChatHubUser user)
-        {
-            if (!this.IgnoredUsers.Any(x => x.UserId == user.UserId))
-            {
-                this.IgnoredUsers.Add(user);
-            }
-        }
-        public void RemoveIgnoredUser(ChatHubUser user)
-        {
-            var item = this.IgnoredUsers.FirstOrDefault(x => x.UserId == user.UserId);
-            if (item != null)
-            {
-                this.IgnoredUsers.Remove(item);
-            }
-        }
-        public void AddIgnoredByUser(ChatHubUser user)
-        {
-            if (!this.IgnoredByUsers.Any(x => x.UserId == user.UserId))
-            {
-                this.IgnoredByUsers.Add(user);
-            }
-        }
-        public void RemoveIgnoredByUser(ChatHubUser user)
-        {
-            var item = this.IgnoredByUsers.FirstOrDefault(x => x.UserId == user.UserId);
-            if (item != null)
-            {
-                this.IgnoredByUsers.Remove(item);
-            }
-        }
-        public void AddModerator(ChatHubModerator moderator, int roomId)
-        {
-            var room = this.Rooms.FirstOrDefault(item => item.Id == roomId);
-            if (room != null && !room.Moderators.Any(item => item.Id == moderator.Id))
-            {
-                room.Moderators.Add(moderator);
-            }
-        }
-        public void RemoveModerator(ChatHubModerator moderator, int roomId)
-        {
-            var room = this.Rooms.FirstOrDefault(item => item.Id == roomId);
-            if(room != null)
-            {
-                var modi = room.Moderators.FirstOrDefault(item => item.Id == moderator.Id);
-                if (modi != null)
-                {
-                    room.Moderators.Remove(modi);
-                }
-            }
-        }
-        public void AddWhitelistUser(ChatHubWhitelistUser whitelistUser, int roomId)
-        {
-            var room = this.Rooms.FirstOrDefault(item => item.Id == roomId);
-            if (room != null && !room.WhitelistUsers.Any(item => item.Id == whitelistUser.Id))
-            {
-                room.WhitelistUsers.Add(whitelistUser);
-            }
-        }
-        public void RemoveWhitelistUser(ChatHubWhitelistUser whitelistUser, int roomId)
-        {
-            var room = this.Rooms.FirstOrDefault(item => item.Id == roomId);
-            if (room != null)
-            {
-                var user = room.WhitelistUsers.FirstOrDefault(item => item.Id == whitelistUser.Id);
-                if (user != null)
-                {
-                    room.WhitelistUsers.Remove(user);
-                }
-            }
-        }
-        public void AddBlacklistUser(ChatHubBlacklistUser blacklistUser, int roomId)
-        {
-            var room = this.Rooms.FirstOrDefault(item => item.Id == roomId);
-            if (room != null && !room.BlacklistUsers.Any(item => item.Id == blacklistUser.Id))
-            {
-                room.BlacklistUsers.Add(blacklistUser);
-            }
-        }
-        public void RemoveBlacklistUser(ChatHubBlacklistUser blacklistUser, int roomId)
-        {
-            var room = this.Rooms.FirstOrDefault(item => item.Id == roomId);
-            if (room != null)
-            {
-                var user = room.BlacklistUsers.FirstOrDefault(item => item.Id == blacklistUser.Id);
-                if (user != null)
-                {
-                    room.BlacklistUsers.Remove(user);
-                }
-            }
         }
 
         private async void OnGetLobbyRoomsTimerElapsed(object source, ElapsedEventArgs e)
