@@ -2,7 +2,7 @@
 @using Microsoft.AspNetCore.Components.Web
 @using Microsoft.AspNetCore.Components.Routing
 
-<button class="position-absolute" @onclick="ToggleNavMenu" style="top: 10px; right: 10px;">
+<button class="btn btn-light position-absolute" @onclick="ToggleNavMenu" style="top: 10px; right: 10px;">
     <span class="oi oi-menu"></span>
 </button>
 
@@ -33,7 +33,7 @@
 
     [Parameter] public List<BlazorTouchMenuItemModel> MenuItemModels { get; set; }
 
-    private bool showNavMenu = true;
+    private bool showNavMenu = false;
 
     private string NavMenuCssClass => showNavMenu ? "d-block" : "d-none";
 

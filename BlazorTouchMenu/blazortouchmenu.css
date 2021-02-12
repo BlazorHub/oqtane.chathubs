@@ -5,7 +5,7 @@
     height: 100vh;
     top: 0;
     display: none;
-    background-image: linear-gradient(180deg, rgb(5, 39, 103) 0%, #3a0647 70%);
+    background-image: linear-gradient(180deg, PaleGreen 0%, RoyalBlue 70%);
 }
 
 .navbar-toggler {
