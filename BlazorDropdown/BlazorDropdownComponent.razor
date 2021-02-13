@@ -1,0 +1,27 @@
+﻿@namespace BlazorDropdown
+
+@using Microsoft.AspNetCore.Components
+
+<div class="btn-group float-right">
+    <button type="button" @onclick="@(() => ToggleDropdown())" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+        Right-aligned menu
+    </button>
+    <div class="dropdown-menu dropdown-menu-left @(ShowDropdown ? DisplayDropdownClass : "")">
+        <button class="dropdown-item" type="button">Action</button>
+        <button class="dropdown-item" type="button">Another action</button>
+        <button class="dropdown-item" type="button">Something else here</button>
+    </div>
+</div>
+
+@code {
+
+    public bool ShowDropdown { get; set; }
+
+    public string DisplayDropdownClass { get; set; } = "show";
+
+    public void ToggleDropdown()
+    {
+        this.ShowDropdown = !this.ShowDropdown;
+    }
+
+}

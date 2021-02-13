@@ -40,7 +40,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BlazorTouchMenu", "BlazorTo
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BlazorTabMenu", "BlazorTabMenu\BlazorTabMenu.csproj", "{5BC5FE1B-C3AF-43AC-9296-F97532B1CFB1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BlazorDropdown", "BlazorDropdown\BlazorDropdown.csproj", "{42EF6326-4156-4157-A211-CE1953827D58}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BlazorDropdown", "BlazorDropdown\BlazorDropdown.csproj", "{42EF6326-4156-4157-A211-CE1953827D58}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
