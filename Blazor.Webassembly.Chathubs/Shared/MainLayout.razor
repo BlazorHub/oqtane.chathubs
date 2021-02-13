@@ -9,11 +9,11 @@
 
     <div class="main h-100">
 
-        <div class="content px-2 px-sm-4">
+        <div class="content px-2 px-sm-4" style="position: absolute; height: 90vh; overflow-y: auto;">
             @Body
         </div>
 
-        <div class="w-100 bg-secondary px-2 px-sm-4 py-1 position-absolute" style="bottom: 0;">
+        <div class="w-100 bg-secondary px-2 px-sm-4 py-1 position-absolute d-flex align-items-center" style="height: 10vh; bottom: 0;">
 
             <BlazorTabMenuComponent TabMenuItemModels="@TabMenuItemModels"></BlazorTabMenuComponent>
 
