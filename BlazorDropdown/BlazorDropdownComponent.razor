@@ -4,16 +4,21 @@
 
 <div class="btn-group float-right">
     <button type="button" @onclick="@(() => ToggleDropdown())" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-        Right-aligned menu
+        <span class="oi oi-menu"></span>
     </button>
-    <div class="dropdown-menu dropdown-menu-left @(ShowDropdown ? DisplayDropdownClass : "")">
-        <button class="dropdown-item" type="button">Action</button>
-        <button class="dropdown-item" type="button">Another action</button>
-        <button class="dropdown-item" type="button">Something else here</button>
+    <div class="dropdown-menu dropdown-menu-right @(ShowDropdown ? DisplayDropdownClass : "")">
+
+        @foreach (var item in DropdownItemModels)
+        {
+            <button class="dropdown-item" type="button">@item.Name</button>
+        }
+
     </div>
 </div>
 
 @code {
+
+    [Parameter] public List<BlazorDropdownItemModel> DropdownItemModels { get; set; }
 
     public bool ShowDropdown { get; set; }
 

@@ -338,7 +338,7 @@ namespace Oqtane.ChatHubs.Services
             {
                 if(this.Connection?.State == HubConnectionState.Connected)
                 {
-                    int maxLength = 60;
+                    int maxLength = 4200;
                     async IAsyncEnumerable<string> broadcastData()
                     {
                         for (var i = 0; i < dataURI.Length; i += maxLength)

@@ -4,7 +4,7 @@
 
 <div style="height: 42px">
 
-    <BlazorDropdownComponent></BlazorDropdownComponent>
+    <BlazorDropdownComponent DropdownItemModels="@DropdownItemModels"></BlazorDropdownComponent>
 
 </div>
 
@@ -30,4 +30,12 @@
 
 </div>
 
+@code {
 
+    public List<BlazorDropdownItemModel> DropdownItemModels = new List<BlazorDropdownItemModel>()
+    {
+        new BlazorDropdownItemModel() { Name = "do not tell anybody"},
+        new BlazorDropdownItemModel() { Name = "this is important action"},
+        new BlazorDropdownItemModel() { Name = "oh yes run anyhow but how do??"}
+    };
+}
