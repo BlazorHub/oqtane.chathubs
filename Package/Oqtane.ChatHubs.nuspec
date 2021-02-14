@@ -55,5 +55,6 @@
     <file src="..\BlazorFileUpload\bin\Release\net5.0\BlazorFileUpload.dll" target="lib\net5.0" />
     <file src="..\BlazorFileUpload\bin\Release\net5.0\BlazorFileUpload.pdb" target="lib\net5.0" />
     <file src="..\Server\wwwroot\**\*.*" target="wwwroot" />
+    <file src="..\BlazorAlerts\wwwroot\**\*.*" target="wwwroot" />
   </files>
 </package>

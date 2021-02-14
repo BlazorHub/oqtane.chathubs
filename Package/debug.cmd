@@ -23,3 +23,4 @@ XCOPY "..\BlazorDraggableList\bin\Debug\net5.0\BlazorDraggableList.pdb" "..\..\o
 XCOPY "..\BlazorFileUpload\bin\Debug\net5.0\BlazorFileUpload.dll" "..\..\oqtane.framework\Oqtane.Server\bin\Debug\net5.0\" /Y
 XCOPY "..\BlazorFileUpload\bin\Debug\net5.0\BlazorFileUpload.pdb" "..\..\oqtane.framework\Oqtane.Server\bin\Debug\net5.0\" /Y
 XCOPY "..\Server\wwwroot\Modules\Oqtane.ChatHubs\*" "..\..\oqtane.framework\Oqtane.Server\wwwroot\Modules\Oqtane.ChatHubs\" /Y /S /I
+XCOPY "..\BlazorAlerts\wwwroot\*" "..\..\oqtane.framework\Oqtane.Server\wwwroot\Modules\Oqtane.ChatHubs\" /Y /S /I
