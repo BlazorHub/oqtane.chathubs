@@ -1,10 +1,13 @@
 ﻿@page "/"
 
+@inject BlazorAlertsService BlazorAlertsService
+
+@using BlazorAlerts
 @using BlazorDropdown
 
 <div style="height: 42px">
 
-    <BlazorDropdownComponent DropdownItemModels="@DropdownItemModels"></BlazorDropdownComponent>
+    <BlazorDropdownComponent DropdownItemModels="@DropdownItemModels" DropdownItemClicked="@DropdownItemClicked"></BlazorDropdownComponent>
 
 </div>
 
@@ -32,10 +35,16 @@
 
 @code {
 
-    public List<BlazorDropdownItemModel> DropdownItemModels = new List<BlazorDropdownItemModel>()
+    public List<BlazorDropdownItem> DropdownItemModels = new List<BlazorDropdownItem>()
     {
-        new BlazorDropdownItemModel() { Name = "do not tell anybody"},
-        new BlazorDropdownItemModel() { Name = "this is important action"},
-        new BlazorDropdownItemModel() { Name = "oh yes run anyhow but how do??"}
+        new BlazorDropdownItem() { Name = "do not tell anybody" },
+        new BlazorDropdownItem() { Name = "this is important action"},
+        new BlazorDropdownItem() { Name = "oh yes run anyhow but how do??"}
     };
+
+    public void DropdownItemClicked(BlazorDropdownEvent item)
+    {
+        this.BlazorAlertsService.NewBlazorAlert(item.ClickedDropdownItem.Name);
+    }
+
 }

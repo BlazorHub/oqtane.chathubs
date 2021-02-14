@@ -10,7 +10,7 @@
 
         @foreach (var item in DropdownItemModels)
         {
-            <button class="dropdown-item" type="button">@item.Name</button>
+            <button @onclick="@(() => DropdownItem_Clicked(item))" class="dropdown-item" type="button">@item.Name</button>
         }
 
     </div>
@@ -18,7 +18,15 @@
 
 @code {
 
-    [Parameter] public List<BlazorDropdownItemModel> DropdownItemModels { get; set; }
+    [Parameter] public List<BlazorDropdownItem> DropdownItemModels { get; set; }
+
+    [Parameter] public EventCallback<BlazorDropdownEvent> DropdownItemClicked { get; set; }
+
+    public async void DropdownItem_Clicked(BlazorDropdownItem item)
+    {
+        var dropdownEvent = new BlazorDropdownEvent() { ClickedDropdownItem = item };
+        await this.DropdownItemClicked.InvokeAsync(dropdownEvent);
+    }
 
     public bool ShowDropdown { get; set; }
 
