@@ -16,7 +16,7 @@
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
     },
-    "Blazor.Webassembly.Chathubs": {
+    "BlazorWasm": {
       "commandName": "Project",
       "dotnetRunMessages": "true",
       "launchBrowser": true,
