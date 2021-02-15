@@ -423,7 +423,12 @@
                         var reader = new FileReader();
                         reader.onloadend = function (event) {
 
+                            var timeDiff = __selfremotelivestream.sourcebuffer.timestampOffset - __selfremotelivestream.video.currentTime;
+                            __selfremotelivestream.video.currentTime = __selfremotelivestream.sourcebuffer.timestampOffset - 1;
+                            console.log('time diff: ' + timeDiff);
+
                             __selfremotelivestream.remotemediasequences.push(reader.result);
+                            
                             if (__selfremotelivestream.remotemediasequences.length >= 2) {
 
                                 __selfremotelivestream.remotemediasequences.shift();
