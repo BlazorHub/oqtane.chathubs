@@ -424,7 +424,9 @@
                         reader.onloadend = function (event) {
 
                             var timeDiff = __selfremotelivestream.sourcebuffer.timestampOffset - __selfremotelivestream.video.currentTime;
-                            __selfremotelivestream.video.currentTime = __selfremotelivestream.sourcebuffer.timestampOffset - 1;
+                            if (timeDiff > 1) {
+                                __selfremotelivestream.video.currentTime = __selfremotelivestream.sourcebuffer.timestampOffset - 1;
+                            }
                             console.log('time diff: ' + timeDiff);
 
                             __selfremotelivestream.remotemediasequences.push(reader.result);
