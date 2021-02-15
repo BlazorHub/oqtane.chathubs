@@ -7,7 +7,7 @@
             var messagewindow = document.querySelector(elementId);
             if (messagewindow !== null) {
 
-                var lastchild = messagewindow.lastChild;
+                var lastchild = messagewindow.lastElementChild;
                 var lastchildheight = lastchild.offsetHeight;
                 var tolerance = 100;
 
